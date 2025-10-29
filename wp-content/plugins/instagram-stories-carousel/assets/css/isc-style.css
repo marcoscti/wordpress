@@ -1,0 +1,48 @@
+.isc-carousel-container {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.isc-story-item {
+    flex: 0 0 auto;
+    margin-right: 15px;
+    text-align: center;
+}
+
+.isc-story-item a {
+    display: block;
+    text-decoration: none;
+}
+
+.isc-story-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #c13584;
+    padding: 2px;
+    object-fit: cover;
+}
+
+/* Estilizando a barra de rolagem */
+.isc-carousel-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.isc-carousel-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.isc-carousel-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.isc-carousel-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
