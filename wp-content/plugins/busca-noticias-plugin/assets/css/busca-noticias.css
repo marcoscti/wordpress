@@ -5,7 +5,7 @@
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #cfd8dc;
-  border-radius: 8px;
+  border-radius: 8px!important;
   font-size: 15px;
   box-sizing: border-box;
   outline: none; /* NÃO mostrar outline por padrão */
@@ -23,15 +23,17 @@
   border: 1px solid #ccc;
   margin-top: 6px;
   border-radius: 6px;
-  overflow: hidden;
+  overflow-y: scroll;
+  max-height: 500px;
 }
 
 /* Quando houver resultados */
 .bn-results.active {
   display: block;
   position: absolute;
-  width: 100%;
   z-index: 9999;
+  max-width: 400px;
+  width: 100%;
 }
 .bn-info h4 {
   margin: 0;
