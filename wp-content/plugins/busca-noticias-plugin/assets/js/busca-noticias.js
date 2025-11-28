@@ -1,11 +1,10 @@
 jQuery(function ($) {
     const input = $('.bn-search-input');
-    const resultsBox = $('.bn-results');
     // Debounce para reduzir número de requisições enquanto usuário digita
     let debounceTimer = null;
     const DEBOUNCE_DELAY = 300; // ms
 
-    function doSearch($input) {
+    function doSearch($input, $resultsBox) {
         const term = $input.val().trim();
         const min = parseInt($input.data('min'));
         const limit = parseInt($input.data('limit'));
@@ -14,11 +13,11 @@ jQuery(function ($) {
         const taxTerm = $input.attr('data-tax-term') || '';
 
         if (term.length < min) {
-            resultsBox.removeClass('active').empty();
+            $resultsBox.removeClass('active').empty();
             return;
         }
 
-        resultsBox.addClass('loading');
+        $resultsBox.addClass('loading');
 
         $.post(BN_Search.ajax_url, {
             action: 'busca_noticias',
@@ -29,14 +28,14 @@ jQuery(function ($) {
             taxonomy: taxonomy,
             tax_term: taxTerm
         }).done(function (response) {
-            resultsBox.removeClass('loading');
+            $resultsBox.removeClass('loading');
 
             if (!response.success || !response.data || response.data.length === 0) {
-                resultsBox.removeClass('active').empty();
+                $resultsBox.removeClass('active').empty();
                 return;
             }
 
-            resultsBox.empty();
+            $resultsBox.empty();
 
             // Construir o DOM de forma segura (não usar template literals com html cru)
             response.data.forEach(function (item) {
@@ -54,27 +53,29 @@ jQuery(function ($) {
                 $('<p>').text(item.resumo.slice(0, 150) + '...').appendTo($info);
 
                 $a.append($thumb).append($info);
-                resultsBox.append($a);
+                $resultsBox.append($a);
             });
 
-            resultsBox.addClass('active');
+            $resultsBox.addClass('active');
         }).fail(function () {
-            resultsBox.removeClass('loading').removeClass('active').empty();
+            $resultsBox.removeClass('loading').removeClass('active').empty();
         });
     }
 
     input.on('input', function () {
         const $this = $(this);
+        const $resultsBox = $this.siblings('.bn-results');
+        
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(function () {
-            doSearch($this);
+            doSearch($this, $resultsBox);
         }, DEBOUNCE_DELAY);
     });
 
     // Ocultar ao clicar fora
     $(document).on('click', function (e) {
         if (!$(e.target).closest('.bn-search-wrap').length) {
-            resultsBox.removeClass('active').empty();
+            $('.bn-results').removeClass('active').empty();
         }
     });
 });
