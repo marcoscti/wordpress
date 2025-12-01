@@ -26,14 +26,14 @@ class BN_Ajax_Search {
             'bn-search-style',
             $dir . 'assets/css/busca-noticias.css',
             [],
-            '1.8'
+            '1.9'
         );
 
         wp_enqueue_script(
             'bn-search-js',
             $dir . 'assets/js/busca-noticias.js',
             ['jquery'],
-            '1.8',
+            '1.9',
             true
         );
 
@@ -81,7 +81,6 @@ class BN_Ajax_Search {
 
     /** AJAX */
     public function ajax_handler() {
-        check_ajax_referer('bn_search_nonce', 'nonce');
 
         $term  = isset($_POST['term']) ? sanitize_text_field($_POST['term']) : '';
         $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 50;
