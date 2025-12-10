@@ -72,6 +72,13 @@ jQuery(function ($) {
         }, DEBOUNCE_DELAY);
     });
 
+    input.on('keypress', function (e) {
+        if (e.which === 13) { // Enter key
+            e.preventDefault();
+            window.location.href = '?s=' + encodeURIComponent($(this).val().trim())+'&post_type='+$(this).attr('data-post-type');
+        }
+        });
+
     // Ocultar ao clicar fora
     $(document).on('click', function (e) {
         if (!$(e.target).closest('.bn-search-wrap').length) {
