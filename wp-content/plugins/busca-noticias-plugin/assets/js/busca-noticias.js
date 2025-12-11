@@ -75,7 +75,7 @@ jQuery(function ($) {
     input.on('keypress', function (e) {
         if (e.which === 13) { // Enter key
             e.preventDefault();
-            window.location.origin = '?s=' + encodeURIComponent($(this).val().trim())+'&post_type='+$(this).attr('data-post-type');
+            window.location.href = window.location.origin = '?s=' + encodeURIComponent($(this).val().trim())+'&post_type='+$(this).attr('data-post-type');
         }
         });
 
