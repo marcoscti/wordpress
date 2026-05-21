@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php if ( apply_filters( 'hello_elementor_page_title', true ) ) : ?>
 		<div class="page-header">
 			<?php
-			//the_archive_title( '<h1 class="entry-title">', '</h1>' );
+			the_archive_title( '<h1 class="entry-title">', '</h1>' );
 			the_archive_description( '<p class="archive-description">', '</p>' );
 			?>
 		</div>
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			the_post();
 			$post_link = get_permalink();
 			?>
-			<article class="post" style="display: grid;grid-template-columns: 2fr 1fr;">
+			<article class="post">
 				<?php
 				printf( '<h2 class="%s"><a href="%s">%s</a></h2>', 'entry-title', esc_url( $post_link ), wp_kses_post( get_the_title() ) );
 				if ( has_post_thumbnail() ) {

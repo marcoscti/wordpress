@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'HELLO_ELEMENTOR_VERSION', '3.4.7' );
+define( 'HELLO_ELEMENTOR_VERSION', '3.4.9' );
 define( 'EHP_THEME_SLUG', 'hello-elementor' );
 
 define( 'HELLO_THEME_PATH', get_template_directory() );
@@ -26,53 +26,7 @@ define( 'HELLO_THEME_IMAGES_URL', HELLO_THEME_ASSETS_URL . 'images/' );
 if ( ! isset( $content_width ) ) {
 	$content_width = 800; // Pixels.
 }
-// Adiciona colunas (Thumb + ID)
-add_filter('manage_posts_columns', function ($columns) {
-    $new = [];
 
-    // ID primeiro
-    $new['post_id'] = 'ID';
-
-    foreach ($columns as $key => $value) {
-        // Thumb antes do título
-        if ($key === 'title') {
-            $new['thumbnail'] = 'Thumb';
-        }
-        $new[$key] = $value;
-    }
-
-    return $new;
-});
-
-// Preenche as colunas
-add_action('manage_posts_custom_column', function ($column, $post_id) {
-    if ($column === 'thumbnail') {
-        if (has_post_thumbnail($post_id)) {
-            echo get_the_post_thumbnail($post_id, [60, 60]);
-        } else {
-            echo '—';
-        }
-    }
-
-    if ($column === 'post_id') {
-        echo $post_id;
-    }
-}, 10, 2);
-
-// Estilo das colunas
-add_action('admin_head', function () {
-    echo '<style>
-        .column-thumbnail {
-            width: 80px;
-			object-fit: cover;
-            text-align: center;
-        }
-        .column-post_id {
-            width: 80px;
-            font-weight: bold;
-        }
-    </style>';
-});
 if ( ! function_exists( 'hello_elementor_setup' ) ) {
 	/**
 	 * Set up theme support.
