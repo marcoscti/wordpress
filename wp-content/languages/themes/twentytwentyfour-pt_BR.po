@@ -246,11 +246,11 @@ msgctxt "Pattern title"
 msgid "List of posts without images, 1 column"
 msgstr "Lista de posts sem imagens, 1 coluna"
 
-#: functions.php:200
+#: functions.php:188
 msgid "A collection of full page layouts."
 msgstr "Uma coleção de modelos de página completa."
 
-#: functions.php:199
+#: functions.php:187
 msgctxt "Block pattern category"
 msgid "Pages"
 msgstr "Páginas"
@@ -402,23 +402,23 @@ msgctxt "Pattern title"
 msgid "Hero"
 msgstr "Herói"
 
-#: functions.php:111
+#: functions.php:107
 msgid "With asterisk"
 msgstr "Com asterisco"
 
-#: functions.php:93
+#: functions.php:89
 msgid "With arrow"
 msgstr "Com seta"
 
-#: functions.php:74
+#: functions.php:70
 msgid "Checkmark"
 msgstr "Marca de seleção"
 
-#: functions.php:51
+#: functions.php:47
 msgid "Pill"
 msgstr "Pílula"
 
-#: functions.php:28
+#: functions.php:24
 msgid "Arrow icon"
 msgstr "Ícone de seta"
 
