@@ -9,11 +9,7 @@
   },
   "styles": {
     "typography": {
-      "fontFamily": "Arial, sans-serif"
-    },
-    "color": {
-      "background": "#ffffff",
-      "text": "#111111"
+      "fontFamily": "Open Sans, sans-serif"
     }
   }
 }

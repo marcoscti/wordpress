@@ -1,9 +1,44 @@
+:root {
+    --primary-color: #0f172a;
+    --secondary-color: #1e293b;
+    --accent-color: #3b82f6;
+    --text-color: #fff;
+    --background-color: #f8fafc;
+}
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Regular.ttf') format('ttf'),
+         url('../fonts/OpenSans-Bold.ttf') format('ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html,body {
+    font-family: 'Open Sans', sans-serif;
+}
 .site-header {
-    background: #0f172a;
+    background: var(--primary-color);
     padding: 25px 40px;
-    color: #fff;
-    position:sticky;
+    color: var(--text-color);
+    position: sticky;
     top: 0;
     z-index: 10;
     width: 100%;
+}
+
+.site-footer {
+    background: var(--primary-color);
+    padding: 25px 40px;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.banner_home {
+    margin-top: 0;
+    width: 100%;
+}
+
+.banner_item_image {
+    width: 100%;
+    height: auto;
 }
