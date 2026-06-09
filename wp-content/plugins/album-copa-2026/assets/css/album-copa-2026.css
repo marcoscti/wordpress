@@ -1,0 +1,77 @@
+:root {
+  --primary-color: #3d1225;
+  --card-background: #45c6cb;
+  --card-legend-background: #1a8686;
+}
+
+.album-copa-2026-form-wrapper {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.album-copa-2026-submission-form p {
+    margin-bottom: 15px;
+}
+.album-copa-2026-submission-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.album-copa-2026-submission-form input[type="text"],
+.album-copa-2026-submission-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+}
+.album-copa-2026-submit-button.file {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.album-copa-2026-button {
+    background: #38b34a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+.album-copa-2026-list-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.album-copa-2026-card .album-copa-2026-card-author {
+    font-weight: bold;
+    margin-bottom: 10px;
+    background-color: var(--card-legend-background);
+    color: white;
+    padding: 10px;
+    border-radius: 50px 50px 0 50px;
+    font-size: 1em;
+    text-align: center;
+    text-transform: uppercase;
+}
+.album-copa-2026-card .album-copa-2026-card-sublegend {
+    font-size: .8em;
+    color: #fff;
+    text-align: center;
+    background-color: var(--card-legend-background);
+    border-radius: 15px 15px 0 0;
+    font-weight: bold;
+    padding: 5px;
+}
+.album-copa-2026-card-image {
+    width: 100%;
+    height: auto;
+    border-radius: 50px 50px 0 50px;
+}
+.album-copa-2026-form-message.album-copa-2026-success { color: green; margin-bottom: 10px; }
+.album-copa-2026-form-message.album-copa-2026-error { color: red; margin-bottom: 10px; }
+.album-copa-2026-comment-item { border-bottom: 1px solid #eee; padding: 5px 0; }
+.album-copa-2026-comment-item strong { display: block; font-size: 0.9em; }

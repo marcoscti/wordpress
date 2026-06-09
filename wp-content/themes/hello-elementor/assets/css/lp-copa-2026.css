@@ -1,0 +1,44 @@
+:root {
+  --primary-color: #3d1225;
+  --card-background: #45c6cb;
+  --card-legend-background: #1a8686;
+}
+.album-copa-2026-card{
+  background-color: var(--card-background);
+  padding:10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border:#1a8686 1px red;
+  padding: 20px;
+}
+.lp-copa-2026-header {
+    background-color: var(--card-legend-background);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+.lp-copa-2026-header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+.nav-links {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+}
+.nav-links li{
+  list-style: none;
+}
+.nav-links li a{
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+}
+.logo a img{
+  max-width: 200px;
+  width: 100%;
+}
