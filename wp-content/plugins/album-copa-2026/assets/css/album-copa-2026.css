@@ -71,10 +71,12 @@
   background-position-y: 15px;
   background-size: 83%;
 }
+.album-copa-2026-card-body,
 .album-copa-2026-card-media {
   text-align: center;
   width: 245px;
 }
+
 .album-copa-2026-container-sublegend {
   display: flex;
   align-items: center;
@@ -133,3 +135,14 @@
   display: block;
   font-size: 0.9em;
 }
+.album-copa-2026-orientations details summary{
+  cursor:pointer;
+}
+.album-copa-2026-orientations details ul{
+  margin:0;
+  padding: 0 0 0 17px;
+  list-style:none;
+}
+.album-copa-2026-orientations details ul li::before {
+      content: "👉 ";
+    }
