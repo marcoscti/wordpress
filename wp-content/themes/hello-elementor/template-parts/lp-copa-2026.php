@@ -29,16 +29,16 @@
                 <a href="<?php echo get_site_url(); ?>/figurinhas/"><img src="https://igesdf.org.br/wp-content/uploads/2022/09/logo-iges-branca.svg" alt="Logo"></a>
             </div>
             <ul class="nav-links">
-                <li><a href="<?php echo get_site_url(); ?>/figurinhas/">Envie a sua</a></li>
-                <li><a href="<?php echo get_site_url(); ?>/album-form/">Album</a></li>
+                <li><a href="<?php echo get_site_url(); ?>/album-form/">Crie a sua</a></li>
+                <li><a href="<?php echo get_site_url(); ?>/figurinhas/">Album</a></li>
             </ul>
-            <button class="btnOpenDrawer">
+            <button class="btnOpenDrawer" style="display: none;">
                 <div></div>
                 <div></div>
                 <div></div>
             </button>
 
-            <div class="drawerBackground">
+            <div class="drawerBackground" style="display: none;"></div>
             </div>
             <div class="drawerContent" style="display: none;">
                 <div class="drawerHeader">
@@ -50,8 +50,8 @@
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="<?php echo get_site_url(); ?>/figurinhas/">Envie a sua</a></li>
-                        <li><a href="<?php echo get_site_url(); ?>/album-form/">Album</a></li>
+                        <li><a href="<?php echo get_site_url(); ?>/album-form/">Envie a sua</a></li>
+                        <li><a href="<?php echo get_site_url(); ?>/figurinhas/">Album</a></li>
                     </ul>
                 </nav>
             </div>
@@ -68,7 +68,19 @@
         ?>
     </main>
     <footer class="lp-copa-2026-footer">
-        <p>Desenvolvido pelo núcleo de mídias digitais</p>
+        <div class="container">
+            <div style="margin: 0;" class="social">
+                <p style="margin: 0;">Siga-nos nas redes sociais:</p>
+                <ul>
+                    <li><a href="https://www.facebook.com/igesdfoficial" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/facebook.png" alt="Facebook" class="lp-copa-2026-image"></a></li>
+                    <li><a href="https://www.instagram.com/iges_df/" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/instagram.png" alt="Instagram" class="lp-copa-2026-image"></a></li>
+                    <li><a href="https://www.youtube.com//@IGESDFoficial" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/youtube.png" alt="YouTube" class="lp-copa-2026-image"></a></li>
+                    <li><a href="https://www.linkedin.com/company/igesdf/" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/linkedin.png" alt="LinkedIn" class="lp-copa-2026-image"></a></li>
+                </ul>
+            </div>
+            <p style="margin: 0;">Desenvolvido pela Acessoria de Comunicação (ASCOM) <br> Email: <a href="mailto:ascom@igesdf.org.br" target="_blank">ascom@igesdf.org.br</a> </p>
+            <p style="margin: 0;">© <?php echo date('Y'); ?> IgesDF - Instituto de Gestão Estratégica de Saúde do Distrito Federal. Todos os direitos reservados.</p>
+        </div>
     </footer>
     <?php wp_footer(); ?>
     <script src="<?php echo get_template_directory_uri(); ?>/assets/js/lp-copa-2026.js"></script>

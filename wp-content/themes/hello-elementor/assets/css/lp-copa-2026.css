@@ -1,27 +1,79 @@
 :root {
-  --primary-color: #3d1225;
   --card-background: #45c6cb;
   --card-legend-background: #1a8686;
+  --igesdf-orange: #EC6608;
 }
-.album-copa-2026-card{
-  background-color: var(--card-background);
-  padding:10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  border:#1a8686 1px red;
+@font-face {
+  font-family: 'Copa';
+  src: url("../fonts/FWC2026-NormalRegular.77c3c249.ttf") format("ttf");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Copa';
+  src: url("../fonts/FWC2026-NormalBlack.2bd896c8.ttf") format("ttf");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body.page-template-lp-copa-2026{
+  height: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: 'Copa', sans-serif!important;
+}
+.lp-copa-2026-main {
+  max-width: 1280px;
+  margin: 0 auto;
   padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+}
+.lp-copa-2026-main .paginate{
+  margin-top: 30px;
+}
+.lp-copa-2026-main .paginate .page-numbers{
+  padding: 15px;
+  background-color:  var(--card-background);
+  color: white;
+}
+.lp-copa-2026-main .paginate .page-numbers.current{
+  background-color: var(--card-legend-background);
+  font-weight: bold;
+}
+
+.lp-copa-body{
+  height: 100%;
+  display: flex;
+    flex-direction: column;
 }
 .lp-copa-2026-header {
-    background-color: var(--card-legend-background);
-    color: white;
-    padding: 20px;
-    text-align: center;
+  background-color: var(--card-legend-background);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
+
 .lp-copa-2026-header nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1280px;
-    margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 .nav-links {
   margin: 0;
@@ -29,16 +81,47 @@
   display: flex;
   gap: 10px;
 }
-.nav-links li{
+.nav-links li {
   list-style: none;
 }
-.nav-links li a{
+.nav-links li a {
   color: white;
   text-decoration: none;
   font-weight: bold;
   padding: 10px 15px;
 }
-.logo a img{
+.logo a img {
   max-width: 200px;
   width: 100%;
+}
+.lp-copa-2026-footer {
+  background-color: var(--card-legend-background);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+.lp-copa-2026-footer .container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.lp-copa-2026-footer .container ul {
+  display: flex;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.lp-copa-2026-footer .container .social {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+}
+.lp-copa-2026-footer .container .social p{
+  font-size: 1.5rem;
+}
+.lp-copa-2026-image{
+  width: 32px;
 }
