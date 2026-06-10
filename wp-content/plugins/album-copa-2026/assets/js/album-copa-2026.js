@@ -3,11 +3,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('album_copa_2026_foto');
     if (fileInput) {
         fileInput.addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : '';
+            const file = e.target.files[0];
             const fileNameDisplay = document.querySelector('.album-copa-2026-file-name');
+            if (!file) return;
+
+            // Exibe nome provisório
             if (fileNameDisplay) {
-                fileNameDisplay.textContent = fileName;
+                fileNameDisplay.textContent = file.name + ' (preparando recorte...)';
             }
+
+            // Inicia fluxo de recorte
+            openCropperModal(file, fileInput, fileNameDisplay);
         });
     }
 
@@ -107,3 +113,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function openCropperModal(file, fileInput, fileNameDisplay) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Cria elementos do modal
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.right = 0;
+        overlay.style.bottom = 0;
+        overlay.style.background = 'rgba(0,0,0,0.7)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = 99999;
+
+        const container = document.createElement('div');
+        container.style.background = '#fff';
+        container.style.padding = '12px';
+        container.style.maxWidth = '90%';
+        container.style.maxHeight = '90%';
+        container.style.overflow = 'auto';
+
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.maxWidth = '100%';
+        img.style.display = 'block';
+
+        const btns = document.createElement('div');
+        btns.style.marginTop = '8px';
+        btns.style.textAlign = 'right';
+
+        const cropBtn = document.createElement('button');
+        cropBtn.type = 'button';
+        cropBtn.textContent = 'Recortar e Usar';
+        cropBtn.style.marginRight = '8px';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.textContent = 'Cancelar';
+
+        btns.appendChild(cropBtn);
+        btns.appendChild(cancelBtn);
+
+        container.appendChild(img);
+        container.appendChild(btns);
+        overlay.appendChild(container);
+        document.body.appendChild(overlay);
+
+        // Inicializa Cropper com aspectRatio 3:4
+        let cropper = null;
+        try {
+            cropper = new Cropper(img, {
+                aspectRatio: 3 / 4,
+                viewMode: 1,
+                autoCropArea: 1,
+            });
+        } catch (err) {
+            console.error('Cropper initialization failed:', err);
+            alert('Erro ao iniciar ferramenta de recorte.');
+            overlay.remove();
+            return;
+        }
+
+        cancelBtn.addEventListener('click', function() {
+            if (cropper) cropper.destroy();
+            overlay.remove();
+            if (fileNameDisplay) fileNameDisplay.textContent = '';
+            fileInput.value = ''; // limpa seleção
+        });
+
+        cropBtn.addEventListener('click', function() {
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas();
+            if (!canvas) {
+                alert('Falha ao obter o recorte.');
+                return;
+            }
+
+            canvas.toBlob(function(blob) {
+                const newFileName = file.name;
+                const newFile = new File([blob], newFileName, { type: blob.type });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(newFile);
+                fileInput.files = dataTransfer.files;
+
+                if (fileNameDisplay) fileNameDisplay.textContent = newFileName + ' (recortado)';
+
+                cropper.destroy();
+                overlay.remove();
+            }, file.type || 'image/jpeg');
+        });
+    };
+    reader.readAsDataURL(file);
+}
