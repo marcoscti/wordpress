@@ -134,8 +134,10 @@ function openCropperModal(file, fileInput, fileNameDisplay) {
         container.style.background = '#fff';
         container.style.padding = '12px';
         container.style.maxWidth = '90%';
-        container.style.maxHeight = '90%';
-        container.style.overflow = 'auto';
+        container.style.maxHeight = '100vh';
+        container.style.overflow = 'scroll';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
 
         const img = document.createElement('img');
         img.src = e.target.result;
