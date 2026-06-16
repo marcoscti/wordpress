@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) exit;
 
 add_action('admin_menu', function() {
-    add_menu_page('Configurações Feed', 'Feed Social', 'manage_options', 'feed-social-settings', 'fs_settings_page_callback', 'dashicons-share');
+    // add_menu_page('Configurações Feed', 'Feed Social', 'manage_options', 'feed-social-settings', 'fs_settings_page_callback', 'dashicons-share');
 });
 
 function fs_settings_page_callback() {

@@ -21,6 +21,7 @@ function fs_enqueue_feed_scripts() {
     wp_localize_script('feed-social-js', 'fs_feed_data', [
         'ajax_url' => admin_url('admin-ajax.php'), // Not strictly needed for REST API, but good practice for other AJAX
         'rest_url' => get_rest_url(null, 'feed-social/v1/posts'),
+        'sse_url' => home_url('/feed-social-sse'),
         'rest_nonce' => wp_create_nonce('wp_rest'), // Nonce for REST API authentication
         'initial_posts_per_page' => get_option('fs_initial_posts_count', 10), // From settings, default 10
         'posts_per_load' => get_option('fs_posts_per_load', 10), // From settings, default 10

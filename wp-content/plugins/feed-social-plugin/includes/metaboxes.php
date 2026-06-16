@@ -136,4 +136,5 @@ add_action('save_post', function ($post_id) {
     if (isset($_POST['fs_media_ids'])) {
         update_post_meta($post_id, '_fs_media_ids', sanitize_text_field($_POST['fs_media_ids']));
     }
+    
 });

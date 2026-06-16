@@ -18,7 +18,7 @@ require_once FS_PLUGIN_PATH . 'includes/metaboxes.php';
 require_once FS_PLUGIN_PATH . 'includes/shortcode.php';
 require_once FS_PLUGIN_PATH . 'includes/rest-api.php';
 require_once FS_PLUGIN_PATH . 'includes/sse.php';
-require_once FS_PLUGIN_PATH . 'includes/admin-settings.php';
+//require_once FS_PLUGIN_PATH . 'includes/admin-settings.php';
 
 // Ativação do Plugin e criação de tabelas
 register_activation_hook(__FILE__, function () {
