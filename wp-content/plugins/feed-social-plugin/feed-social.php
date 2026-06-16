@@ -1,9 +1,12 @@
 <?php
 /**
  * Plugin Name: Feed Social
- * Description: Feed social com mídia, curtidas, comentários, SSE e scroll infinito.
- * Version: 0.1.0
+ * Description: Feed social com mídia, galeria, curtidas, comentários, scroll infinito e notificações em tempo real (SSE).
+ * Version: 1.3.0
  * Author: Marcos
+ * Text Domain: feed-social
+ * Requires at least: 5.0
+ * Requires PHP: 7.4
  */
 
 if (!defined('ABSPATH')) exit;
