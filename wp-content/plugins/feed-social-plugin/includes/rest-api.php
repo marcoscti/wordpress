@@ -42,14 +42,22 @@ add_action('rest_api_init', function () {
 });
 
 function fs_rest_get_posts($request) {
-    $per_page = $request->get_param('per_page') ?: 10;
-    $page = $request->get_param('page') ?: 1;
+    $per_page = max(1, min(50, absint($request->get_param('per_page') ?: 10)));
+
+    if ($request->get_param('offset') !== null) {
+        $offset = max(0, absint($request->get_param('offset')));
+    } else {
+        $page = max(1, absint($request->get_param('page') ?: 1));
+        $offset = ($page - 1) * $per_page;
+    }
 
     $query = new WP_Query([
         'post_type' => 'feed-social',
         'posts_per_page' => $per_page,
-        'paged' => $page,
-        'post_status' => 'publish' // Apenas posts publicados
+        'offset' => $offset,
+        'post_status' => 'publish',
+        'orderby' => 'date',
+        'order' => 'DESC',
     ]);
 
     $posts = [];
@@ -81,10 +89,14 @@ function fs_rest_get_posts($request) {
         ];
     }
     
+    $loaded = count($posts);
+    $total = (int) $query->found_posts;
+
     return rest_ensure_response([
         'posts' => $posts,
-        'total_pages' => $query->max_num_pages,
-        'current_page' => (int) $page
+        'total' => $total,
+        'offset' => $offset,
+        'has_more' => ($offset + $loaded) < $total,
     ]);
 }
 

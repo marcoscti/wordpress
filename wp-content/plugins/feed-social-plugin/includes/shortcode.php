@@ -62,8 +62,8 @@ function fs_enqueue_feed_scripts() {
         wp_enqueue_style('swiper-css');
     }
 
-    wp_enqueue_script('feed-social-js', FS_PLUGIN_URL . 'assets/js/feed-social.js', ['jquery'], '1.2.0', true);
-    wp_enqueue_style('feed-social-css', FS_PLUGIN_URL . 'assets/css/feed-social.css', [], '1.2.0');
+    wp_enqueue_script('feed-social-js', FS_PLUGIN_URL . 'assets/js/feed-social.js', ['jquery'], '1.3.0', true);
+    wp_enqueue_style('feed-social-css', FS_PLUGIN_URL . 'assets/css/feed-social.css', [], '1.3.0');
 
     wp_localize_script('feed-social-js', 'fs_feed_data', [
         'rest_url' => get_rest_url(null, 'feed-social/v1/posts'),
@@ -73,7 +73,8 @@ function fs_enqueue_feed_scripts() {
         'sse_url' => fs_get_sse_url(),
         'feed_page_url' => fs_get_feed_page_url(),
         'rest_nonce' => wp_create_nonce('wp_rest'),
-        'posts_per_load' => (int) get_option('fs_posts_per_load', 10),
+        'initial_posts' => 5,
+        'posts_per_load' => 2,
         'loading_text' => __('Carregando mais posts...', 'feed-social'),
         'no_more_posts_text' => __('Não há mais posts para carregar.', 'feed-social'),
         'like_prompt' => __('Informe seu e-mail para curtir:', 'feed-social'),
@@ -93,11 +94,15 @@ function fs_render_feed_shortcode($atts) {
     ?>
     <div id="feed-social-app">
         <div id="fs-posts-container"></div>
-        <div id="fs-loading-indicator" style="display: none;">
-            <p class="fs-loading-text"></p>
-        </div>
-        <div id="fs-no-more-posts" style="display: none;">
-            <p class="fs-no-more-posts-text"></p>
+        <div id="fs-feed-footer">
+            <div id="fs-loading-indicator" class="fs-loading-indicator" hidden>
+                <span class="fs-spinner" aria-hidden="true"></span>
+                <p class="fs-loading-text"></p>
+            </div>
+            <div id="fs-scroll-sentinel" class="fs-scroll-sentinel" aria-hidden="true"></div>
+            <div id="fs-no-more-posts" class="fs-no-more-posts" hidden>
+                <p class="fs-no-more-posts-text"></p>
+            </div>
         </div>
     </div>
     <?php

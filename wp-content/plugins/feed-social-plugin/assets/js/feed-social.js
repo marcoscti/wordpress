@@ -1,13 +1,44 @@
 jQuery(document).ready(function ($) {
     const $feedContainer = $('#fs-posts-container');
     const $loadingIndicator = $('#fs-loading-indicator');
+    const $scrollSentinel = $('#fs-scroll-sentinel');
     const $noMorePosts = $('#fs-no-more-posts');
     const $loadingText = $loadingIndicator.find('.fs-loading-text');
     const $noMorePostsText = $noMorePosts.find('.fs-no-more-posts-text');
+    const sentinelEl = $scrollSentinel[0];
 
-    let currentPage = 1;
-    let totalPages = 1;
+    let currentOffset = 0;
+    let hasMore = true;
     let isLoading = false;
+
+    function setLoadingVisible(visible) {
+        $loadingIndicator.prop('hidden', !visible);
+    }
+
+    function updateSentinelVisibility() {
+        if (!$scrollSentinel.length) {
+            return;
+        }
+
+        if (hasMore) {
+            $scrollSentinel.show();
+            $noMorePosts.prop('hidden', true);
+        } else {
+            $scrollSentinel.hide();
+            $noMorePosts.prop('hidden', false);
+        }
+    }
+
+    function checkAndLoadMore() {
+        if (!hasMore || isLoading || !sentinelEl) {
+            return;
+        }
+
+        const rect = sentinelEl.getBoundingClientRect();
+        if (rect.top <= window.innerHeight + 200) {
+            fetchPosts();
+        }
+    }
 
     const likedPosts = new Set(JSON.parse(localStorage.getItem('fs_liked_posts') || '[]'));
 
@@ -119,10 +150,10 @@ jQuery(document).ready(function ($) {
                 showFeedNotification(post);
 
                 if (fs_feed_data.has_feed && $feedContainer.length) {
-                    currentPage = 1;
-                    totalPages = 1;
+                    currentOffset = 0;
+                    hasMore = true;
                     $feedContainer.empty();
-                    $noMorePosts.hide();
+                    updateSentinelVisibility();
                     fetchPosts();
                 }
             } catch (error) {
@@ -241,15 +272,19 @@ jQuery(document).ready(function ($) {
     }
 
     async function fetchPosts() {
-        if (!$feedContainer.length || isLoading || (currentPage > totalPages && currentPage !== 1)) {
+        if (!$feedContainer.length || isLoading || !hasMore) {
             return;
         }
 
+        const perPage = currentOffset === 0
+            ? fs_feed_data.initial_posts
+            : fs_feed_data.posts_per_load;
+
         isLoading = true;
-        $loadingIndicator.show();
+        setLoadingVisible(true);
 
         try {
-            const response = await fetch(`${fs_feed_data.rest_url}?page=${currentPage}&per_page=${fs_feed_data.posts_per_load}`, {
+            const response = await fetch(`${fs_feed_data.rest_url}?offset=${currentOffset}&per_page=${perPage}`, {
                 headers: {
                     'X-WP-Nonce': fs_feed_data.rest_nonce,
                 },
@@ -258,19 +293,18 @@ jQuery(document).ready(function ($) {
 
             if (data.posts && data.posts.length > 0) {
                 data.posts.forEach(renderPost);
-                currentPage++;
-                totalPages = data.total_pages;
+                currentOffset += data.posts.length;
+                hasMore = Boolean(data.has_more);
             } else {
-                totalPages = 0;
+                hasMore = false;
             }
         } catch (error) {
             console.error('Erro ao carregar posts:', error);
         } finally {
             isLoading = false;
-            $loadingIndicator.hide();
-            if (currentPage > totalPages) {
-                $noMorePosts.show();
-            }
+            setLoadingVisible(false);
+            updateSentinelVisibility();
+            checkAndLoadMore();
         }
     }
 
@@ -419,15 +453,22 @@ jQuery(document).ready(function ($) {
         handleCommentSubmit($form.closest('.fs-post-item'), $form);
     });
 
-    if ($feedContainer.length) {
+    if ($feedContainer.length && sentinelEl) {
         const observer = new IntersectionObserver(function (entries) {
-            if (entries[0].isIntersecting && !isLoading && currentPage <= totalPages) {
+            if (entries[0].isIntersecting && !isLoading && hasMore) {
                 fetchPosts();
             }
-        }, { threshold: 0.5 });
+        }, {
+            root: null,
+            rootMargin: '200px 0px',
+            threshold: 0,
+        });
 
-        observer.observe($loadingIndicator[0]);
+        observer.observe(sentinelEl);
+        updateSentinelVisibility();
         fetchPosts();
+
+        $(window).on('scroll.fsFeed resize.fsFeed', checkAndLoadMore);
     }
 
     initSse();

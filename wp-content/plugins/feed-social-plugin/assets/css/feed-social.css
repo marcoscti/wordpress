@@ -160,6 +160,59 @@
 .fs-comment-submit:hover:not(:disabled) {
   background: #111;
 }
+
+#fs-feed-footer {
+  min-height: 48px;
+}
+
+.fs-scroll-sentinel {
+  width: 100%;
+  height: 1px;
+  pointer-events: none;
+}
+
+.fs-loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 0;
+  color: #666;
+}
+
+.fs-loading-indicator[hidden],
+.fs-no-more-posts[hidden] {
+  display: none !important;
+}
+
+.fs-loading-text,
+.fs-no-more-posts-text {
+  margin: 0;
+  font-size: 0.9em;
+  color: #888;
+}
+
+.fs-no-more-posts {
+  padding: 12px 0 4px;
+  text-align: center;
+}
+
+.fs-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #ddd;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: fs-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes fs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Notification Toast */
 .fs-notification-toast {
   position: fixed;
