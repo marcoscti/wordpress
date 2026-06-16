@@ -1,0 +1,15 @@
+/*
+Theme Name: IgesDF 2026
+Author: Marcos Cordeiro
+Version: 1.0
+Text Domain: meu-tema
+*/
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+    font-family: 'Open Sans', sans-serif;
+}
