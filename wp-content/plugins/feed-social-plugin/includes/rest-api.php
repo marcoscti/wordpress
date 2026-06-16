@@ -24,6 +24,21 @@ add_action('rest_api_init', function () {
         'callback' => 'fs_rest_handle_comment',
         'permission_callback' => '__return_true'
     ]);
+
+    // Listar comentários de um post
+    register_rest_route($namespace, '/comments', [
+        'methods' => 'GET',
+        'callback' => 'fs_rest_get_comments',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'post_id' => [
+                'required' => true,
+                'validate_callback' => function ($value) {
+                    return is_numeric($value) && (int) $value > 0;
+                },
+            ],
+        ],
+    ]);
 });
 
 function fs_rest_get_posts($request) {
@@ -75,12 +90,12 @@ function fs_rest_get_posts($request) {
 
 function fs_rest_handle_like($request) {
     global $wpdb;
-    $params = $request->get_json_params();
-    $post_id = absint($params['post_id']);
-    $email = sanitize_email($params['email']);
+    $params = $request->get_json_params() ?: [];
+    $post_id = absint($params['post_id'] ?? 0);
+    $email = sanitize_email($params['email'] ?? '');
     $table = $wpdb->prefix . 'feed_social_likes';
 
-    if (empty($post_id) || !is_email($email)) {
+    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || !is_email($email)) {
         return new WP_Error('invalid_data', 'Dados inválidos', ['status' => 400]);
     }
 
@@ -108,28 +123,64 @@ function fs_rest_handle_like($request) {
 
 function fs_rest_handle_comment($request) {
     global $wpdb;
-    $params = $request->get_json_params();
-    $post_id = absint($params['post_id']);
-    $name = sanitize_text_field($params['name']);
-    $email = sanitize_email($params['email']);
-    $comment = sanitize_textarea_field($params['comment']);
+    $params = $request->get_json_params() ?: [];
+    $post_id = absint($params['post_id'] ?? 0);
+    $name = sanitize_text_field($params['name'] ?? '');
+    $email = sanitize_email($params['email'] ?? '');
+    $comment = sanitize_textarea_field($params['comment'] ?? '');
     $table = $wpdb->prefix . 'feed_social_comments';
 
-    if (empty($post_id) || empty($name) || !is_email($email) || empty($comment)) {
+    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || empty($name) || !is_email($email) || empty($comment)) {
         return new WP_Error('missing_fields', 'Campos obrigatórios faltando', ['status' => 400]);
     }
 
-    $wpdb->insert($table, [
+    $inserted = $wpdb->insert($table, [
         'post_id' => $post_id,
         'name' => $name,
         'email' => $email,
         'comment' => $comment,
-        'created_at' => current_time('mysql')
+        'created_at' => current_time('mysql'),
     ], ['%d', '%s', '%s', '%s', '%s']);
+
+    if ($inserted === false) {
+        return new WP_Error('db_error', 'Não foi possível salvar o comentário', ['status' => 500]);
+    }
 
     return rest_ensure_response([
         'success' => true,
-        'new_count' => fs_get_comments_count($post_id)
+        'new_count' => fs_get_comments_count($post_id),
+        'comment' => [
+            'id' => (int) $wpdb->insert_id,
+            'name' => $name,
+            'comment' => $comment,
+            'created_at' => current_time('mysql'),
+        ],
+    ]);
+}
+
+function fs_rest_get_comments($request) {
+    global $wpdb;
+    $post_id = absint($request->get_param('post_id'));
+    $table = $wpdb->prefix . 'feed_social_comments';
+
+    if (get_post_type($post_id) !== 'feed-social') {
+        return new WP_Error('invalid_post', 'Post inválido', ['status' => 400]);
+    }
+
+    $rows = $wpdb->get_results($wpdb->prepare(
+        "SELECT id, name, comment, created_at FROM $table WHERE post_id = %d ORDER BY created_at ASC",
+        $post_id
+    ));
+
+    return rest_ensure_response([
+        'comments' => array_map(function ($row) {
+            return [
+                'id' => (int) $row->id,
+                'name' => $row->name,
+                'comment' => $row->comment,
+                'created_at' => $row->created_at,
+            ];
+        }, $rows ?: []),
     ]);
 }
 

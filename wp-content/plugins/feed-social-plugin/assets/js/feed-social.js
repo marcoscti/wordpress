@@ -1,4 +1,4 @@
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
     const $feedContainer = $('#fs-posts-container');
     const $loadingIndicator = $('#fs-loading-indicator');
     const $noMorePosts = $('#fs-no-more-posts');
@@ -8,63 +8,167 @@ jQuery(document).ready(function($) {
     let currentPage = 1;
     let totalPages = 1;
     let isLoading = false;
-    let notificationTimeout;
 
-    // SSE Client
-    if (typeof EventSource !== 'undefined') {
-        const feedEvents = new EventSource('/feed-social-sse');
+    const likedPosts = new Set(JSON.parse(localStorage.getItem('fs_liked_posts') || '[]'));
 
-        feedEvents.addEventListener(
-            'new-content-feed',
-            function(event) {
-                const post = JSON.parse(event.data);
-                console.log('New content received via SSE:', post);
-                showFeedNotification(post);
+    function saveLikedPosts() {
+        localStorage.setItem('fs_liked_posts', JSON.stringify([...likedPosts]));
+    }
 
-            }
-        );
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-        feedEvents.onerror = function(event) {
-            console.error('SSE Error:', event);
-            // Optionally, try to reconnect after a delay
+    function getUserEmail(promptText) {
+        let email = localStorage.getItem('fs_user_email');
+        if (email && isValidEmail(email)) {
+            return email;
+        }
+
+        email = window.prompt(promptText || fs_feed_data.like_prompt);
+        if (email && isValidEmail(email)) {
+            localStorage.setItem('fs_user_email', email.trim());
+            return email.trim();
+        }
+
+        return null;
+    }
+
+    function getUserName() {
+        let name = localStorage.getItem('fs_user_name');
+        if (name) {
+            return name;
+        }
+
+        name = window.prompt(fs_feed_data.comment_name_prompt);
+        if (name) {
+            localStorage.setItem('fs_user_name', name.trim());
+            return name.trim();
+        }
+
+        return null;
+    }
+
+    function restHeaders() {
+        return {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': fs_feed_data.rest_nonce,
         };
-    } else {
-        console.warn('Server-Sent Events not supported by this browser.');
+    }
+
+    function requestNotificationPermission() {
+        if (!('Notification' in window) || Notification.permission !== 'default') {
+            return;
+        }
+
+        Notification.requestPermission();
+    }
+
+    function showBrowserNotification(post) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            return false;
+        }
+
+        const notification = new Notification(fs_feed_data.notification_title, {
+            body: post.excerpt || fs_feed_data.notification_body,
+            icon: post.thumbnail || undefined,
+            tag: 'fs-post-' + post.id,
+        });
+
+        notification.onclick = function () {
+            window.focus();
+            window.location.href = fs_feed_data.feed_page_url;
+            notification.close();
+        };
+
+        return true;
     }
 
     function showFeedNotification(post) {
+        showBrowserNotification(post);
+
         const $notification = $(`
             <div class="fs-notification-toast">
-                <p>Acabou de publicar um post</p>
+                <p>${fs_feed_data.notification_body}</p>
                 <div class="fs-notification-content">
                     ${post.thumbnail ? `<img src="${post.thumbnail}" alt="${post.title}" class="fs-notification-thumbnail">` : ''}
                     <div class="fs-notification-text">
-                        <p>${post.excerpt}</p>
-                        <a href="/feed-social" class="fs-notification-link">Ver agora &rarr;</a>
+                        <p>${post.excerpt || post.title}</p>
+                        <a href="${fs_feed_data.feed_page_url}" class="fs-notification-link">Ver agora &rarr;</a>
                     </div>
                 </div>
             </div>
         `);
 
         $('body').append($notification);
-        $notification.fadeIn().delay(5000).fadeOut(function() { // Display for 5 seconds
+        $notification.fadeIn().delay(8000).fadeOut(function () {
             $(this).remove();
         });
     }
 
-    $loadingText.text(fs_feed_data.loading_text);
-    $noMorePostsText.text(fs_feed_data.no_more_posts_text);
+    function initSse() {
+        if (typeof EventSource === 'undefined' || !fs_feed_data.sse_url) {
+            return;
+        }
 
-    // Function to render a single post
+        const feedEvents = new EventSource(fs_feed_data.sse_url);
+
+        feedEvents.addEventListener('new-content-feed', function (event) {
+            try {
+                const post = JSON.parse(event.data);
+                showFeedNotification(post);
+
+                if (fs_feed_data.has_feed && $feedContainer.length) {
+                    currentPage = 1;
+                    totalPages = 1;
+                    $feedContainer.empty();
+                    $noMorePosts.hide();
+                    fetchPosts();
+                }
+            } catch (error) {
+                console.error('Erro ao processar evento SSE:', error);
+            }
+        });
+
+        feedEvents.onopen = function () {
+            console.log('Feed Social SSE conectado.');
+        };
+
+        feedEvents.onerror = function () {
+            console.warn('Feed Social SSE reconectando...');
+        };
+    }
+
+    requestNotificationPermission();
+
+    if (fs_feed_data.has_feed) {
+        $loadingText.text(fs_feed_data.loading_text);
+        $noMorePostsText.text(fs_feed_data.no_more_posts_text);
+    }
+
+    function formatCount(count) {
+        return count > 0 ? count : '';
+    }
+
+    function updateLikeUI($post, count, liked) {
+        const $likes = $post.find('.fs-likes');
+        $likes.toggleClass('fs-liked', liked);
+        $likes.find('.fs-count').text(formatCount(count));
+    }
+
+    function updateCommentUI($post, count) {
+        $post.find('.fs-comments .fs-count').text(formatCount(count));
+    }
+
     function renderPost(post) {
         let mediaHtml = '';
         const mediaGallery = post.media_gallery || [];
+        const isLiked = likedPosts.has(post.id);
 
         if (mediaGallery.length > 1) {
-            // Carousel with Swiper.js
             mediaHtml += '<div class="swiper fs-media-carousel">';
             mediaHtml += '<div class="swiper-wrapper">';
-            mediaGallery.forEach(media => {
+            mediaGallery.forEach(function (media) {
                 mediaHtml += '<div class="swiper-slide">';
                 if (media.type && media.type.startsWith('video')) {
                     mediaHtml += `<video src="${media.url}" controls muted playsinline></video>`;
@@ -80,14 +184,12 @@ jQuery(document).ready(function($) {
             mediaHtml += '</div>';
         } else if (mediaGallery.length === 1) {
             const media = mediaGallery[0];
-            // Single media item
             if (media.type && media.type.startsWith('video')) {
                 mediaHtml += `<video src="${media.url}" controls muted playsinline></video>`;
             } else {
                 mediaHtml += `<img src="${media.url}" alt="${post.title}">`;
             }
         } else if (post.thumbnail) {
-            // Fallback to featured image if no gallery media
             mediaHtml += `<img src="${post.thumbnail}" alt="${post.title}">`;
         }
 
@@ -97,16 +199,32 @@ jQuery(document).ready(function($) {
                     ${mediaHtml}
                 </div>
                 <div class="fs-post-meta">
-                    <span class="fs-likes"><svg aria-label="Curtir" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Curtir</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg> ${post.likes>0 ? post.likes : ''}</span>
-                    <span class="fs-comments"><svg aria-label="Comentar" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Comentar</title><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg> ${post.comments > 0 ? post.comments.length : ''}</span>
+                    <button type="button" class="fs-likes${isLiked ? ' fs-liked' : ''}" aria-label="Curtir">
+                        <svg aria-hidden="true" fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
+                            <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path>
+                        </svg>
+                        <span class="fs-count">${formatCount(post.likes)}</span>
+                    </button>
+                    <button type="button" class="fs-comments" aria-label="Comentar">
+                        <svg aria-hidden="true" fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
+                            <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span class="fs-count">${formatCount(post.comments)}</span>
+                    </button>
                 </div>
                 <div class="fs-post-content">${post.content}</div>
-                
+                <div class="fs-comments-panel" hidden>
+                    <div class="fs-comments-list"></div>
+                    <form class="fs-comment-form">
+                        <textarea name="comment" rows="3" placeholder="Escreva um comentário..." required></textarea>
+                        <button type="submit" class="fs-comment-submit">Enviar</button>
+                    </form>
+                </div>
             </article>
         `;
+
         $feedContainer.append(postHtml);
 
-        // Initialize Swiper for new carousels
         if (mediaGallery.length > 1 && typeof Swiper !== 'undefined') {
             new Swiper($feedContainer.find('.fs-media-carousel:last')[0], {
                 loop: true,
@@ -122,9 +240,8 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // Function to fetch posts from the REST API
     async function fetchPosts() {
-        if (isLoading || (currentPage > totalPages && currentPage !== 1)) { // Allow initial load even if totalPages is 0
+        if (!$feedContainer.length || isLoading || (currentPage > totalPages && currentPage !== 1)) {
             return;
         }
 
@@ -134,8 +251,8 @@ jQuery(document).ready(function($) {
         try {
             const response = await fetch(`${fs_feed_data.rest_url}?page=${currentPage}&per_page=${fs_feed_data.posts_per_load}`, {
                 headers: {
-                    'X-WP-Nonce': fs_feed_data.rest_nonce
-                }
+                    'X-WP-Nonce': fs_feed_data.rest_nonce,
+                },
             });
             const data = await response.json();
 
@@ -144,7 +261,7 @@ jQuery(document).ready(function($) {
                 currentPage++;
                 totalPages = data.total_pages;
             } else {
-                totalPages = 0; // No more posts
+                totalPages = 0;
             }
         } catch (error) {
             console.error('Erro ao carregar posts:', error);
@@ -157,16 +274,161 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // Intersection Observer for infinite scrolling
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !isLoading && currentPage <= totalPages) {
-            fetchPosts();
+    async function loadComments($post) {
+        const postId = $post.data('post-id');
+        const $list = $post.find('.fs-comments-list');
+
+        $list.html('<p class="fs-comments-loading">Carregando comentários...</p>');
+
+        try {
+            const response = await fetch(`${fs_feed_data.comments_url}?post_id=${postId}`, {
+                headers: {
+                    'X-WP-Nonce': fs_feed_data.rest_nonce,
+                },
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao carregar comentários');
+            }
+
+            if (!data.comments.length) {
+                $list.html('<p class="fs-comments-empty">Nenhum comentário ainda.</p>');
+                return;
+            }
+
+            const items = data.comments.map(function (item) {
+                return `
+                    <div class="fs-comment-item">
+                        <strong>${item.name}</strong>
+                        <p>${item.comment}</p>
+                    </div>
+                `;
+            }).join('');
+
+            $list.html(items);
+        } catch (error) {
+            $list.html('<p class="fs-comments-error">Não foi possível carregar os comentários.</p>');
+            console.error(error);
         }
-    }, { threshold: 0.5 });
+    }
 
-    // Observe the loading indicator
-    observer.observe($loadingIndicator[0]);
+    async function handleLike($post) {
+        const postId = $post.data('post-id');
+        const email = getUserEmail(fs_feed_data.like_prompt);
 
-    // Initial load
-    fetchPosts();
+        if (!email) {
+            return;
+        }
+
+        const $likes = $post.find('.fs-likes');
+        $likes.prop('disabled', true);
+
+        try {
+            const response = await fetch(fs_feed_data.like_url, {
+                method: 'POST',
+                headers: restHeaders(),
+                body: JSON.stringify({
+                    post_id: postId,
+                    email: email,
+                }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao curtir');
+            }
+
+            if (data.action === 'liked') {
+                likedPosts.add(postId);
+            } else {
+                likedPosts.delete(postId);
+            }
+
+            saveLikedPosts();
+            updateLikeUI($post, data.new_count, data.action === 'liked');
+        } catch (error) {
+            console.error('Erro ao curtir:', error);
+            window.alert('Não foi possível registrar a curtida. Tente novamente.');
+        } finally {
+            $likes.prop('disabled', false);
+        }
+    }
+
+    async function handleCommentSubmit($post, $form) {
+        const postId = $post.data('post-id');
+        const name = getUserName();
+        const email = getUserEmail(fs_feed_data.comment_email_prompt);
+        const comment = $form.find('textarea[name="comment"]').val().trim();
+
+        if (!name || !email || !comment) {
+            return;
+        }
+
+        const $submit = $form.find('.fs-comment-submit');
+        $submit.prop('disabled', true);
+
+        try {
+            const response = await fetch(fs_feed_data.comment_url, {
+                method: 'POST',
+                headers: restHeaders(),
+                body: JSON.stringify({
+                    post_id: postId,
+                    name: name,
+                    email: email,
+                    comment: comment,
+                }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao comentar');
+            }
+
+            $form.find('textarea[name="comment"]').val('');
+            updateCommentUI($post, data.new_count);
+            await loadComments($post);
+        } catch (error) {
+            console.error('Erro ao comentar:', error);
+            window.alert('Não foi possível enviar o comentário. Tente novamente.');
+        } finally {
+            $submit.prop('disabled', false);
+        }
+    }
+
+    $feedContainer.on('click', '.fs-likes', function () {
+        handleLike($(this).closest('.fs-post-item'));
+    });
+
+    $feedContainer.on('click', '.fs-comments', function () {
+        const $post = $(this).closest('.fs-post-item');
+        const $panel = $post.find('.fs-comments-panel');
+        const isHidden = $panel.prop('hidden');
+
+        $('.fs-comments-panel').prop('hidden', true);
+
+        if (isHidden) {
+            $panel.prop('hidden', false);
+            loadComments($post);
+        }
+    });
+
+    $feedContainer.on('submit', '.fs-comment-form', function (event) {
+        event.preventDefault();
+        const $form = $(this);
+        handleCommentSubmit($form.closest('.fs-post-item'), $form);
+    });
+
+    if ($feedContainer.length) {
+        const observer = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting && !isLoading && currentPage <= totalPages) {
+                fetchPosts();
+            }
+        }, { threshold: 0.5 });
+
+        observer.observe($loadingIndicator[0]);
+        fetchPosts();
+    }
+
+    initSse();
 });

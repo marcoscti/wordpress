@@ -20,8 +20,14 @@ require_once FS_PLUGIN_PATH . 'includes/rest-api.php';
 require_once FS_PLUGIN_PATH . 'includes/sse.php';
 //require_once FS_PLUGIN_PATH . 'includes/admin-settings.php';
 
-// Ativação do Plugin e criação de tabelas
+add_action('plugins_loaded', function () {
+    if (get_option('fs_db_version') !== FS_DB_VERSION) {
+        fs_create_database_tables();
+    }
+});
+
 register_activation_hook(__FILE__, function () {
     fs_create_database_tables();
+    delete_transient('fs_feed_page_url');
     flush_rewrite_rules();
 });

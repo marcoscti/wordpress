@@ -65,9 +65,100 @@
   margin: 15px;
   font-size: 0.9em;
   color: #888;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.fs-comments{
-    margin-left: 5px;
+
+.fs-likes,
+.fs-comments {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.fs-likes:hover,
+.fs-comments:hover {
+  color: #333;
+}
+
+.fs-likes.fs-liked {
+  color: #e0245e;
+}
+
+.fs-likes:disabled,
+.fs-comments:disabled,
+.fs-comment-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fs-comments-panel {
+  margin: 0 15px 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.fs-comments-list {
+  margin-bottom: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.fs-comment-item {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.fs-comment-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.fs-comment-item p {
+  margin: 0;
+  color: #555;
+  line-height: 1.4;
+}
+
+.fs-comments-empty,
+.fs-comments-loading,
+.fs-comments-error {
+  margin: 0 0 12px;
+  color: #888;
+  font-size: 0.9em;
+}
+
+.fs-comment-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  resize: vertical;
+  font: inherit;
+}
+
+.fs-comment-submit {
+  margin-top: 8px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.fs-comment-submit:hover:not(:disabled) {
+  background: #111;
 }
 /* Notification Toast */
 .fs-notification-toast {
