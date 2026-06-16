@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Feed Social
  * Description: Feed social com mídia, galeria, curtidas, comentários, scroll infinito e notificações em tempo real (SSE).
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: Marcos
  * Text Domain: feed-social
  * Requires at least: 5.0

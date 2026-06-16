@@ -191,21 +191,92 @@ jQuery(document).ready(function ($) {
         $post.find('.fs-comments .fs-count').text(formatCount(count));
     }
 
+    const $videoModal = $('#fs-video-modal');
+    const $videoModalPlayer = $videoModal.find('.fs-video-modal-player');
+
+    function isVideoMedia(media) {
+        return media.type && media.type.startsWith('video');
+    }
+
+    function getVideoPoster(media, postThumbnail) {
+        if (media.poster) {
+            return media.poster;
+        }
+        return postThumbnail || '';
+    }
+
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function renderMediaItem(media, postTitle, postThumbnail) {
+        if (isVideoMedia(media)) {
+            const poster = getVideoPoster(media, postThumbnail);
+
+            if (poster) {
+                return `
+                    <button type="button" class="fs-video-cover" data-video-url="${escapeHtml(media.url)}" aria-label="Reproduzir vídeo">
+                        <img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">
+                        <span class="fs-video-play-icon" aria-hidden="true"></span>
+                    </button>
+                `;
+            }
+
+            return `<video src="${escapeHtml(media.url)}" controls muted playsinline></video>`;
+        }
+
+        return `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(postTitle)}">`;
+    }
+
+    function openVideoModal(videoUrl) {
+        if (!$videoModal.length || !videoUrl) {
+            return;
+        }
+
+        $videoModalPlayer.attr('src', videoUrl);
+        $videoModal.prop('hidden', false);
+        $('body').addClass('fs-video-modal-open');
+
+        const playPromise = $videoModalPlayer[0].play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(function () {
+                // Autoplay pode ser bloqueado; o usuário inicia pelo controle nativo.
+            });
+        }
+    }
+
+    function closeVideoModal() {
+        if (!$videoModal.length) {
+            return;
+        }
+
+        const player = $videoModalPlayer[0];
+        if (player) {
+            player.pause();
+            player.removeAttribute('src');
+            player.load();
+        }
+
+        $videoModal.prop('hidden', true);
+        $('body').removeClass('fs-video-modal-open');
+    }
+
     function renderPost(post) {
         let mediaHtml = '';
         const mediaGallery = post.media_gallery || [];
         const isLiked = likedPosts.has(post.id);
+        const postThumbnail = post.thumbnail || '';
 
         if (mediaGallery.length > 1) {
             mediaHtml += '<div class="swiper fs-media-carousel">';
             mediaHtml += '<div class="swiper-wrapper">';
             mediaGallery.forEach(function (media) {
                 mediaHtml += '<div class="swiper-slide">';
-                if (media.type && media.type.startsWith('video')) {
-                    mediaHtml += `<video src="${media.url}" controls muted playsinline></video>`;
-                } else {
-                    mediaHtml += `<img src="${media.url}" alt="${post.title}">`;
-                }
+                mediaHtml += renderMediaItem(media, post.title, postThumbnail);
                 mediaHtml += '</div>';
             });
             mediaHtml += '</div>';
@@ -214,14 +285,9 @@ jQuery(document).ready(function ($) {
             mediaHtml += '<div class="swiper-button-next"></div>';
             mediaHtml += '</div>';
         } else if (mediaGallery.length === 1) {
-            const media = mediaGallery[0];
-            if (media.type && media.type.startsWith('video')) {
-                mediaHtml += `<video src="${media.url}" controls muted playsinline></video>`;
-            } else {
-                mediaHtml += `<img src="${media.url}" alt="${post.title}">`;
-            }
-        } else if (post.thumbnail) {
-            mediaHtml += `<img src="${post.thumbnail}" alt="${post.title}">`;
+            mediaHtml += renderMediaItem(mediaGallery[0], post.title, postThumbnail);
+        } else if (postThumbnail) {
+            mediaHtml += `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
         }
 
         const postHtml = `
@@ -429,6 +495,20 @@ jQuery(document).ready(function ($) {
             $submit.prop('disabled', false);
         }
     }
+
+    $feedContainer.on('click', '.fs-video-cover', function () {
+        openVideoModal($(this).data('video-url'));
+    });
+
+    $videoModal.on('click', '.fs-video-modal-backdrop, .fs-video-modal-close', function () {
+        closeVideoModal();
+    });
+
+    $(document).on('keydown.fsVideoModal', function (event) {
+        if (event.key === 'Escape' && $videoModal.length && !$videoModal.prop('hidden')) {
+            closeVideoModal();
+        }
+    });
 
     $feedContainer.on('click', '.fs-likes', function () {
         handleLike($(this).closest('.fs-post-item'));

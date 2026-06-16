@@ -67,13 +67,25 @@ function fs_rest_get_posts($request) {
         $media_gallery = [];
 
         foreach ($media_ids_array as $media_id) {
+            $media_id = (int) $media_id;
             $media_url = wp_get_attachment_url($media_id);
             $mime_type = get_post_mime_type($media_id);
             if ($media_url) {
+                $is_video = $mime_type && strpos($mime_type, 'video') === 0;
+                $poster = '';
+
+                if ($is_video) {
+                    $poster = get_the_post_thumbnail_url($media_id, 'large') ?: '';
+                    if (!$poster && count($media_ids_array) === 1) {
+                        $poster = get_the_post_thumbnail_url($post->ID, 'large') ?: '';
+                    }
+                }
+
                 $media_gallery[] = [
                     'id' => $media_id,
                     'url' => $media_url,
                     'type' => $mime_type,
+                    'poster' => $poster,
                 ];
             }
         }

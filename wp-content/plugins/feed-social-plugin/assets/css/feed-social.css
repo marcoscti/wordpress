@@ -17,10 +17,117 @@
 }
 
 .fs-post-thumbnail img,
-.fs-post-thumbnail video {
+.fs-post-thumbnail video,
+.fs-post-thumbnail .fs-video-cover img {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.fs-video-cover {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: #000;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.fs-video-cover img {
+  max-height: calc(100vh - 160px);
+  object-fit: cover;
+  width: 100%;
+}
+
+.fs-video-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+.fs-video-play-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  transform: translate(-50%, -50%);
+  border-style: solid;
+  border-width: 10px 0 10px 16px;
+  border-color: transparent transparent transparent #fff;
+}
+
+.fs-video-cover:hover .fs-video-play-icon {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.fs-video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.fs-video-modal[hidden] {
+  display: none !important;
+}
+
+body.fs-video-modal-open {
+  overflow: hidden;
+}
+
+.fs-video-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  padding: 0;
+}
+
+.fs-video-modal-content {
+  position: relative;
+  z-index: 1;
+  width: min(900px, 100%);
+  max-height: calc(100vh - 40px);
+}
+
+.fs-video-modal-player {
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  display: block;
+  background: #000;
+  border-radius: 8px;
+}
+
+.fs-video-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.fs-video-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .fs-post-thumbnail video {

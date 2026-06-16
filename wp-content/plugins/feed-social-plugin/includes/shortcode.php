@@ -62,8 +62,8 @@ function fs_enqueue_feed_scripts() {
         wp_enqueue_style('swiper-css');
     }
 
-    wp_enqueue_script('feed-social-js', FS_PLUGIN_URL . 'assets/js/feed-social.js', ['jquery'], '1.3.0', true);
-    wp_enqueue_style('feed-social-css', FS_PLUGIN_URL . 'assets/css/feed-social.css', [], '1.3.0');
+    wp_enqueue_script('feed-social-js', FS_PLUGIN_URL . 'assets/js/feed-social.js', ['jquery'], '1.4.0', true);
+    wp_enqueue_style('feed-social-css', FS_PLUGIN_URL . 'assets/css/feed-social.css', [], '1.4.0');
 
     wp_localize_script('feed-social-js', 'fs_feed_data', [
         'rest_url' => get_rest_url(null, 'feed-social/v1/posts'),
@@ -102,6 +102,13 @@ function fs_render_feed_shortcode($atts) {
             <div id="fs-scroll-sentinel" class="fs-scroll-sentinel" aria-hidden="true"></div>
             <div id="fs-no-more-posts" class="fs-no-more-posts" hidden>
                 <p class="fs-no-more-posts-text"></p>
+            </div>
+        </div>
+        <div id="fs-video-modal" class="fs-video-modal" hidden role="dialog" aria-modal="true" aria-label="<?php esc_attr_e('Reproduzir vídeo', 'feed-social'); ?>">
+            <button type="button" class="fs-video-modal-backdrop" aria-label="<?php esc_attr_e('Fechar vídeo', 'feed-social'); ?>"></button>
+            <div class="fs-video-modal-content">
+                <button type="button" class="fs-video-modal-close" aria-label="<?php esc_attr_e('Fechar', 'feed-social'); ?>">&times;</button>
+                <video class="fs-video-modal-player" controls playsinline></video>
             </div>
         </div>
     </div>
