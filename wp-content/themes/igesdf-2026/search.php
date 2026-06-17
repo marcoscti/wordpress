@@ -15,18 +15,22 @@
                 <div class="col-12 mb-4">
 
                     <article class="card">
-                        <div class="card-body">
-
-                            <h2 class="h4">
-                                <a href="<?php the_permalink(); ?>">
+                        <div class="card-body d-flex gap-3">
+                            <div class="card-image">
+                                <?php if (has_post_thumbnail()) : ?>
+                                    <?php the_post_thumbnail('thumbnail', ['class' => 'border']); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <h2 class="h4">
+                                <a href="<?php the_permalink(); ?>" class="link-underline-light">
                                     <?php the_title(); ?>
                                 </a>
                             </h2>
-
                             <p>
                                 <?php echo wp_trim_words(get_the_excerpt(), 25); ?>
                             </p>
-
+                            </div>
                         </div>
                     </article>
 

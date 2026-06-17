@@ -2,6 +2,13 @@
     --primary-color: #0094c6;
     --white: #fff;
 }
+body{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif;
+    image-rendering: optimizeSpeed;
+}
 header{
     position: sticky;
     top: 0;
@@ -19,7 +26,14 @@ footer{
     height: 100%;
     min-height: 100dvh;
 }
-
+.noticia-template-default .igesdf-container{
+    max-width: 1024px!important;
+    width: 100%;
+}
+.noticia-template-default .content .wp-caption-text{
+    font-size: .9rem;
+    font-style: italic;
+}
 .header-content {
     display: flex;
     align-items: center;

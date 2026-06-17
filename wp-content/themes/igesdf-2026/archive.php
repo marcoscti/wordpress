@@ -1,14 +1,14 @@
 <?php get_header(); ?>
 
 <div class="container py-5 igesdf-container">
-
-    <header class="mb-5">
+    <?php echo breadcrumb() ?>
+    <section class="mb-5">
         <?php if (get_the_archive_description()) : ?>
             <div class="archive-description">
                 <?php the_archive_description(); ?>
             </div>
         <?php endif; ?>
-    </header>
+    </section>
 
     <?php if (have_posts()) : ?>
 
@@ -34,7 +34,7 @@
                         <div class="card-body">
 
                             <h2 class="h5">
-                                <a href="<?php the_permalink(); ?>">
+                                <a href="<?php the_permalink(); ?>" class="link-underline-light">
                                     <?php the_title(); ?>
                                 </a>
                             </h2>
@@ -42,7 +42,7 @@
                             <p>
                                 <?php echo wp_trim_words(
                                     get_the_excerpt(),
-                                    20
+                                    10
                                 ); ?>
                             </p>
 

@@ -5,8 +5,8 @@
     <?php while (have_posts()) : the_post(); ?>
 
         <article>
-
-            <section class="mb-4">
+            <?php echo breadcrumb() ?>    
+        <section class="mb-4">
                 <p class="text-muted">
 
                     Atualizado em
@@ -20,23 +20,9 @@
 
             </section>
 
-            <?php if (has_post_thumbnail()) : ?>
-
-                <div class="mb-4">
-
-                    <?php the_post_thumbnail(
-                        'large',
-                        ['class' => 'img-fluid rounded']
-                    ); ?>
-
-                </div>
-
-            <?php endif; ?>
-
             <div class="content">
-
+                <h1 class="mb-4 fs-1"><?php the_title(); ?></h1>
                 <?php the_content(); ?>
-
             </div>
 
             <hr>

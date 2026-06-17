@@ -157,6 +157,7 @@ function create_post_types()
         'taxonomies'          => array('category'),
         'menu_icon'           => 'dashicons-editor-table',
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
+        'description'         => 'Fique por dentro das últimas notícias do instituto',
     );
     register_post_type('noticia', $args_noticia);
 
@@ -453,3 +454,44 @@ add_action('admin_head', function () {
         }
     </style>';
 });
+
+function breadcrumb()
+{
+
+    if (is_singular()) {
+
+        $post_type = get_post_type();
+        echo '<nav class="mb-4 text-muted" aria-label="breadcrumb">';
+        echo '<ol class="breadcrumb list-">';
+        echo '<li class="breadcrumb-item">';
+        echo '<a href="' . home_url() . '"><i class="fa fa-home"></i>Início</a>';
+        echo '</li>';
+
+        if ($post_type !== 'post' && $post_type !== 'page') {
+
+            $obj = get_post_type_object($post_type);
+
+            if ($obj && $obj->has_archive) {
+                echo '<li class="breadcrumb-item">';
+                echo '<a href="' . get_post_type_archive_link($post_type) . '">';
+                echo esc_html($obj->labels->name);
+                echo '</a>';
+                echo '</li>';
+            }
+        }
+
+        // Título reduzido
+        $title = get_the_title();
+
+        if (mb_strlen($title) > 40) {
+            $title = mb_substr($title, 0, 40) . '...';
+        }
+
+        echo '<li class="breadcrumb-item active" aria-current="page">';
+        echo esc_html($title);
+        echo '</li>';
+        echo '</ol>';
+        echo '</nav>';
+
+    }
+}
