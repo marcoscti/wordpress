@@ -6,6 +6,7 @@ jQuery(document).ready(function($) {
     let isPaused = false;
     let timeRemaining = STORY_DURATION;
     let startTime;
+    let videoStory = false;
 
     // Inicializa o carrossel de stories
     if (typeof Swiper !== 'undefined') {
@@ -53,6 +54,7 @@ jQuery(document).ready(function($) {
 
         timeRemaining = STORY_DURATION;
         isPaused = false;
+        videoStory = false;
     }
 
     function startTimer() {
@@ -114,16 +116,29 @@ jQuery(document).ready(function($) {
         }, function(response) {
             if (response.success) {
                 modalContent.html(response.data.content);
-                // Encontra e tenta reproduzir o vídeo
-                const video = modalContent.find('video, iframe');
-                if (video.length) {
-                    if (video.is('video')) {
-                        video.prop('muted', true).trigger('play');
-                    } else if (video.is('iframe') && video.attr('src').includes('youtube.com')) {
-                        video.attr('src', video.attr('src') + '&autoplay=1&mute=1');
-                    }
+
+                if (response.data.has_video) {
+                    videoStory = true;
+                    const video = modalContent.find('video');
+                    const currentProgressBar = progressBarContainer.find('.fs-story-progress-bar').eq(getStoryIndex(currentStoryId));
+
+                    video.on('timeupdate', function() {
+                        const progress = (this.currentTime / this.duration) * 100;
+                        if (currentProgressBar) currentProgressBar.css('width', progress + '%');
+                    });
+
+                    video.on('ended', function() {
+                        showNextStory();
+                    });
+
+                    // Pausa o timer geral, pois o vídeo controla a progressão
+                    clearTimeout(storyTimeout);
+                    clearInterval(progressInterval);
+
+                    video.trigger('play');
+                } else {
+                    startTimer();
                 }
-                startTimer();
             } else {
                 modalContent.html('<p>Erro ao carregar o story.</p>');
             }

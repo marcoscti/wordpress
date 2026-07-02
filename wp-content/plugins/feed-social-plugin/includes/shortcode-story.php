@@ -107,12 +107,13 @@ function fs_get_story_content_ajax() {
 
     $video_id = get_post_meta($story_id, '_fs_story_video_id', true);
     $video_url = $video_id ? wp_get_attachment_url($video_id) : '';
+    $has_video = !empty($video_url);
 
     $content = '<h2>' . esc_html($story->post_title) . '</h2>';
     
     // Prioriza o vídeo. Se não houver vídeo, usa a imagem destacada.
     if ($video_url) {
-        $content .= '<video src="' . esc_url($video_url) . '" autoplay muted loop playsinline></video>';
+        $content .= '<video src="' . esc_url($video_url) . '" autoplay muted playsinline></video>';
     } elseif (has_post_thumbnail($story_id)) {
         $content .= get_the_post_thumbnail($story_id, 'large');
     }
@@ -124,6 +125,7 @@ function fs_get_story_content_ajax() {
 
     wp_send_json_success([
         'content' => $content,
+        'has_video' => $has_video,
     ]);
 }
 add_action('wp_ajax_fs_get_story_content', 'fs_get_story_content_ajax');
