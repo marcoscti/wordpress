@@ -112,6 +112,23 @@
     max-height: 80vh;
     object-fit: contain;
 }
+
+/* Estilo para o vídeo principal do story */
+.fs-story-modal-content > video {
+    max-width: 100%;
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+.fs-story-modal-content .story-main-content video,
+.fs-story-modal-content .story-main-content iframe {
+    max-width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    margin-top: 15px;
+}
 .fs-story-modal-content .wp-block-paragraph,
 .fs-story-modal-content h2{
     display: none;
@@ -182,4 +199,21 @@
 }
 .fs-story-next {
     right: 20px;
+}
+
+/* Animação para stories fixos */
+@keyframes pulse-border {
+    0% {
+        box-shadow: 0 0 0 0 rgba(200, 212, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(200, 212, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(200, 212, 0, 0);
+    }
+}
+
+.fs-story-fixed .fs-story-thumb {
+    animation: pulse-border 2s infinite;
 }

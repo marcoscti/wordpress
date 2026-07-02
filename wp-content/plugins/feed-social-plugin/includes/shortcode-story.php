@@ -29,15 +29,23 @@ function fs_render_story_shortcode($atts) {
                 <div class="swiper-wrapper">
                     <?php while ($stories_query->have_posts()) : $stories_query->the_post(); ?>
                         <?php
+                        // Lógica de expiração
+                        $expires = get_post_meta(get_the_ID(), '_fs_story_expires', true);
+                        if ($expires === 'yes') {
+                            $post_time = get_post_time('U', true);
+                            $expiration_time = $post_time + (24 * HOUR_IN_SECONDS);
+                            if (time() >= $expiration_time) {
+                                continue; // Pula para o próximo story se este já expirou
+                            }
+                        }
+
                         $story_ids[] = get_the_ID();
+                        $is_fixed = get_post_meta(get_the_ID(), '_fs_story_expires', true) !== 'yes';
+                        $item_class = $is_fixed ? ' fs-story-fixed' : '';
                         ?>
                         <div class="swiper-slide" data-story-id="<?php echo get_the_ID(); ?>">
-                            <a href="#" class="fs-story-item" data-story-id="<?php echo get_the_ID(); ?>">
-                                <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('thumbnail', ['class' => 'fs-story-thumb']); ?>
-                                <?php else : ?>
-                                    <div class="fs-story-placeholder"></div>
-                                <?php endif; ?>
+                            <a href="#" class="fs-story-item<?php echo esc_attr($item_class); ?>" data-story-id="<?php echo get_the_ID(); ?>">
+                                <?php the_post_thumbnail('thumbnail', ['class' => 'fs-story-thumb']); ?>
                                 <span class="fs-story-title"><?php the_title(); ?></span>
                             </a>
                         </div>
@@ -62,8 +70,7 @@ function fs_render_story_shortcode($atts) {
     } else {
         echo '<p>' . __('Nenhum story encontrado.', 'feed-social') . '</p>';
     }
-
-    wp_reset_postdata();
+    wp_reset_postdata(); // Restaura os dados do post original
 
     wp_localize_script('fs-story-script', 'fs_story_data', ['story_ids' => $story_ids]);
     return ob_get_clean();
@@ -98,9 +105,15 @@ function fs_get_story_content_ajax() {
         wp_send_json_error(['message' => 'Story não encontrado.']);
     }
 
+    $video_id = get_post_meta($story_id, '_fs_story_video_id', true);
+    $video_url = $video_id ? wp_get_attachment_url($video_id) : '';
+
     $content = '<h2>' . esc_html($story->post_title) . '</h2>';
     
-    if (has_post_thumbnail($story_id)) {
+    // Prioriza o vídeo. Se não houver vídeo, usa a imagem destacada.
+    if ($video_url) {
+        $content .= '<video src="' . esc_url($video_url) . '" autoplay muted loop playsinline></video>';
+    } elseif (has_post_thumbnail($story_id)) {
         $content .= get_the_post_thumbnail($story_id, 'large');
     }
 
@@ -109,7 +122,9 @@ function fs_get_story_content_ajax() {
         $content .= '<div class="story-main-content">' . $story_content . '</div>';
     }
 
-    wp_send_json_success(['content' => $content]);
+    wp_send_json_success([
+        'content' => $content,
+    ]);
 }
 add_action('wp_ajax_fs_get_story_content', 'fs_get_story_content_ajax');
 add_action('wp_ajax_nopriv_fs_get_story_content', 'fs_get_story_content_ajax');

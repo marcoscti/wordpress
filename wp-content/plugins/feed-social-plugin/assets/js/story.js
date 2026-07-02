@@ -36,7 +36,7 @@ jQuery(document).ready(function($) {
         progressBarContainer.empty();
         if (fs_story_data.story_ids.length > 1) {
             fs_story_data.story_ids.forEach(() => {
-                progressBarContainer.prepend('<div class="fs-story-progress-segment"><div class="fs-story-progress-bar"></div></div>');
+                progressBarContainer.append('<div class="fs-story-progress-segment"><div class="fs-story-progress-bar"></div></div>');
             });
         }
     }
@@ -114,6 +114,15 @@ jQuery(document).ready(function($) {
         }, function(response) {
             if (response.success) {
                 modalContent.html(response.data.content);
+                // Encontra e tenta reproduzir o vídeo
+                const video = modalContent.find('video, iframe');
+                if (video.length) {
+                    if (video.is('video')) {
+                        video.prop('muted', true).trigger('play');
+                    } else if (video.is('iframe') && video.attr('src').includes('youtube.com')) {
+                        video.attr('src', video.attr('src') + '&autoplay=1&mute=1');
+                    }
+                }
                 startTimer();
             } else {
                 modalContent.html('<p>Erro ao carregar o story.</p>');

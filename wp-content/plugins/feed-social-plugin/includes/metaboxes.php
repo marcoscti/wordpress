@@ -1,14 +1,21 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-add_action('add_meta_boxes', function () {
-    add_meta_box('fs_media_gallery', 'Galeria de Mídias', 'fs_media_metabox_callback', 'feed-social', 'normal', 'high');
+add_action('add_meta_boxes', function ($post_type) {
+    if ($post_type === 'feed-social') {
+        add_meta_box('fs_media_gallery', 'Galeria de Mídias', 'fs_media_metabox_callback', 'feed-social', 'normal', 'high');
+    }
+
+    if ($post_type === 'social_story') {
+        add_meta_box('fs_story_options', 'Opções do Story', 'fs_story_options_metabox_callback', 'social_story', 'side', 'default');
+        add_meta_box('fs_story_video', 'Vídeo do Story', 'fs_story_video_metabox_callback', 'social_story', 'side', 'default');
+    }
 });
 
 // Garante que o seletor de mídia do WordPress seja carregado
 add_action('admin_enqueue_scripts', function ($hook) {
     global $post;
-    if (('post.php' === $hook || 'post-new.php' === $hook) && 'feed-social' === ($post->post_type ?? '')) {
+    if (('post.php' === $hook || 'post-new.php' === $hook) && in_array(($post->post_type ?? ''), ['feed-social', 'social_story'])) {
         wp_enqueue_media();
     }
 });
@@ -131,10 +138,81 @@ function fs_media_metabox_callback($post) {
     <?php
 }
 
-add_action('save_post', function ($post_id) {
-    if (!isset($_POST['fs_media_nonce']) || !wp_verify_nonce($_POST['fs_media_nonce'], 'fs_save_media')) return;
-    if (isset($_POST['fs_media_ids'])) {
-        update_post_meta($post_id, '_fs_media_ids', sanitize_text_field($_POST['fs_media_ids']));
+function fs_story_options_metabox_callback($post) {
+    wp_nonce_field('fs_save_story_options', 'fs_story_options_nonce');
+    $expires = get_post_meta($post->ID, '_fs_story_expires', true);
+    ?>
+    <p>
+        <input type="checkbox" id="fs_story_expires" name="fs_story_expires" value="yes" <?php checked($expires, 'yes'); ?> />
+        <label for="fs_story_expires">Expirar em 24 horas</label>
+    </p>
+    <p class="description">
+        Se marcado, este story não será mais exibido 24 horas após a publicação.
+    </p>
+    <?php
+}
+
+function fs_story_video_metabox_callback($post) {
+    wp_nonce_field('fs_save_story_video', 'fs_story_video_nonce');
+    $video_id = get_post_meta($post->ID, '_fs_story_video_id', true);
+    $video_url = $video_id ? wp_get_attachment_url($video_id) : '';
+    ?>
+    <div id="fs-story-video-container">
+        <input type="hidden" name="fs_story_video_id" id="fs_story_video_id" value="<?php echo esc_attr($video_id); ?>">
+        <div id="fs-story-video-preview" style="margin-bottom: 10px;">
+            <?php if ($video_url): ?>
+                <video src="<?php echo esc_url($video_url); ?>" style="max-width:100%; height:auto;" controls></video>
+            <?php endif; ?>
+        </div>
+        <button type="button" class="button" id="fs_upload_story_video_button">Selecionar Vídeo</button>
+        <button type="button" class="button" id="fs_remove_story_video_button" style="<?php echo $video_id ? '' : 'display:none;'; ?>">Remover Vídeo</button>
+    </div>
+    <script>
+    jQuery(document).ready(function($){
+        var frame;
+        $('#fs_upload_story_video_button').on('click', function(e){
+            e.preventDefault();
+            if (frame) { frame.open(); return; }
+            frame = wp.media({
+                title: 'Selecionar Vídeo para o Story',
+                button: { text: 'Usar este vídeo' },
+                library: { type: 'video' },
+                multiple: false
+            });
+            frame.on('select', function(){
+                var attachment = frame.state().get('selection').first().toJSON();
+                $('#fs_story_video_id').val(attachment.id);
+                $('#fs_story_video_preview').html('<video src="' + attachment.url + '" style="max-width:100%; height:auto;" controls></video>');
+                $('#fs_remove_story_video_button').show();
+            });
+            frame.open();
+        });
+        $('#fs_remove_story_video_button').on('click', function(e){
+            e.preventDefault();
+            $('#fs_story_video_id').val('');
+            $('#fs_story_video_preview').empty();
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+add_action('save_post', function ($post_id, $post) {
+    if ($post->post_type === 'feed-social') {
+        if (!isset($_POST['fs_media_nonce']) || !wp_verify_nonce($_POST['fs_media_nonce'], 'fs_save_media')) return;
+        if (isset($_POST['fs_media_ids'])) {
+            update_post_meta($post_id, '_fs_media_ids', sanitize_text_field($_POST['fs_media_ids']));
+        }
     }
-    
-});
+
+    if ($post->post_type === 'social_story') {
+        if (!isset($_POST['fs_story_options_nonce']) || !wp_verify_nonce($_POST['fs_story_options_nonce'], 'fs_save_story_options')) return;
+        $expires = isset($_POST['fs_story_expires']) && $_POST['fs_story_expires'] === 'yes' ? 'yes' : 'no';
+        update_post_meta($post_id, '_fs_story_expires', $expires);
+
+        if (!isset($_POST['fs_story_video_nonce']) || !wp_verify_nonce($_POST['fs_story_video_nonce'], 'fs_save_story_video')) return;
+        $video_id = isset($_POST['fs_story_video_id']) ? intval($_POST['fs_story_video_id']) : 0;
+        update_post_meta($post_id, '_fs_story_video_id', $video_id);
+    }
+}, 10, 2);
