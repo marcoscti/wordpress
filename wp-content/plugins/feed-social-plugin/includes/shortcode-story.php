@@ -68,7 +68,7 @@ function fs_render_story_shortcode($atts) {
         </div>
         <?php
     } else {
-        echo '<p>' . __('Nenhum story encontrado.', 'feed-social') . '</p>';
+        echo '<p>' . __('', 'feed-social') . '</p>';
     }
     wp_reset_postdata(); // Restaura os dados do post original
 
