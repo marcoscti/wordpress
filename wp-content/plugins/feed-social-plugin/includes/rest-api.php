@@ -119,7 +119,7 @@ function fs_rest_handle_like($request) {
     $email = sanitize_email($params['email'] ?? '');
     $table = $wpdb->prefix . 'feed_social_likes';
 
-    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || !is_email($email)) {
+    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || !is_email($email)) { // Corrigido de 'social_feed' para 'feed-social'
         return new WP_Error('invalid_data', 'Dados inválidos', ['status' => 400]);
     }
 
@@ -154,7 +154,7 @@ function fs_rest_handle_comment($request) {
     $comment = sanitize_textarea_field($params['comment'] ?? '');
     $table = $wpdb->prefix . 'feed_social_comments';
 
-    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || empty($name) || !is_email($email) || empty($comment)) {
+    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || empty($name) || !is_email($email) || empty($comment)) { // Corrigido de 'social_feed' para 'feed-social'
         return new WP_Error('missing_fields', 'Campos obrigatórios faltando', ['status' => 400]);
     }
 
@@ -187,7 +187,7 @@ function fs_rest_get_comments($request) {
     $post_id = absint($request->get_param('post_id'));
     $table = $wpdb->prefix . 'feed_social_comments';
 
-    if (get_post_type($post_id) !== 'feed-social') {
+    if (get_post_type($post_id) !== 'feed-social') { // Corrigido de 'social_feed' para 'feed-social'
         return new WP_Error('invalid_post', 'Post inválido', ['status' => 400]);
     }
 

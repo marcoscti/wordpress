@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Feed Social
  * Description: Feed social com mídia, galeria, curtidas, comentários, scroll infinito e notificações em tempo real (SSE).
- * Version: 1.4.0
+ * Version: 2.0.0
  * Author: Marcos
  * Text Domain: feed-social
  * Requires at least: 5.0
@@ -13,13 +13,14 @@ if (!defined('ABSPATH')) exit;
 
 define('FS_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('FS_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('FS_DB_VERSION', '1.0.0');
+define('FS_DB_VERSION', '2.0.0');
 
 require_once FS_PLUGIN_PATH . 'includes/database.php';
 require_once FS_PLUGIN_PATH . 'includes/post-type.php';
 require_once FS_PLUGIN_PATH . 'includes/metaboxes.php';
 require_once FS_PLUGIN_PATH . 'includes/shortcode.php';
 require_once FS_PLUGIN_PATH . 'includes/rest-api.php';
+require_once FS_PLUGIN_PATH . 'includes/shortcode-story.php';
 require_once FS_PLUGIN_PATH . 'includes/sse.php';
 //require_once FS_PLUGIN_PATH . 'includes/admin-settings.php';
 
