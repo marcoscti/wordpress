@@ -461,8 +461,8 @@ function breadcrumb()
     if (is_singular()) {
 
         $post_type = get_post_type();
-        echo '<nav class="mb-4 text-muted" aria-label="breadcrumb">';
-        echo '<ol class="breadcrumb list-">';
+        echo '<nav class="text-muted align-items-center" aria-label="breadcrumb">';
+        echo '<ol class="breadcrumb list m-0">';
         echo '<li class="breadcrumb-item">';
         echo '<a href="' . home_url() . '"><i class="fa fa-home"></i>Início</a>';
         echo '</li>';
@@ -492,6 +492,52 @@ function breadcrumb()
         echo '</li>';
         echo '</ol>';
         echo '</nav>';
+    }
+}
+function incluir_cpt_nas_tags($query)
+{
+    if (
+        !is_admin() &&
+        $query->is_main_query() &&
+        $query->is_tag()
+    ) {
+        $query->set('post_type', [
+            'post',
+            'noticia'
+        ]);
+    }
+}
 
+add_action('pre_get_posts', 'incluir_cpt_nas_tags');
+function render_tags()
+{
+    $tags = get_terms([
+        'taxonomy'   => 'post_tag',
+        'hide_empty' => true
+    ]);
+
+    echo '<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel" style="background-color: #fff;">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white" id="offcanvasFilterLabel">Filtrar</h5>
+            <button type="button" class="btn-close text-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav navbar-nav" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+           ';
+    foreach ($tags as $tag) {
+        echo '<li><a href="' . get_term_link($tag) . '" style="color: #000;">' . esc_html($tag->name) . '</a></li>';
+    }
+    echo '
+            </ul>
+        </div>
+    </div>';
+    if (count($tags) > 0) {
+        echo '<button class="btn btn-primary btn-sm"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasFilter"
+                    aria-controls="offcanvasFilter">
+                    <i class="fa fa-filter" aria-hidden="true"></i> Filtrar
+                </button>';
     }
 }
