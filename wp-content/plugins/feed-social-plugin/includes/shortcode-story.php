@@ -113,7 +113,7 @@ function fs_get_story_content_ajax() {
     
     // Prioriza o vídeo. Se não houver vídeo, usa a imagem destacada.
     if ($video_url) {
-        $content .= '<video src="' . esc_url($video_url) . '" autoplay muted playsinline></video>';
+        $content .= '<video src="' . esc_url($video_url) . '"controls autoplay muted playsinline></video>';
     } elseif (has_post_thumbnail($story_id)) {
         $content .= get_the_post_thumbnail($story_id, 'large');
     }
