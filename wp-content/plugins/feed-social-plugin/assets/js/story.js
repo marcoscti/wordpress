@@ -18,8 +18,8 @@ jQuery(document).ready(function($) {
                 prevEl: '.swiper-button-prev',
             },
             breakpoints: {
-                320: { slidesPerView: 2, spaceBetween: 10 },
-                480: { slidesPerView: 3, spaceBetween: 15 },
+                320: { slidesPerView: 4, spaceBetween: 10 },
+                480: { slidesPerView: 4, spaceBetween: 15 },
                 640: { slidesPerView: 4, spaceBetween: 20 },
                 1024: { slidesPerView: 5, spaceBetween: 20 }
             }

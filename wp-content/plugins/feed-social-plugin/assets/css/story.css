@@ -54,12 +54,14 @@
 }
 
 .fs-story-title {
-    font-size: 13px;
+    margin-top: 2px;
+    font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 90px;
+    font-family: "Poppins", sans-serif;
 }
 
 /* Botões de navegação do Swiper */
@@ -123,7 +125,7 @@
 .fs-story-modal-content > video {
     max-width: 100%;
     height: auto;
-    max-height: 80vh;
+    max-height: 95vh;
     object-fit: contain;
     border-radius: 4px;
 }

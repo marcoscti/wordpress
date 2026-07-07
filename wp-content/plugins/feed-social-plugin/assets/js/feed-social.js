@@ -250,6 +250,7 @@ jQuery(document).ready(function ($) {
     }
 
     function closeVideoModal() {
+        console.log('Fechando modal de vídeo...');
         if (!$videoModal.length) {
             return;
         }
@@ -259,6 +260,7 @@ jQuery(document).ready(function ($) {
             player.pause();
             player.removeAttribute('src');
             player.load();
+            console.log('Vídeo pausado e src removido.');
         }
 
         $videoModal.prop('hidden', true);

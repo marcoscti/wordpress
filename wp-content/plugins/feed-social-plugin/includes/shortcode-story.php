@@ -48,7 +48,11 @@ function fs_render_story_shortcode($atts)
                         <div class="swiper-slide" data-story-id="<?php echo get_the_ID(); ?>">
                             <a href="#" class="fs-story-item<?php echo esc_attr($item_class); ?>" data-story-id="<?php echo get_the_ID(); ?>">
                                 <?php the_post_thumbnail('thumbnail', ['class' => 'fs-story-thumb']); ?>
-                                <span class="fs-story-title"><?php the_title(); ?></span>
+                                <span class="fs-story-title"><?php
+                                                                $title = get_the_title();
+                                                                $words = preg_split('/\s+/', trim($title));
+                                                                echo implode(' ', array_slice($words, 0, 2));
+                                                                ?></span>
                             </a>
                         </div>
                     <?php endwhile; ?>
