@@ -179,6 +179,9 @@ jQuery(document).ready(function($) {
     function closeModal() {
         resetTimer();
         modal.removeClass('fs-story-modal-show');
+        const video = modalContent.find('video');
+        video.trigger('pause');
+        video.removeAttr('src');
     }
 
     closeBtn.on('click', closeModal);
