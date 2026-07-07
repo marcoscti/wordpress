@@ -1,11 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 /* Basic styling for the social feed */
 #feed-social-app {
   max-width: 500px;
   margin: 20px auto;
   background-color: #fff;
   border-radius: 8px;
-  /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
-  padding: 20px;
 }
 
 .fs-post-item {
@@ -388,5 +387,38 @@ body.fs-video-modal-open {
     right: 10px;
     left: 10px;
     max-width: calc(100% - 20px);
-  }
+  }  
+}
+.fs-feed-title{
+  color: #0094c6;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+}
+.fs-post-author-name{
+  color: #0094c6;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+}
+.fs-post-author{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+.fs-container-story-title{
+  color: #0094c6;
+}
+.fs-post-author-avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' id='Camada_1' data-name='Camada 1' viewBox='0 0 364.34 365.18'%3E%3Ctitle%3ELogo IGESDF.frontellosvg%3C/title%3E%3Cpath d='M154.43.84h54.41A35.15,35.15,0,0,1,244,36V246H119.28V36A35.15,35.15,0,0,1,154.43.84' style='fill:%23038fc2'%3E%3C/path%3E%3Cpath d='M119.28,245.36H35.15A35.15,35.15,0,0,1,0,210.21v-54.4a35.15,35.15,0,0,1,35.15-35.15h84.13v124.7' style='fill:%23c5d108'%3E%3C/path%3E%3Cpolygon points='243.98 245.36 204.85 245.36 119.28 245.36 119.28 205.69 119.28 120.66 243.13 120.66 243.13 245.36 204.85 245.36 243.13 245.36 243.98 245.36' style='fill:%2313b5c7'%3E%3C/polygon%3E%3Cpath d='M329.19,245.36H244V120.66h85.21a35.15,35.15,0,0,1,35.15,35.15v54.4a35.15,35.15,0,0,1-35.15,35.15' style='fill:%23fdeb20'%3E%3C/path%3E%3Cpath d='M243.14,245.36h0Zm.84,0h-.84V120.66H244v124.7' style='fill:%239acca1'%3E%3C/path%3E%3Cpath d='M119.28,244.51H244V330a35.15,35.15,0,0,1-35.14,35.15H154.43A35.15,35.15,0,0,1,119.28,330V244.51Z' style='fill:%23ea660f'%3E%3C/path%3E%3Cpath d='M87,202.74c5.13-13.12,16.8-22.09,28.66-28.88a176.65,176.65,0,0,1,40-16.61c28.07-7.89,57.88-9.35,86.72-5.31A243,243,0,0,1,290,163.72c4.85,1.73,6.94-6,2.12-7.7-57.89-20.58-125.47-20.19-179.82,10.56-14.11,8-26.94,18.59-33,34-1.87,4.79,5.85,6.87,7.71,2.12' style='fill:%23fff'%3E%3C/path%3E%3Cpath d='M203.86,338.62c-46-55.41-65.21-131.49-53.43-202.32A241.69,241.69,0,0,1,167.9,77.71c2.08-4.65-4.8-8.72-6.89-4C130.43,142.31,132.5,223.11,164.29,291a248.75,248.75,0,0,0,33.92,53.32c3.29,4,8.91-1.72,5.65-5.65' style='fill:%23fff'%3E%3C/path%3E%3C/svg%3E");
+  background-size: 32px;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid #c8d400;
+  padding: 2px;
 }

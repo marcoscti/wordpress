@@ -105,7 +105,7 @@ jQuery(document).ready(function($) {
         if (!storyId) return;
         currentStoryId = storyId;
 
-        modalContent.html('<p>Carregando...</p>');
+        modalContent.html('<p style="color: #fff;">Carregando...</p>');
         if (!modal.hasClass('fs-story-modal-show')) createProgressBars();
         modal.addClass('fs-story-modal-show');
 

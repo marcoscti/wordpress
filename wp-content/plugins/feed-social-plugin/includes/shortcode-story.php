@@ -1,12 +1,14 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-function fs_register_story_shortcode() {
+function fs_register_story_shortcode()
+{
     add_shortcode('feed_social_storie', 'fs_render_story_shortcode');
 }
 add_action('init', 'fs_register_story_shortcode');
 
-function fs_render_story_shortcode($atts) {
+function fs_render_story_shortcode($atts)
+{
     fs_enqueue_story_assets();
 
     $args = array(
@@ -23,7 +25,7 @@ function fs_render_story_shortcode($atts) {
     $story_ids = [];
 
     if ($stories_query->have_posts()) {
-        ?>
+?>
         <div class="fs-story-container">
             <div class="swiper fs-story-carousel">
                 <div class="swiper-wrapper">
@@ -58,15 +60,18 @@ function fs_render_story_shortcode($atts) {
 
         <!-- Story Modal -->
         <div id="fs-story-modal" class="fs-story-modal">
-            <div class="fs-story-progress-bar-container"></div>
+
             <span class="fs-story-close">&times;</span>
-            <div class="fs-story-modal-content">
-                <!-- Content will be loaded via AJAX -->
+            <div class="fs-story-modal-wrapper">
+                <div class="fs-story-modal-content">
+                    <!-- Content will be loaded via AJAX -->
+                </div>
+                <div class="fs-story-progress-bar-container"></div>
             </div>
             <button class="fs-story-nav fs-story-prev" aria-label="Anterior">&lsaquo;</button>
             <button class="fs-story-nav fs-story-next" aria-label="Próximo">&rsaquo;</button>
         </div>
-        <?php
+<?php
     } else {
         echo '<p>' . __('', 'feed-social') . '</p>';
     }
@@ -76,7 +81,8 @@ function fs_render_story_shortcode($atts) {
     return ob_get_clean();
 }
 
-function fs_enqueue_story_assets() {
+function fs_enqueue_story_assets()
+{
     // Enqueue Swiper JS and CSS
     wp_enqueue_style('swiper-css', 'https://unpkg.com/swiper/swiper-bundle.min.css', array(), '8.4.5');
     wp_enqueue_script('swiper-js', 'https://unpkg.com/swiper/swiper-bundle.min.js', array(), '8.4.5', true);
@@ -91,7 +97,8 @@ function fs_enqueue_story_assets() {
     ));
 }
 
-function fs_get_story_content_ajax() {
+function fs_get_story_content_ajax()
+{
     check_ajax_referer('fs_get_story_content', 'nonce');
 
     if (!isset($_POST['story_id'])) {
@@ -110,7 +117,7 @@ function fs_get_story_content_ajax() {
     $has_video = !empty($video_url);
 
     $content = '<h2>' . esc_html($story->post_title) . '</h2>';
-    
+
     // Prioriza o vídeo. Se não houver vídeo, usa a imagem destacada.
     if ($video_url) {
         $content .= '<video src="' . esc_url($video_url) . '"controls autoplay muted playsinline></video>';

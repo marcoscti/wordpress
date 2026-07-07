@@ -3,12 +3,11 @@ if (!defined('ABSPATH')) exit;
 
 function fs_register_post_type() {
     $labels = array(
-        'name'                  => _x('Feed Social', 'Post type general name', 'feed-social'),
+        'name'                  => _x('IgesDF+', 'Post type general name', 'feed-social'),
         'singular_name'         => _x('Post do Feed', 'Post type singular name', 'feed-social'), // phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder, WordPress.WP.I18n.MismatchedPlaceholders
-        'menu_name'             => _x('Feed Social', 'Admin Menu text', 'feed-social'),
+        'menu_name'             => _x('IgesDF+', 'Admin Menu text', 'feed-social'),
         'name_admin_bar'        => _x('Post do Feed', 'Add New on Toolbar', 'feed-social'),
         'add_new'               => __('Adicionar Novo', 'feed-social'),
-        'add_new_item'          => __('Adicionar Novo Post', 'feed-social'),
         'new_item'              => __('Novo Post', 'feed-social'),
         'edit_item'             => __('Editar Post', 'feed-social'),
         'view_item'             => __('Ver Post', 'feed-social'),
@@ -35,7 +34,7 @@ function fs_register_post_type() {
         'has_archive'        => true,
         'hierarchical'       => false,
         'menu_position'      => 5,
-        'menu_icon'          => 'dashicons-share',
+        'menu_icon'          => 'dashicons-plus',
         'supports'           => array('title', 'editor', 'thumbnail', 'author', 'revisions'),
         'show_in_rest'       => true,
     );
@@ -47,12 +46,12 @@ function fs_register_post_type() {
         'singular_name'         => _x('Story', 'Post type singular name', 'feed-social'), // phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder, WordPress.WP.I18n.MismatchedPlaceholders
         'menu_name'             => _x('Stories', 'Admin Menu text', 'feed-social'),
         'name_admin_bar'        => _x('Story', 'Add New on Toolbar', 'feed-social'),
-        'add_new'               => __('Adicionar Novo Story', 'feed-social'),
-        'add_new_item'          => __('Adicionar Novo Story', 'feed-social'),
+        'add_new'               => __('Novo Story', 'feed-social'),
+        'add_new_item'          => __('Novo Story', 'feed-social'),
         'new_item'              => __('Novo Story', 'feed-social'),
         'edit_item'             => __('Editar Story', 'feed-social'),
         'view_item'             => __('Ver Story', 'feed-social'),
-        'all_items'             => __('Todos os Stories', 'feed-social'),
+        'all_items'             => __('Stories', 'feed-social'),
         'search_items'          => __('Pesquisar Stories', 'feed-social'),
         'parent_item_colon'     => __('Story Pai:', 'feed-social'),
         'not_found'             => __('Nenhum story encontrado.', 'feed-social'),

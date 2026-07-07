@@ -290,8 +290,14 @@ jQuery(document).ready(function ($) {
             mediaHtml += `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
         }
 
-        const postHtml = `
+        const postHtml = `<div class="fs-post-header">
+                    <div class="fs-post-author">
+                        <div class="fs-post-author-avatar"></div>
+                        <span class="fs-post-author-name">Iges+</span>
+                    </div>
+                </div>
             <article class="fs-post-item" data-post-id="${post.id}">
+                
                 <div class="fs-post-thumbnail">
                     ${mediaHtml}
                 </div>

@@ -2,7 +2,7 @@
 .fs-story-container {
     margin:0;
     position: relative;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-family: "Poppins", sans-serif;
     max-width: 500px; /* Largura máxima do container */
     margin-left: auto; /* Centraliza o container horizontalmente */
     margin-right: auto; /* Centraliza o container horizontalmente */
@@ -14,7 +14,7 @@
 /* Estilização do carrossel Swiper */
 .fs-story-carousel {
     width: 100%;
-    height: 150px;
+    height: 120px;
     padding: 10px 0;
 }
 
@@ -54,7 +54,6 @@
 }
 
 .fs-story-title {
-    margin-top: 8px;
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
@@ -93,17 +92,24 @@
 .fs-story-modal.fs-story-modal-show {
     display: flex;
 }
-
+.fs-story-modal-wrapper{
+    position: relative;
+}
 .fs-story-modal-content {
     margin: auto;
-    padding: 20px;
-    width: 90%;
     max-width: 500px; /* Largura máxima do modal */
     border-radius: 8px;
     position: relative;
     text-align: center;
 }
-
+.story-main-content{
+    position: absolute;
+    bottom: 60px;
+    font-size: .8rem;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: .5px .5px black;
+}
 .fs-story-modal-content img {
     max-width: 100%;
     height: auto;
@@ -129,7 +135,6 @@
     object-fit: contain;
     margin-top: 15px;
 }
-.fs-story-modal-content .wp-block-paragraph,
 .fs-story-modal-content h2{
     display: none;
 }
@@ -153,8 +158,7 @@
 /* Barra de progresso e navegação do Modal */
 .fs-story-progress-bar-container {
     position: absolute;
-    bottom: 140px;
-    width: 450px;
+    width: 100%;
     padding: 5px;
     display: flex;
     gap: 3px;
