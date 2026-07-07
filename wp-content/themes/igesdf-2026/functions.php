@@ -1,5 +1,25 @@
 <?php
-
+add_action('wp_head', function () {
+?>
+<link rel="manifest" href="<?php echo get_template_directory_uri(); ?>/manifest.json">
+<meta name="theme-color" content="#0094c6">
+<?php
+});
+add_action('wp_footer', function () {
+?>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+            console.log('Service Worker registrado!', reg);
+        })
+        .catch(err => {
+            console.error(err);
+        });
+}
+</script>
+<?php
+});
 function meu_tema_setup()
 {
 
