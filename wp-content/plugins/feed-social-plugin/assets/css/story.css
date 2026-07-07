@@ -1,225 +1,233 @@
 /* Container para o carrossel de stories */
 .fs-story-container {
-    margin:0;
-    position: relative;
-    font-family: "Poppins", sans-serif;
-    max-width: 500px; /* Largura máxima do container */
-    margin-left: auto; /* Centraliza o container horizontalmente */
-    margin-right: auto; /* Centraliza o container horizontalmente */
+  margin: 0;
+  position: relative;
+  font-family: "Poppins", sans-serif;
+  max-width: 500px; /* Largura máxima do container */
+  margin-left: auto; /* Centraliza o container horizontalmente */
+  margin-right: auto; /* Centraliza o container horizontalmente */
 }
 .fs-story-container .swiper-button-prev:after,
 .fs-story-container .swiper-button-next:after {
-    font-size: 12px;
+  font-size: 12px;
 }
 /* Estilização do carrossel Swiper */
 .fs-story-carousel {
-    width: 100%;
-    height: 120px;
-    padding: 10px 0;
+  width: 100%;
+  height: 120px;
+  padding: 10px 0;
 }
 
 .fs-story-carousel .swiper-slide {
-    width: 100px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  width: 100px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .fs-story-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
-    cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  cursor: pointer;
 }
 
 .fs-story-thumb {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;    
-    border: 2px solid #c8d400;
-    padding: 2px;
-    background-color: #fff;
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #c8d400;
+  padding: 2px;
+  background-color: #fff;
+  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .fs-story-item:hover .fs-story-thumb {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .fs-story-title {
-    margin-top: 2px;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 90px;
-    font-family: "Poppins", sans-serif;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90px;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Botões de navegação do Swiper */
 .fs-story-carousel .swiper-button-next,
 .fs-story-carousel .swiper-button-prev {
-    color: #666;
-    --swiper-navigation-size: 24px;
-    background-color: rgba(240, 240, 240, 0.8);
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
+  color: #666;
+  --swiper-navigation-size: 24px;
+  background-color: rgba(240, 240, 240, 0.8);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }
-
 
 /* Modal do Story */
 .fs-story-modal {
-    display: none; /* Oculto por padrão */
-    position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.85);
-    align-items: center;
-    justify-content: center;
+  display: none; /* Oculto por padrão */
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.85);
+  align-items: center;
+  justify-content: center;
 }
 
 .fs-story-modal.fs-story-modal-show {
-    display: flex;
+  display: flex;
 }
-.fs-story-modal-wrapper{
-    position: relative;
+.fs-story-modal-wrapper {
+  position: relative;
 }
 .fs-story-modal-content {
-    margin: auto;
-    max-width: 500px; /* Largura máxima do modal */
-    border-radius: 8px;
-    position: relative;
-    text-align: center;
+  margin: auto;
+  max-width: 500px; /* Largura máxima do modal */
+  border-radius: 8px;
+  position: relative;
+  text-align: center;
 }
-.story-main-content{
-    position: absolute;
-    bottom: 60px;
-    font-size: .8rem;
-    color: #fff;
-    font-weight: 600;
-    text-shadow: .5px .5px black;
+.story-main-content {
+  position: absolute;
+  bottom: 60px;
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0.5px 0.5px black;
 }
 .fs-story-modal-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin-bottom: 15px;
-    max-height: 80vh;
-    object-fit: contain;
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  max-height: 80vh;
+  object-fit: contain;
 }
 
 /* Estilo para o vídeo principal do story */
 .fs-story-modal-content > video {
-    max-width: 100%;
-    height: auto;
-    max-height: 95vh;
-    object-fit: contain;
-    border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 4px;
 }
 .fs-story-modal-content .story-main-content video,
 .fs-story-modal-content .story-main-content iframe {
-    max-width: 100%;
-    height: auto;
-    max-height: 70vh;
-    object-fit: contain;
-    margin-top: 15px;
+  max-width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  margin-top: 15px;
 }
-.fs-story-modal-content h2{
-    display: none;
+.fs-story-modal-content h2 {
+  display: none;
 }
 /* Botão de fechar o modal */
 .fs-story-close {
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 25px;
-    font-size: 35px;
-    font-weight: bold;
-    cursor: pointer;
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  font-size: 35px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .fs-story-close:hover,
 .fs-story-close:focus {
-    color: #000;
-    text-decoration: none;
+  color: #000;
+  text-decoration: none;
 }
 
 /* Barra de progresso e navegação do Modal */
 .fs-story-progress-bar-container {
-    position: absolute;
-    width: 100%;
-    padding: 5px;
-    display: flex;
-    gap: 3px;
-    box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  gap: 3px;
+  box-sizing: border-box;
 }
 
 .fs-story-progress-segment {
-    flex: 1;
-    height: 3px;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-radius: 2px;
-    overflow: hidden;
+  flex: 1;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .fs-story-progress-bar {
-    height: 100%;
-    background-color: #fff;
-    width: 0;
+  height: 100%;
+  background-color: #fff;
+  width: 0;
 }
 
 .fs-story-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    font-size: 30px;
-    cursor: pointer;
-    padding: 10px;
-    z-index: 10001;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 10001;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fs-story-prev {
-    left: 20px;
+  left: 20px;
 }
 .fs-story-next {
-    right: 20px;
+  right: 20px;
 }
 
 /* Animação para stories fixos */
 @keyframes pulse-border {
-    0% {
-        box-shadow: 0 0 0 0 rgba(200, 212, 0, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(200, 212, 0, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(200, 212, 0, 0);
-    }
+  0% {
+    box-shadow: 0 0 0 0 rgba(200, 212, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(200, 212, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(200, 212, 0, 0);
+  }
 }
 
 .fs-story-fixed .fs-story-thumb {
-    animation: pulse-border 2s infinite;
+  animation: pulse-border 2s infinite;
+}
+
+@media (max-width: 600px) {
+  .fs-story-close {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
 }
