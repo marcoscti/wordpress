@@ -6,22 +6,8 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
     deferredPrompt = e;
 
-    $("#modalPWA").modal("show");
-
 });
 
-$("#btnInstalarApp").on("click", async function () {
-
-    if (!deferredPrompt)
-        return;
-
-    deferredPrompt.prompt();
-
-    await deferredPrompt.userChoice;
-
-    deferredPrompt = null;
-
-});
 
 self.addEventListener('fetch', event => {});
 //Função para corrigir o problema do menu do WordPress sobrepondo o menu lateral do tema

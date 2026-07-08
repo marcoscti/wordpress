@@ -1,24 +1,29 @@
 <?php
 add_action('wp_head', function () {
 ?>
-<link rel="manifest" href="<?php echo get_template_directory_uri(); ?>/manifest.json">
-<meta name="theme-color" content="#0094c6">
+    <link rel="manifest" href="<?php echo get_template_directory_uri(); ?>/manifest.json">
+    <meta name="theme-color" content="#0094c6">
 <?php
 });
 add_action('wp_footer', function () {
 ?>
-<script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-        .then(reg => {
-            console.log('Service Worker registrado!', reg);
-        })
-        .catch(err => {
-            console.error(err);
-        });
-}
-</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => {
+                    console.log('Service Worker registrado!', reg);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
+    </script>
 <?php
+});
+add_action('wp_footer', function () {
+
+    get_template_part('template-parts/modal-pwa');
+
 });
 function meu_tema_setup()
 {
@@ -77,6 +82,19 @@ function meu_tema_assets()
         '1.0',
         true
     );
+    wp_enqueue_script(
+    'pwa-js',
+    get_template_directory_uri() . '/assets/js/pwa.js',
+    ['bootstrap-js'],
+    '1.0',
+    true
+);
+wp_enqueue_style(
+    'pwa-css',
+    get_template_directory_uri() . '/assets/css/pwa.css',
+    [],
+    '1.0'
+);
 }
 /**
  * Adiciona classes Bootstrap aos itens do menu
