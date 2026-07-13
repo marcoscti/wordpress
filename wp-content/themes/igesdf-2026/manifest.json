@@ -1,19 +1,19 @@
 {
   "name": "Intranet - IgesDF",
   "short_name": "Intranet",
-  "start_url": "/intranet/",
-  "scope": "/intranet/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0057B8",
   "icons": [
     {
-      "src": "/intranet/wp-content/themes/igesdf-2026/assets/icons/icon-192.png",
+      "src": "/wp-content/themes/igesdf-2026/assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/intranet/wp-content/themes/igesdf-2026/assets/icons/icon-512.png",
+      "src": "/wp-content/themes/igesdf-2026/assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

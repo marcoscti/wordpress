@@ -38,7 +38,7 @@ if (typeof Swiper !== "undefined") {
                 slidesPerView: 6
             },
             1024: {
-                slidesPerView: 8
+                slidesPerView: 6
             }
         }
     });
