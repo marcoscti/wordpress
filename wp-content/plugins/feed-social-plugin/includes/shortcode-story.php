@@ -72,7 +72,7 @@ function fs_render_story_shortcode($atts)
         if (!empty($story_ids)) :
 
             $first_story = $story_ids[0];
-            $thumb = get_the_post_thumbnail_url($first_story, 'thumbnail');
+
 
     ?>
 
@@ -83,8 +83,21 @@ function fs_render_story_shortcode($atts)
                     data-story-id="<?php echo esc_attr($first_story); ?>">
 
                     <img
-                        src="<?php echo esc_url($thumb); ?>"
+                        src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>"
                         class="fs-story-thumb">
+
+                </a>
+
+            </div>
+        <?php else: ?>
+            <div class="fs-story-container">
+
+                <a href="#"
+                    class="fs-story-item fs-story-single">
+
+                    <img
+                        src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>"
+                        class="fs-story-thumb inactive">
 
                 </a>
 

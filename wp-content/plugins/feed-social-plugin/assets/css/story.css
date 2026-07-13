@@ -48,7 +48,14 @@
   transition: transform 0.2s ease-in-out;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.fs-story-thumb.inactive {
+  border-color: #ccc;
+}
 
+.fs-story-container .fs-story-thumb{
+  width: 120px;
+  height: 120px;
+}
 .fs-story-item:hover .fs-story-thumb {
   transform: scale(1.05);
 }
