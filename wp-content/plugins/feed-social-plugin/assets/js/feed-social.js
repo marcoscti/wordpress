@@ -74,7 +74,7 @@ jQuery(document).ready(function ($) {
       return email;
     }
 
-    email = window.prompt(promptText || fs_feed_data.like_prompt);
+    email = window.prompt(`Informe seu E-mail Institucional:`);
     if (email && isValidEmail(email)) {
       localStorage.setItem("fs_user_email", email.trim());
       return email.trim();
@@ -114,7 +114,7 @@ jQuery(document).ready(function ($) {
       return name;
     }
 
-    name = window.prompt(fs_feed_data.comment_name_prompt);
+    name = window.prompt(`Informe Seu Nome e Setor Ex: Marcos ASCOM`);
     if (name) {
       localStorage.setItem("fs_user_name", name.trim());
       return name.trim();

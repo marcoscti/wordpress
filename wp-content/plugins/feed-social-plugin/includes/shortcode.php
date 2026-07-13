@@ -154,7 +154,9 @@ function fs_render_feed_shortcode($atts)
                         <textarea
                             name="comment"
                             placeholder="Adicione um comentário..."
-                            required rows="2"></textarea>
+                            required rows="2"
+                            resizable="none"
+                            ></textarea>
 
                         <button type="submit" class="fs-comment-submit btn btn-sm mt-0">
                             Publicar

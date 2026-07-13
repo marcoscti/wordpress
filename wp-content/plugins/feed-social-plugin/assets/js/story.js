@@ -29,7 +29,7 @@ if (typeof Swiper !== "undefined") {
 
         breakpoints: {
             320: {
-                slidesPerView: 4
+                slidesPerView: 5
             },
             480: {
                 slidesPerView: 5

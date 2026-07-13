@@ -762,12 +762,13 @@ body.fs-post-modal-open {
     width:auto;
     padding:2px 12px;
     font-size:13px;
-    font-weight:600;
+    font-weight:700;
     white-space:nowrap;
     border:none;
     border-radius:2px;
     border:1px solid #c8d400;
     background:#fff;  
+    color:#575756;
 }
 
 .fs-post-modal-close{
