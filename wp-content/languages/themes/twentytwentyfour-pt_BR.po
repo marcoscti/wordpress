@@ -1175,16 +1175,16 @@ msgctxt "Question in the FAQ pattern"
 msgid "I'd like to get to meet fellow architects, how can I do that?"
 msgstr "Gostaria de conhecer outros arquitetos. Como posso fazer isso?"
 
+#: patterns/text-faq.php:24
+msgctxt "Question in the FAQ pattern"
+msgid "What is your process working in smaller projects?"
+msgstr "Qual é o seu processo de trabalho em projetos menores?"
+
 #: patterns/text-faq.php:27 patterns/text-faq.php:38 patterns/text-faq.php:49
 #: patterns/text-faq.php:60
 msgctxt "Answer in the FAQ pattern"
 msgid "Études offers comprehensive consulting, management, design, and research solutions. Our vision is to be at the forefront of architectural innovation, fostering a global community of architects and enthusiasts united by a passion for creating spaces. Every architectural endeavor is an opportunity to shape the future."
 msgstr "A Études oferece soluções abrangentes de consultoria, gestão, design e pesquisa. Nossa visão é estar na vanguarda da inovação arquitetônica, fomentando uma comunidade global de arquitetos e entusiastas unidos pela paixão de criar espaços. Cada empreendimento arquitetônico é uma oportunidade de moldar o futuro."
-
-#: patterns/text-faq.php:24
-msgctxt "Question in the FAQ pattern"
-msgid "What is your process working in smaller projects?"
-msgstr "Qual é o seu processo de trabalho em projetos menores?"
 
 #: patterns/text-faq.php:15
 msgctxt "Heading of the FAQs"
