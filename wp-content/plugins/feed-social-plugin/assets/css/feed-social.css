@@ -746,7 +746,10 @@ body.fs-post-modal-open {
     align-items:center;
     gap:8px;
 }
-
+.fs-highlight-container{
+  max-width: 800px;
+  margin: 0 auto;
+}
 .fs-post-modal-close{
     width:36px;
     height:36px;

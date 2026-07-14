@@ -29,16 +29,16 @@ if (typeof Swiper !== "undefined") {
 
         breakpoints: {
             320: {
-                slidesPerView: 5
+                slidesPerView: 4
             },
             480: {
-                slidesPerView: 5
+                slidesPerView: 6
             },
             768: {
-                slidesPerView: 6
+                slidesPerView: 10
             },
             1024: {
-                slidesPerView: 6
+                slidesPerView: 8
             }
         }
     });
