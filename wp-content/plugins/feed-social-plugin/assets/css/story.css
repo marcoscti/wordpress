@@ -55,6 +55,7 @@
 .fs-story-container .fs-story-thumb{
   width: 120px;
   height: 120px;
+  padding: 5px;
 }
 .fs-story-item:hover .fs-story-thumb {
   transform: scale(1.05);
@@ -69,6 +70,7 @@
   text-overflow: ellipsis;
   width: 90px;
   font-family: "Poppins", sans-serif;
+
 }
 
 /* Botões de navegação do Swiper */
@@ -117,6 +119,7 @@
   color: #fff;
   font-weight: 600;
   text-shadow: 0.5px 0.5px black;
+  width: 100%;
 }
 .fs-story-modal-content img {
   max-width: 100%;
@@ -249,6 +252,6 @@
 }
 .fs-highlight-item .fs-story-title{
   display: block;
-  text-align: left;
+  text-align: center;
   margin-left: 4px;
 }
