@@ -143,7 +143,7 @@ function fs_story_options_metabox_callback($post) {
     $expires = get_post_meta($post->ID, '_fs_story_expires', true);
     ?>
     <p>
-        <input type="checkbox" id="fs_story_expires" name="fs_story_expires" value="yes" <?php checked($expires, 'yes'); ?> />
+        <input type="checkbox" id="fs_story_expires" name="fs_story_expires" value="yes" <?php checked($expires, 'yes'); ?> checked/>
         <label for="fs_story_expires">Expirar em 24 horas</label>
     </p>
     <p class="description">
