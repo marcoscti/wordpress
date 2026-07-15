@@ -275,11 +275,10 @@ jQuery(document).ready(function ($) {
 
       return `
             <div class="fs-media-thumb fs-media-thumb-video">
-                ${
-                  poster
-                    ? `<img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">`
-                    : `<div class="fs-media-thumb-placeholder"></div>`
-                }
+                ${poster
+          ? `<img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">`
+          : `<div class="fs-media-thumb-placeholder"></div>`
+        }
                 <span class="fs-media-thumb-play"></span>
             </div>
         `;
@@ -468,11 +467,15 @@ jQuery(document).ready(function ($) {
     $modal.find(".fs-post-modal-comments").html('<p class="fs-comments-loading">Carregando comentários...</p>');
     $modal.find(".fs-post-modal-actions").html(`
         <button type="button" class="fs-likes${likedPosts.has(post.id) ? " fs-liked" : ""}">
-            <span class="fs-action-icon">♥</span>
+            <span class="fs-action-icon"><svg width="24" height="21" viewBox="0 0 24 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.0951 2.67899C20.5631 2.1467 19.9314 1.72445 19.2361 1.43636C18.5408 1.14828 17.7956 1 17.043 1C16.2904 1 15.5452 1.14828 14.8499 1.43636C14.1547 1.72445 13.523 2.1467 12.9909 2.67899L11.8868 3.78315L10.7826 2.67899C9.70792 1.60431 8.25034 1.00056 6.73051 1.00056C5.21069 1.00056 3.75311 1.60431 2.67843 2.67899C1.60375 3.75366 1 5.21124 1 6.73107C1 8.25089 1.60375 9.70847 2.67843 10.7832L11.8868 19.9915L21.0951 10.7832C21.6274 10.2511 22.0496 9.61942 22.3377 8.92415C22.6258 8.22888 22.7741 7.48366 22.7741 6.73107C22.7741 5.97848 22.6258 5.23326 22.3377 4.53799C22.0496 3.84272 21.6274 3.21102 21.0951 2.67899Z" stroke="#e0245e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
             <span class="fs-count">${formatCount(post.likes || 0)}</span>
         </button>
         <button type="button" class="fs-comments-toggle" aria-expanded="false">
-            <span class="fs-action-icon">💬</span>
+            <span class="fs-action-icon"><svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.5498 13.3C19.5498 13.8525 19.3303 14.3824 18.9396 14.7731C18.5489 15.1638 18.019 15.3833 17.4665 15.3833H4.96647L0.799805 19.55V2.88334C0.799805 2.3308 1.0193 1.8009 1.41 1.4102C1.8007 1.0195 2.3306 0.800003 2.88314 0.800003H17.4665C18.019 0.800003 18.5489 1.0195 18.9396 1.4102C19.3303 1.8009 19.5498 2.3308 19.5498 2.88334V13.3Z" stroke="#C8D400" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
             <span class="fs-count">${formatCount(post.comments || 0)}</span>
         </button>
     `);
