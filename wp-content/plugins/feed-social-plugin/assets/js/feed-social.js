@@ -1,128 +1,171 @@
 jQuery(document).ready(function ($) {
-    const $feedContainer = $('#fs-posts-container');
-    const $loadingIndicator = $('#fs-loading-indicator');
-    const $scrollSentinel = $('#fs-scroll-sentinel');
-    const $noMorePosts = $('#fs-no-more-posts');
-    const $loadingText = $loadingIndicator.find('.fs-loading-text');
-    const $noMorePostsText = $noMorePosts.find('.fs-no-more-posts-text');
-    const sentinelEl = $scrollSentinel[0];
+  const $feedContainer = $("#fs-posts-container");
+  const $loadingIndicator = $("#fs-loading-indicator");
+  const $scrollSentinel = $("#fs-scroll-sentinel");
+  const $noMorePosts = $("#fs-no-more-posts");
+  const $loadingText = $loadingIndicator.find(".fs-loading-text");
+  const $noMorePostsText = $noMorePosts.find(".fs-no-more-posts-text");
+  const sentinelEl = $scrollSentinel[0];
 
-    let currentOffset = 0;
-    let hasMore = true;
-    let isLoading = false;
+  let currentOffset = 0;
+  let hasMore = true;
+  let isLoading = false;
+  const postsPerRow = 4;
+  let pendingBatch = [];
 
-    function setLoadingVisible(visible) {
-        $loadingIndicator.prop('hidden', !visible);
+  function setLoadingVisible(visible) {
+    $loadingIndicator.prop("hidden", !visible);
+  }
+
+  function updateSentinelVisibility() {
+    if (!$scrollSentinel.length) {
+      return;
     }
 
-    function updateSentinelVisibility() {
-        if (!$scrollSentinel.length) {
-            return;
-        }
+    if (hasMore) {
+      $scrollSentinel.show();
+      $noMorePosts.prop("hidden", true);
+    } else {
+      $scrollSentinel.hide();
+      $noMorePosts.prop("hidden", false);
+    }
+  }
 
-        if (hasMore) {
-            $scrollSentinel.show();
-            $noMorePosts.prop('hidden', true);
-        } else {
-            $scrollSentinel.hide();
-            $noMorePosts.prop('hidden', false);
-        }
+  function checkAndLoadMore() {
+    if (!hasMore || isLoading || !sentinelEl) {
+      return;
     }
 
-    function checkAndLoadMore() {
-        if (!hasMore || isLoading || !sentinelEl) {
-            return;
-        }
+    const rect = sentinelEl.getBoundingClientRect();
+    if (rect.top <= window.innerHeight + 200) {
+      fetchPosts();
+    }
+  }
 
-        const rect = sentinelEl.getBoundingClientRect();
-        if (rect.top <= window.innerHeight + 200) {
-            fetchPosts();
-        }
+  function flushPendingPosts() {
+    if (!pendingBatch.length) {
+      return;
     }
 
-    const likedPosts = new Set(JSON.parse(localStorage.getItem('fs_liked_posts') || '[]'));
+    const itemsToRender = pendingBatch.splice(0, postsPerRow);
+    itemsToRender.forEach(function (post) {
+      renderPost(post);
+    });
+  }
 
-    function saveLikedPosts() {
-        localStorage.setItem('fs_liked_posts', JSON.stringify([...likedPosts]));
+  const likedPosts = new Set(
+    JSON.parse(localStorage.getItem("fs_liked_posts") || "[]"),
+  );
+  const loadedPosts = {};
+  let currentPostId = null;
+  let modalSwiperInstance = null;
+  let hasOpenedPostFromUrl = false;
+  function saveLikedPosts() {
+    localStorage.setItem("fs_liked_posts", JSON.stringify([...likedPosts]));
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function getUserEmail(promptText) {
+    let email = localStorage.getItem("fs_user_email");
+    if (email && isValidEmail(email)) {
+      return email;
     }
 
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    email = window.prompt(`Informe seu E-mail Institucional:`);
+    if (email && isValidEmail(email)) {
+      localStorage.setItem("fs_user_email", email.trim());
+      return email.trim();
     }
 
-    function getUserEmail(promptText) {
-        let email = localStorage.getItem('fs_user_email');
-        if (email && isValidEmail(email)) {
-            return email;
-        }
+    return null;
+  }
 
-        email = window.prompt(promptText || fs_feed_data.like_prompt);
-        if (email && isValidEmail(email)) {
-            localStorage.setItem('fs_user_email', email.trim());
-            return email.trim();
-        }
+  function saveUserProfile(name, email) {
+    const normalizedName = (name || "").trim();
+    const normalizedEmail = (email || "").trim();
 
-        return null;
+    if (!normalizedEmail) {
+      return;
     }
 
-    function getUserName() {
-        let name = localStorage.getItem('fs_user_name');
-        if (name) {
-            return name;
-        }
-
-        name = window.prompt(fs_feed_data.comment_name_prompt);
-        if (name) {
-            localStorage.setItem('fs_user_name', name.trim());
-            return name.trim();
-        }
-
-        return null;
+    if (normalizedName) {
+      localStorage.setItem("fs_user_name", normalizedName);
     }
 
-    function restHeaders() {
-        return {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': fs_feed_data.rest_nonce,
-        };
+    localStorage.setItem("fs_user_email", normalizedEmail);
+
+    $.ajax({
+      url: fs_feed_data.ajax_url,
+      type: "POST",
+      data: {
+        action: "fs_save_user_profile",
+        name: normalizedName,
+        email: normalizedEmail,
+      },
+    });
+  }
+
+  function getUserName() {
+    let name = localStorage.getItem("fs_user_name");
+    if (name) {
+      return name;
     }
 
-    function requestNotificationPermission() {
-        if (!('Notification' in window) || Notification.permission !== 'default') {
-            return;
-        }
-
-        Notification.requestPermission();
+    name = window.prompt(`Informe Seu Nome e Setor Ex: Marcos ASCOM`);
+    if (name) {
+      localStorage.setItem("fs_user_name", name.trim());
+      return name.trim();
     }
 
-    function showBrowserNotification(post) {
-        if (!('Notification' in window) || Notification.permission !== 'granted') {
-            return false;
-        }
+    return null;
+  }
 
-        const notification = new Notification(fs_feed_data.notification_title, {
-            body: post.excerpt || fs_feed_data.notification_body,
-            icon: post.thumbnail || undefined,
-            tag: 'fs-post-' + post.id,
-        });
+  function restHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "X-WP-Nonce": fs_feed_data.rest_nonce,
+    };
+  }
 
-        notification.onclick = function () {
-            window.focus();
-            window.location.href = fs_feed_data.feed_page_url;
-            notification.close();
-        };
-
-        return true;
+  function requestNotificationPermission() {
+    if (!("Notification" in window) || Notification.permission !== "default") {
+      return;
     }
 
-    function showFeedNotification(post) {
-        showBrowserNotification(post);
+    Notification.requestPermission();
+  }
 
-        const $notification = $(`
+  function showBrowserNotification(post) {
+    if (!("Notification" in window) || Notification.permission !== "granted") {
+      return false;
+    }
+
+    const notification = new Notification(fs_feed_data.notification_title, {
+      body: post.excerpt || fs_feed_data.notification_body,
+      icon: post.thumbnail || undefined,
+      tag: "fs-post-" + post.id,
+    });
+
+    notification.onclick = function () {
+      window.focus();
+      window.location.href = fs_feed_data.feed_page_url;
+      notification.close();
+    };
+
+    return true;
+  }
+
+  function showFeedNotification(post) {
+    showBrowserNotification(post);
+
+    const $notification = $(`
             <div class="fs-notification-toast">
                 <p>${fs_feed_data.notification_body}</p>
                 <div class="fs-notification-content">
-                    ${post.thumbnail ? `<img src="${post.thumbnail}" alt="${post.title}" class="fs-notification-thumbnail">` : ''}
+                    ${post.thumbnail ? `<img src="${post.thumbnail}" alt="${post.title}" class="fs-notification-thumbnail">` : ""}
                     <div class="fs-notification-text">
                         <p>${post.excerpt || post.title}</p>
                         <a href="${fs_feed_data.feed_page_url}" class="fs-notification-link">Ver agora &rarr;</a>
@@ -131,431 +174,641 @@ jQuery(document).ready(function ($) {
             </div>
         `);
 
-        $('body').append($notification);
-        $notification.fadeIn().delay(8000).fadeOut(function () {
-            $(this).remove();
-        });
+    $("body").append($notification);
+    $notification
+      .fadeIn()
+      .delay(8000)
+      .fadeOut(function () {
+        $(this).remove();
+      });
+  }
+
+  function initSse() {
+    if (typeof EventSource === "undefined" || !fs_feed_data.sse_url) {
+      return;
     }
 
-    function initSse() {
-        if (typeof EventSource === 'undefined' || !fs_feed_data.sse_url) {
-            return;
+    const feedEvents = new EventSource(fs_feed_data.sse_url);
+
+    feedEvents.addEventListener("new-content-feed", function (event) {
+      try {
+        const post = JSON.parse(event.data);
+        showFeedNotification(post);
+
+        if (fs_feed_data.has_feed && $feedContainer.length) {
+          currentOffset = 0;
+          hasMore = true;
+          pendingBatch = [];
+          $feedContainer.empty();
+          updateSentinelVisibility();
+          fetchPosts();
         }
+      } catch (error) {
+        console.error("Erro ao processar evento SSE:", error);
+      }
+    });
 
-        const feedEvents = new EventSource(fs_feed_data.sse_url);
+    feedEvents.onopen = function () {
+      console.log("Feed Social SSE conectado.");
+    };
 
-        feedEvents.addEventListener('new-content-feed', function (event) {
-            try {
-                const post = JSON.parse(event.data);
-                showFeedNotification(post);
+    feedEvents.onerror = function () {
+      console.warn("Feed Social SSE reconectando...");
+    };
+  }
 
-                if (fs_feed_data.has_feed && $feedContainer.length) {
-                    currentOffset = 0;
-                    hasMore = true;
-                    $feedContainer.empty();
-                    updateSentinelVisibility();
-                    fetchPosts();
+  requestNotificationPermission();
+
+  if (fs_feed_data.has_feed) {
+    $loadingText.text(fs_feed_data.loading_text);
+    $noMorePostsText.text(fs_feed_data.no_more_posts_text);
+  }
+
+  function formatCount(count) {
+    return count > 0 ? count : "";
+  }
+
+  function isVideoMedia(media) {
+    return media.type && media.type.startsWith("video");
+  }
+
+  function getVideoPoster(media, postThumbnail) {
+    if (media.poster) {
+      return media.poster;
+    }
+    return postThumbnail || "";
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderMediaItem(
+    media,
+    postTitle,
+    postThumbnail,
+    insideModal = false,
+  ) {
+    if (!media) {
+      return "";
+    }
+
+    if (isVideoMedia(media)) {
+      const poster = getVideoPoster(media, postThumbnail);
+
+      if (insideModal) {
+        return `
+            <video
+                controls
+                autoplay
+                playsinline
+                preload="metadata"
+                poster="${escapeHtml(poster)}"
+                src="${escapeHtml(media.url)}">
+            </video>
+        `;
+      }
+
+      return `
+            <div class="fs-media-thumb fs-media-thumb-video">
+                ${
+                  poster
+                    ? `<img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">`
+                    : `<div class="fs-media-thumb-placeholder"></div>`
                 }
-            } catch (error) {
-                console.error('Erro ao processar evento SSE:', error);
-            }
-        });
-
-        feedEvents.onopen = function () {
-            console.log('Feed Social SSE conectado.');
-        };
-
-        feedEvents.onerror = function () {
-            console.warn('Feed Social SSE reconectando...');
-        };
+                <span class="fs-media-thumb-play"></span>
+            </div>
+        `;
     }
 
-    requestNotificationPermission();
+    return `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(postTitle)}">`;
+  }
 
-    if (fs_feed_data.has_feed) {
-        $loadingText.text(fs_feed_data.loading_text);
-        $noMorePostsText.text(fs_feed_data.no_more_posts_text);
+  function getRequestedPostId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("fs_post");
+  }
+
+  function renderPost(post) {
+    loadedPosts[post.id] = post;
+    let mediaHtml = "";
+    const mediaGallery = Array.isArray(post.media_gallery) ? post.media_gallery : [];
+    const postThumbnail = post.thumbnail || "";
+
+    if (mediaGallery.length > 0) {
+      mediaHtml += renderMediaItem(mediaGallery[0], post.title, postThumbnail);
+      if (mediaGallery.length > 1) {
+        mediaHtml += `<span class="fs-media-thumb-count">+${mediaGallery.length - 1}</span>`;
+      }
+    } else if (postThumbnail) {
+      mediaHtml += `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
     }
 
-    function formatCount(count) {
-        return count > 0 ? count : '';
-    }
-
-    function updateLikeUI($post, count, liked) {
-        const $likes = $post.find('.fs-likes');
-        $likes.toggleClass('fs-liked', liked);
-        $likes.find('.fs-count').text(formatCount(count));
-    }
-
-    function updateCommentUI($post, count) {
-        $post.find('.fs-comments .fs-count').text(formatCount(count));
-    }
-
-    const $videoModal = $('#fs-video-modal');
-    const $videoModalPlayer = $videoModal.find('.fs-video-modal-player');
-
-    function isVideoMedia(media) {
-        return media.type && media.type.startsWith('video');
-    }
-
-    function getVideoPoster(media, postThumbnail) {
-        if (media.poster) {
-            return media.poster;
-        }
-        return postThumbnail || '';
-    }
-
-    function escapeHtml(text) {
-        return String(text)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
-    function renderMediaItem(media, postTitle, postThumbnail) {
-        if (isVideoMedia(media)) {
-            const poster = getVideoPoster(media, postThumbnail);
-
-            if (poster) {
-                return `
-                    <button type="button" class="fs-video-cover" data-video-url="${escapeHtml(media.url)}" aria-label="Reproduzir vídeo">
-                        <img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">
-                        <span class="fs-video-play-icon" aria-hidden="true"></span>
-                    </button>
-                `;
-            }
-
-            return `<video src="${escapeHtml(media.url)}" controls muted playsinline></video>`;
-        }
-
-        return `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(postTitle)}">`;
-    }
-
-    function openVideoModal(videoUrl) {
-        if (!$videoModal.length || !videoUrl) {
-            return;
-        }
-
-        $videoModalPlayer.attr('src', videoUrl);
-        $videoModal.prop('hidden', false);
-        $('body').addClass('fs-video-modal-open');
-
-        const playPromise = $videoModalPlayer[0].play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(function () {
-                // Autoplay pode ser bloqueado; o usuário inicia pelo controle nativo.
-            });
-        }
-    }
-
-    function closeVideoModal() {
-        if (!$videoModal.length) {
-            return;
-        }
-
-        const player = $videoModalPlayer[0];
-        if (player) {
-            player.pause();
-            player.removeAttr('src');
-            player.load();
-        }
-
-        $videoModal.prop('hidden', true);
-        $('body').removeClass('fs-video-modal-open');
-    }
-
-    function renderPost(post) {
-        let mediaHtml = '';
-        const mediaGallery = post.media_gallery || [];
-        const isLiked = likedPosts.has(post.id);
-        const postThumbnail = post.thumbnail || '';
-
-        if (mediaGallery.length > 1) {
-            mediaHtml += '<div class="swiper fs-media-carousel">';
-            mediaHtml += '<div class="swiper-wrapper">';
-            mediaGallery.forEach(function (media) {
-                mediaHtml += '<div class="swiper-slide">';
-                mediaHtml += renderMediaItem(media, post.title, postThumbnail);
-                mediaHtml += '</div>';
-            });
-            mediaHtml += '</div>';
-            mediaHtml += '<div class="swiper-pagination"></div>';
-            mediaHtml += '<div class="swiper-button-prev"></div>';
-            mediaHtml += '<div class="swiper-button-next"></div>';
-            mediaHtml += '</div>';
-        } else if (mediaGallery.length === 1) {
-            mediaHtml += renderMediaItem(mediaGallery[0], post.title, postThumbnail);
-        } else if (postThumbnail) {
-            mediaHtml += `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
-        }
-
-        const postHtml = `<div class="fs-post-header">
-                    <div class="fs-post-author">
-                        <div class="fs-post-author-avatar"></div>
-                        <span class="fs-post-author-name">Iges+</span>
-                    </div>
-                </div>
+    const postHtml = `
             <article class="fs-post-item" data-post-id="${post.id}">
-                
                 <div class="fs-post-thumbnail">
                     ${mediaHtml}
                 </div>
-                <div class="fs-post-meta">
-                    <button type="button" class="fs-likes${isLiked ? ' fs-liked' : ''}" aria-label="Curtir">
-                        <svg aria-hidden="true" fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
-                            <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path>
-                        </svg>
-                        <span class="fs-count">${formatCount(post.likes)}</span>
-                    </button>
-                    <button type="button" class="fs-comments" aria-label="Comentar">
-                        <svg aria-hidden="true" fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
-                            <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path>
-                        </svg>
-                        <span class="fs-count">${formatCount(post.comments)}</span>
-                    </button>
-                </div>
-                <div class="fs-post-content">${post.content}</div>
-                <div class="fs-comments-panel" hidden>
-                    <div class="fs-comments-list"></div>
-                    <form class="fs-comment-form">
-                        <textarea name="comment" rows="3" placeholder="Escreva um comentário..." required></textarea>
-                        <button type="submit" class="fs-comment-submit">Enviar</button>
-                    </form>
-                </div>
-            </article>
+          </article>
         `;
 
-        $feedContainer.append(postHtml);
+    $feedContainer.append(postHtml);
+    $feedContainer
+      .find(".fs-post-item:last .fs-post-thumbnail")
+      .on("click", function () {
+        openPostModal(post);
+      });
 
-        if (mediaGallery.length > 1 && typeof Swiper !== 'undefined') {
-            new Swiper($feedContainer.find('.fs-media-carousel:last')[0], {
-                loop: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-            });
-        }
+    if (!hasOpenedPostFromUrl && String(getRequestedPostId()) === String(post.id)) {
+      hasOpenedPostFromUrl = true;
+      openPostModal(post);
+    }
+  }
+
+  function pauseModalVideos() {
+    $("#fs-post-modal video").each(function () {
+      if (this.pause) {
+        this.pause();
+      }
+    });
+  }
+
+  function destroyModalSwiper() {
+    if (modalSwiperInstance && typeof modalSwiperInstance.destroy === "function") {
+      modalSwiperInstance.destroy(true, true);
+    }
+    modalSwiperInstance = null;
+  }
+
+  function showCopyFeedback() {
+    const $feedback = $("<div class=\"fs-copy-feedback\">Link copiado!</div>");
+    $("body").append($feedback);
+    $feedback.fadeIn(120).delay(1800).fadeOut(180, function () {
+      $(this).remove();
+    });
+  }
+
+  function buildPostModalUrl(postId) {
+    const baseUrl = window.location.href.split("#")[0];
+    const url = new URL(baseUrl, window.location.href);
+    url.searchParams.set("fs_post", postId);
+    return url.toString();
+  }
+
+  function copyPostLink(postId) {
+    const link = buildPostModalUrl(postId);
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function () {
+        showCopyFeedback();
+      });
+      return;
     }
 
-    async function fetchPosts() {
-        if (!$feedContainer.length || isLoading || !hasMore) {
-            return;
-        }
+    const tempInput = document.createElement("input");
+    tempInput.value = link;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    showCopyFeedback();
+  }
 
-        const perPage = currentOffset === 0
-            ? fs_feed_data.initial_posts
-            : fs_feed_data.posts_per_load;
+  function closePostModal() {
+    const $modal = $("#fs-post-modal");
 
-        isLoading = true;
-        setLoadingVisible(true);
-
-        try {
-            const response = await fetch(`${fs_feed_data.rest_url}?offset=${currentOffset}&per_page=${perPage}`, {
-                headers: {
-                    'X-WP-Nonce': fs_feed_data.rest_nonce,
-                },
-            });
-            const data = await response.json();
-
-            if (data.posts && data.posts.length > 0) {
-                data.posts.forEach(renderPost);
-                currentOffset += data.posts.length;
-                hasMore = Boolean(data.has_more);
-            } else {
-                hasMore = false;
-            }
-        } catch (error) {
-            console.error('Erro ao carregar posts:', error);
-        } finally {
-            isLoading = false;
-            setLoadingVisible(false);
-            updateSentinelVisibility();
-            checkAndLoadMore();
-        }
+    if (!$modal.length) {
+      return;
     }
 
-    async function loadComments($post) {
-        const postId = $post.data('post-id');
-        const $list = $post.find('.fs-comments-list');
+    pauseModalVideos();
+    destroyModalSwiper();
+    $modal.attr("hidden", true);
+    $modal.removeClass("fs-comments-expanded");
+    $modal.find(".fs-post-modal-media").empty();
+    $modal.find(".fs-post-modal-comments").empty();
+    $modal.find(".fs-post-modal-actions").empty();
+    $("body").removeClass("fs-post-modal-open");
+    currentPostId = null;
+    hasOpenedPostFromUrl = false;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("fs_post");
+    window.history.replaceState({}, document.title, url.toString());
+  }
 
-        $list.html('<p class="fs-comments-loading">Carregando comentários...</p>');
+  function setMobileModalState() {
+    const $modal = $("#fs-post-modal");
+    if (!$modal.length) {
+      return;
+    }
 
-        try {
-            const response = await fetch(`${fs_feed_data.comments_url}?post_id=${postId}`, {
-                headers: {
-                    'X-WP-Nonce': fs_feed_data.rest_nonce,
-                },
-            });
-            const data = await response.json();
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!isMobile) {
+      $modal.removeClass("fs-mobile-content-collapsed");
+      $modal.addClass("fs-comments-expanded");
+      $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
+      return;
+    }
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Erro ao carregar comentários');
-            }
+    $modal.removeClass("fs-comments-expanded");
+    $modal.removeClass("fs-mobile-content-collapsed");
+    $modal.find(".fs-comments-toggle").attr("aria-expanded", "false");
+  }
 
-            if (!data.comments.length) {
-                $list.html('<p class="fs-comments-empty">Nenhum comentário ainda.</p>');
-                return;
-            }
+  function openPostModal(post) {
+    currentPostId = post.id;
 
-            const items = data.comments.map(function (item) {
-                return `
+    const $modal = $("#fs-post-modal");
+
+    if (post.id) {
+      $.ajax({
+        url: fs_feed_data.ajax_url,
+        type: "POST",
+        data: {
+          action: "fs_register_view",
+          post_id: post.id,
+        },
+      });
+    }
+    const mediaGallery = Array.isArray(post.media_gallery) ? post.media_gallery : [];
+    const postThumbnail = post.thumbnail || "";
+
+    let mediaHtml = "";
+
+    if (mediaGallery.length > 1) {
+      mediaHtml = '<div class="swiper fs-modal-carousel">';
+      mediaHtml += '<div class="swiper-wrapper">';
+
+      mediaGallery.forEach(function (media) {
+        mediaHtml += `
+                <div class="swiper-slide">
+                    ${renderMediaItem(media, post.title, postThumbnail, true)}
+                </div>
+            `;
+      });
+
+      mediaHtml += "</div>";
+      mediaHtml += `
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        `;
+      mediaHtml += "</div>";
+    } else if (mediaGallery.length === 1) {
+      mediaHtml = renderMediaItem(mediaGallery[0], post.title, postThumbnail, true);
+    } else if (postThumbnail) {
+      mediaHtml = `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
+    }
+
+    $modal.find(".fs-post-modal-media").html(mediaHtml);
+    $modal.find(".fs-post-modal-comments").html('<p class="fs-comments-loading">Carregando comentários...</p>');
+    $modal.find(".fs-post-modal-actions").html(`
+        <button type="button" class="fs-likes${likedPosts.has(post.id) ? " fs-liked" : ""}">
+            <span class="fs-action-icon">♥</span>
+            <span class="fs-count">${formatCount(post.likes || 0)}</span>
+        </button>
+        <button type="button" class="fs-comments-toggle" aria-expanded="false">
+            <span class="fs-action-icon">💬</span>
+            <span class="fs-count">${formatCount(post.comments || 0)}</span>
+        </button>
+    `);
+
+    setMobileModalState();
+    const url = new URL(window.location.href);
+    url.searchParams.set("fs_post", post.id);
+    window.history.replaceState({}, document.title, url.toString());
+
+    $modal.removeAttr("hidden");
+    $("body").addClass("fs-post-modal-open");
+
+    loadComments(post.id);
+
+    if (mediaGallery.length > 1 && typeof Swiper !== "undefined") {
+      destroyModalSwiper();
+      modalSwiperInstance = new Swiper(".fs-modal-carousel", {
+        loop: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        on: {
+          slideChangeTransitionStart: function () {
+            pauseModalVideos();
+          },
+          slideChange: function () {
+            pauseModalVideos();
+          },
+        },
+      });
+    }
+  }
+  function openPostFromUrl() {
+    const postId = getRequestedPostId();
+
+    if (!postId || hasOpenedPostFromUrl || !loadedPosts[postId]) {
+      return false;
+    }
+
+    hasOpenedPostFromUrl = true;
+    openPostModal(loadedPosts[postId]);
+    return true;
+  }
+
+  async function fetchPosts() {
+    if (!$feedContainer.length || isLoading || !hasMore) {
+      return;
+    }
+
+    const perPage =
+      currentOffset === 0
+        ? fs_feed_data.initial_posts
+        : fs_feed_data.posts_per_load;
+
+    isLoading = true;
+    setLoadingVisible(true);
+
+    try {
+      const response = await fetch(
+        `${fs_feed_data.rest_url}?offset=${currentOffset}&per_page=${perPage}`,
+        {
+          headers: {
+            "X-WP-Nonce": fs_feed_data.rest_nonce,
+          },
+        },
+      );
+      const data = await response.json();
+
+      if (data.posts && data.posts.length > 0) {
+        pendingBatch = pendingBatch.concat(data.posts);
+        while (pendingBatch.length >= postsPerRow) {
+          flushPendingPosts();
+        }
+
+        currentOffset += data.posts.length;
+        hasMore = Boolean(data.has_more);
+      } else {
+        hasMore = false;
+      }
+    } catch (error) {
+      console.error("Erro ao carregar posts:", error);
+    } finally {
+      isLoading = false;
+      setLoadingVisible(false);
+      updateSentinelVisibility();
+
+      if (!hasMore && pendingBatch.length) {
+        flushPendingPosts();
+      }
+
+      if (!openPostFromUrl()) {
+        checkAndLoadMore();
+      }
+    }
+  }
+
+  async function loadComments(postId) {
+    const $list = $("#fs-post-modal .fs-post-modal-comments");
+
+    $list.html('<p class="fs-comments-loading">Carregando comentários...</p>');
+
+    try {
+      const response = await fetch(
+        `${fs_feed_data.comments_url}?post_id=${postId}`,
+        {
+          headers: {
+            "X-WP-Nonce": fs_feed_data.rest_nonce,
+          },
+        },
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao carregar comentários");
+      }
+
+      if (!data.comments.length) {
+        $list.html('<p class="fs-comments-empty">Nenhum comentário ainda.</p>');
+        return;
+      }
+
+      const items = data.comments
+        .map(function (item) {
+          return `
                     <div class="fs-comment-item">
                         <strong>${item.name}</strong>
                         <p>${item.comment}</p>
                     </div>
                 `;
-            }).join('');
+        })
+        .join("");
 
-            $list.html(items);
-        } catch (error) {
-            $list.html('<p class="fs-comments-error">Não foi possível carregar os comentários.</p>');
-            console.error(error);
-        }
+      $list.html(items);
+    } catch (error) {
+      $list.html(
+        '<p class="fs-comments-error">Não foi possível carregar os comentários.</p>',
+      );
+      console.error(error);
+    }
+  }
+  async function handleLike(postId) {
+    const email = getUserEmail(fs_feed_data.like_prompt);
+
+    if (!email) return;
+
+    saveUserProfile("", email);
+
+    const $likes = $("#fs-post-modal .fs-likes");
+
+    $likes.prop("disabled", true);
+
+    try {
+      const response = await fetch(fs_feed_data.like_url, {
+        method: "POST",
+        headers: restHeaders(),
+        body: JSON.stringify({
+          post_id: postId,
+          email: email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      if (data.action === "liked") {
+        likedPosts.add(postId);
+      } else {
+        likedPosts.delete(postId);
+      }
+
+      saveLikedPosts();
+
+      loadedPosts[postId].likes = data.new_count;
+
+      $likes.toggleClass("fs-liked", data.action === "liked");
+
+      $likes.find(".fs-count").text(formatCount(data.new_count));
+    } finally {
+      $likes.prop("disabled", false);
+    }
+  }
+  async function handleCommentSubmit($form) {
+    const postId = currentPostId;
+    const name = getUserName();
+    const email = getUserEmail(fs_feed_data.comment_email_prompt);
+    const comment = $form.find('textarea[name="comment"]').val().trim();
+
+    if (!name || !email || !comment) {
+      return;
     }
 
-    async function handleLike($post) {
-        const postId = $post.data('post-id');
-        const email = getUserEmail(fs_feed_data.like_prompt);
+    saveUserProfile(name, email);
 
-        if (!email) {
-            return;
-        }
+    const $submit = $form.find("button[type='submit']");
+    $submit.prop("disabled", true);
 
-        const $likes = $post.find('.fs-likes');
-        $likes.prop('disabled', true);
+    try {
+      const response = await fetch(fs_feed_data.comment_url, {
+        method: "POST",
+        headers: restHeaders(),
+        body: JSON.stringify({
+          post_id: postId,
+          name: name,
+          email: email,
+          comment: comment,
+        }),
+      });
+      const data = await response.json();
 
-        try {
-            const response = await fetch(fs_feed_data.like_url, {
-                method: 'POST',
-                headers: restHeaders(),
-                body: JSON.stringify({
-                    post_id: postId,
-                    email: email,
-                }),
-            });
-            const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao comentar");
+      }
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Erro ao curtir');
-            }
+      $form.find('textarea[name="comment"]').val("");
 
-            if (data.action === 'liked') {
-                likedPosts.add(postId);
-            } else {
-                likedPosts.delete(postId);
-            }
+      loadedPosts[postId].comments = data.new_count;
+      await loadComments(postId);
+    } catch (error) {
+      console.error("Erro ao comentar:", error);
+      window.alert("Não foi possível enviar o comentário. Tente novamente.");
+    } finally {
+      $submit.prop("disabled", false);
+    }
+  }
 
-            saveLikedPosts();
-            updateLikeUI($post, data.new_count, data.action === 'liked');
-        } catch (error) {
-            console.error('Erro ao curtir:', error);
-            window.alert('Não foi possível registrar a curtida. Tente novamente.');
-        } finally {
-            $likes.prop('disabled', false);
-        }
+
+  $(document).on("click", "#fs-post-modal .fs-likes", function () {
+    handleLike(currentPostId);
+  });
+  $(document).on("click", "#fs-post-modal .fs-comments-toggle", function () {
+    const $modal = $("#fs-post-modal");
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    if (!isMobile) {
+      return;
     }
 
-    async function handleCommentSubmit($post, $form) {
-        const postId = $post.data('post-id');
-        const name = getUserName();
-        const email = getUserEmail(fs_feed_data.comment_email_prompt);
-        const comment = $form.find('textarea[name="comment"]').val().trim();
+    const willExpand = !$modal.hasClass("fs-comments-expanded");
+    $modal.toggleClass("fs-comments-expanded", willExpand);
+    $modal.removeClass("fs-mobile-content-collapsed");
+    if (willExpand) {
+      loadComments(currentPostId);
+    }
+    $(this).attr("aria-expanded", willExpand ? "true" : "false");
+  });
 
-        if (!name || !email || !comment) {
-            return;
-        }
+  $(document).on("click", "#fs-post-modal .fs-post-modal-footer button[type='submit']", function () {
+    const $modal = $("#fs-post-modal");
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-        const $submit = $form.find('.fs-comment-submit');
-        $submit.prop('disabled', true);
-
-        try {
-            const response = await fetch(fs_feed_data.comment_url, {
-                method: 'POST',
-                headers: restHeaders(),
-                body: JSON.stringify({
-                    post_id: postId,
-                    name: name,
-                    email: email,
-                    comment: comment,
-                }),
-            });
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Erro ao comentar');
-            }
-
-            $form.find('textarea[name="comment"]').val('');
-            updateCommentUI($post, data.new_count);
-            await loadComments($post);
-        } catch (error) {
-            console.error('Erro ao comentar:', error);
-            window.alert('Não foi possível enviar o comentário. Tente novamente.');
-        } finally {
-            $submit.prop('disabled', false);
-        }
+    if (!isMobile) {
+      return;
     }
 
-    $feedContainer.on('click', '.fs-video-cover', function () {
-        openVideoModal($(this).data('video-url'));
-    });
+    $modal.addClass("fs-comments-expanded").removeClass("fs-mobile-content-collapsed");
+    $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
+  });
 
-    $videoModal.on('click', '.fs-video-modal-backdrop, .fs-video-modal-close', function () {
-        closeVideoModal();
-    });
+  $(document).on("focus", "#fs-post-modal textarea", function () {
+    const $modal = $("#fs-post-modal");
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-    $(document).on('keydown.fsVideoModal', function (event) {
-        if (event.key === 'Escape' && $videoModal.length && !$videoModal.prop('hidden')) {
-            closeVideoModal();
-        }
-    });
-
-    $feedContainer.on('click', '.fs-likes', function () {
-        handleLike($(this).closest('.fs-post-item'));
-    });
-
-    $feedContainer.on('click', '.fs-comments', function () {
-        const $post = $(this).closest('.fs-post-item');
-        const $panel = $post.find('.fs-comments-panel');
-        const isHidden = $panel.prop('hidden');
-
-        $('.fs-comments-panel').prop('hidden', true);
-
-        if (isHidden) {
-            $panel.prop('hidden', false);
-            loadComments($post);
-        }
-    });
-
-    $feedContainer.on('submit', '.fs-comment-form', function (event) {
-        event.preventDefault();
-        const $form = $(this);
-        handleCommentSubmit($form.closest('.fs-post-item'), $form);
-    });
-
-    if ($feedContainer.length && sentinelEl) {
-        const observer = new IntersectionObserver(function (entries) {
-            if (entries[0].isIntersecting && !isLoading && hasMore) {
-                fetchPosts();
-            }
-        }, {
-            root: null,
-            rootMargin: '200px 0px',
-            threshold: 0,
-        });
-
-        observer.observe(sentinelEl);
-        updateSentinelVisibility();
-        fetchPosts();
-
-        $(window).on('scroll.fsFeed resize.fsFeed', checkAndLoadMore);
+    if (!isMobile) {
+      return;
     }
 
-    initSse();
+    $modal.addClass("fs-comments-expanded").removeClass("fs-mobile-content-collapsed");
+    $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
+  });
+
+  $(document).on("click", "#fs-post-modal .fs-post-modal-media", function (event) {
+    const $modal = $("#fs-post-modal");
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    if (!isMobile || $(event.target).closest(".fs-likes, .fs-comments-toggle, .fs-comment-form, textarea").length) {
+      return;
+    }
+
+    $modal.toggleClass("fs-mobile-content-collapsed");
+    $modal.toggleClass("fs-comments-expanded", false);
+    $modal.find(".fs-comments-toggle").attr("aria-expanded", "false");
+  });
+  $(document).on(
+    "submit",
+    "#fs-post-modal .fs-comment-form",
+    function (e) {
+      e.preventDefault();
+
+      handleCommentSubmit($(this));
+    },
+  );
+  if ($feedContainer.length && sentinelEl) {
+    const observer = new IntersectionObserver(
+      function (entries) {
+        if (entries[0].isIntersecting && !isLoading && hasMore) {
+          fetchPosts();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px 0px",
+        threshold: 0,
+      },
+    );
+
+    observer.observe(sentinelEl);
+    updateSentinelVisibility();
+    fetchPosts();
+
+    $(window).on("scroll.fsFeed resize.fsFeed", checkAndLoadMore);
+  }
+
+  initSse();
+  $(document).on("click", "#fs-post-modal .fs-post-modal-copy-link", function (e) {
+    e.preventDefault();
+    copyPostLink(currentPostId);
+  });
+  $(document).on(
+    "click",
+    "#fs-post-modal .fs-post-modal-overlay, #fs-post-modal .fs-post-modal-close",
+    function (e) {
+      e.preventDefault();
+      closePostModal();
+    },
+  );
+  $(document).on("keydown", function (event) {
+    if (event.key === "Escape") {
+      closePostModal();
+    }
+  });
 });

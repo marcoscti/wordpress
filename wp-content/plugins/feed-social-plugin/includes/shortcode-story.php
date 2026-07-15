@@ -6,82 +6,123 @@ function fs_register_story_shortcode()
     add_shortcode('feed_social_storie', 'fs_render_story_shortcode');
 }
 add_action('init', 'fs_register_story_shortcode');
+function fs_render_story_modal()
+{
+?>
+    <div id="fs-story-modal" class="fs-story-modal">
 
+        <span class="fs-story-close">&times;</span>
+
+        <div class="fs-story-modal-wrapper">
+
+            <div class="fs-story-modal-content"></div>
+
+            <div class="fs-story-progress-bar-container"></div>
+
+        </div>
+
+        <button class="fs-story-nav fs-story-prev">&lsaquo;</button>
+        <button class="fs-story-nav fs-story-next">&rsaquo;</button>
+
+    </div>
+    <?php
+}
 function fs_render_story_shortcode($atts)
 {
     fs_enqueue_story_assets();
 
     $args = array(
-        'post_type' => 'social_story',
+        'post_type'      => 'social_story',
         'posts_per_page' => -1,
-        'post_status' => 'publish',
-        'orderby' => 'date',
-        'order' => 'DESC',
+        'post_status'    => 'publish',
+        'orderby'        => 'date',
+        'order'          => 'DESC',
     );
 
     $stories_query = new WP_Query($args);
 
     ob_start();
+
     $story_ids = [];
 
     if ($stories_query->have_posts()) {
-?>
-        <div class="fs-story-container">
-            <div class="swiper fs-story-carousel">
-                <div class="swiper-wrapper">
-                    <?php while ($stories_query->have_posts()) : $stories_query->the_post(); ?>
-                        <?php
-                        // Lógica de expiração
-                        $expires = get_post_meta(get_the_ID(), '_fs_story_expires', true);
-                        if ($expires === 'yes') {
-                            $post_time = get_post_time('U', true);
-                            $expiration_time = $post_time + (24 * HOUR_IN_SECONDS);
-                            if (time() >= $expiration_time) {
-                                continue; // Pula para o próximo story se este já expirou
-                            }
-                        }
 
-                        $story_ids[] = get_the_ID();
-                        $is_fixed = get_post_meta(get_the_ID(), '_fs_story_expires', true) !== 'yes';
-                        $item_class = $is_fixed ? ' fs-story-fixed' : '';
-                        ?>
-                        <div class="swiper-slide" data-story-id="<?php echo get_the_ID(); ?>">
-                            <a href="#" class="fs-story-item<?php echo esc_attr($item_class); ?>" data-story-id="<?php echo get_the_ID(); ?>">
-                                <?php the_post_thumbnail('thumbnail', ['class' => 'fs-story-thumb']); ?>
-                                <span class="fs-story-title"><?php
-                                                                $title = get_the_title();
-                                                                $words = preg_split('/\s+/', trim($title));
-                                                                echo implode(' ', array_slice($words, 0, 2));
-                                                                ?></span>
-                            </a>
-                        </div>
-                    <?php endwhile; ?>
-                </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+        while ($stories_query->have_posts()) {
+            $stories_query->the_post();
+
+            // Mantém expiração dos stories normais
+            $expires = get_post_meta(get_the_ID(), '_fs_story_expires', true);
+
+            if ($expires === 'yes') {
+
+                $post_time = get_post_time('U', true);
+                $expiration_time = $post_time + (24 * HOUR_IN_SECONDS);
+
+                if (time() >= $expiration_time) {
+                    continue;
+                }
+            }
+
+            $story_ids[] = get_the_ID();
+        }
+
+        wp_reset_postdata();
+
+
+        if (!empty($story_ids)) :
+
+            $first_story = $story_ids[0];
+
+
+    ?>
+
+            <div class="fs-story-container">
+
+                <a href="#"
+                    class="fs-story-item fs-story-single"
+                    data-story-id="<?php echo esc_attr($first_story); ?>">
+
+                    <img
+                        src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>"
+                        class="fs-story-thumb">
+
+                </a>
+
             </div>
-        </div>
+        <?php else: ?>
+            <div class="fs-story-container">
 
-        <!-- Story Modal -->
-        <div id="fs-story-modal" class="fs-story-modal">
+                <a href="#"
+                    class="fs-story-item fs-story-single">
 
-            <span class="fs-story-close">&times;</span>
-            <div class="fs-story-modal-wrapper">
-                <div class="fs-story-modal-content">
-                    <!-- Content will be loaded via AJAX -->
-                </div>
-                <div class="fs-story-progress-bar-container"></div>
+                    <img
+                        src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>"
+                        class="fs-story-thumb inactive">
+
+                </a>
+
             </div>
-            <button class="fs-story-nav fs-story-prev" aria-label="Anterior">&lsaquo;</button>
-            <button class="fs-story-nav fs-story-next" aria-label="Próximo">&rsaquo;</button>
-        </div>
-<?php
+
+    <?php
+
+        endif;
     } else {
-        echo '<p>' . __('', 'feed-social') . '</p>';
-    }
-    wp_reset_postdata(); // Restaura os dados do post original
 
-    wp_localize_script('fs-story-script', 'fs_story_data', ['story_ids' => $story_ids]);
+        echo '<p></p>';
+    }
+
+
+    wp_localize_script(
+        'fs-story-script',
+        'fs_story_data',
+        [
+            'story_ids' => $story_ids
+        ]
+    );
+
+
+    fs_render_story_modal();
+
     return ob_get_clean();
 }
 
@@ -138,6 +179,107 @@ function fs_get_story_content_ajax()
         'content' => $content,
         'has_video' => $has_video,
     ]);
+}
+function fs_register_highlight_shortcode()
+{
+    add_shortcode('feed_social_destaques', 'fs_render_highlight_shortcode');
+}
+add_action('init', 'fs_register_highlight_shortcode');
+
+function fs_render_highlight_shortcode($atts)
+{
+    fs_enqueue_story_assets();
+
+    $termos = get_terms([
+        'taxonomy'   => 'destaque',
+        'hide_empty' => true
+    ]);
+
+    if (empty($termos) || is_wp_error($termos)) {
+        return '';
+    }
+
+    ob_start();
+
+    $story_ids = [];
+    ?>
+
+    <div class="fs-highlight-container">
+
+        <div class="swiper fs-highlight-carousel">
+            <div class="swiper-wrapper">
+
+                <?php foreach ($termos as $termo) :
+
+                    $stories = new WP_Query([
+                        'post_type'      => 'social_story',
+                        'posts_per_page' => -1,
+                        'post_status'    => 'publish',
+                        'tax_query' => [
+                            [
+                                'taxonomy' => 'destaque',
+                                'field'    => 'term_id',
+                                'terms'    => $termo->term_id
+                            ]
+                        ]
+                    ]);
+
+                    if (!$stories->have_posts()) {
+                        continue;
+                    }
+                    $story_ids_term = [];
+
+                    while ($stories->have_posts()) {
+                        $stories->the_post();
+
+                        // Destaques não possuem expiração
+                        $story_ids_term[] = get_the_ID();
+                        $story_ids[] = get_the_ID();
+                    }
+
+                    if (empty($story_ids_term)) {
+                        wp_reset_postdata();
+                        continue;
+                    }
+
+                    wp_reset_postdata();
+
+                    $capa = get_the_post_thumbnail_url($story_ids_term[0], 'thumbnail');
+
+                ?>
+
+                    <div class="swiper-slide">
+
+                        <a href="#"
+                            class="fs-highlight-item"
+                            data-story-group='<?php echo json_encode($story_ids_term); ?>'>
+
+                            <img
+                                src="<?php echo esc_url($capa); ?>"
+                                class="fs-story-thumb">
+
+                            <span class="fs-story-title">
+                                <?php echo esc_html($termo->name); ?>
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+
+        </div>
+
+    </div>
+
+<?php
+
+    return ob_get_clean();
 }
 add_action('wp_ajax_fs_get_story_content', 'fs_get_story_content_ajax');
 add_action('wp_ajax_nopriv_fs_get_story_content', 'fs_get_story_content_ajax');

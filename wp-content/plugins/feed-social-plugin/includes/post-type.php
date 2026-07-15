@@ -1,7 +1,8 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-function fs_register_post_type() {
+function fs_register_post_type()
+{
     $labels = array(
         'name'                  => _x('IgesDF+', 'Post type general name', 'feed-social'),
         'singular_name'         => _x('Post do Feed', 'Post type singular name', 'feed-social'), // phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder, WordPress.WP.I18n.MismatchedPlaceholders
@@ -72,11 +73,46 @@ function fs_register_post_type() {
         'rewrite'            => array('slug' => 'story'),
         'capability_type'    => 'post',
         'has_archive'        => true,
-        'hierarchical'       => false,
+        'hierarchical'       => true,
         'menu_position'      => null,
         'supports'           => array('title', 'editor', 'thumbnail', 'author'),
         'show_in_rest'       => true,
     );
+
     register_post_type('social_story', $story_args);
+    register_taxonomy('destaque', ['social_story'], [
+
+    'labels' => [
+        'name'              => 'Destaques',
+        'singular_name'     => 'Destaque',
+        'search_items'      => 'Buscar Destaques',
+        'all_items'         => 'Todos os Destaques',
+        'edit_item'         => 'Editar Destaque',
+        'update_item'       => 'Atualizar Destaque',
+        'add_new_item'      => 'Adicionar Destaque',
+        'new_item_name'     => 'Novo Destaque',
+        'menu_name'         => 'Destaques',
+    ],
+
+    'public'             => true,
+    'hierarchical'       => true,
+    'show_ui'            => true,
+    'show_admin_column'  => true,
+    'show_in_rest'       => true,
+    'rewrite'            => [
+        'slug' => 'destaque'
+    ],
+]);
 }
+add_action('admin_menu', function () {
+
+    add_submenu_page(
+        'edit.php?post_type=feed-social',
+        'Destaques',
+        'Destaques',
+        'manage_categories',
+        'edit-tags.php?taxonomy=destaque&post_type=social_story'
+    );
+
+});
 add_action('init', 'fs_register_post_type');

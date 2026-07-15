@@ -90,14 +90,15 @@ function fs_rest_get_posts($request) {
             }
         }
 
-        $posts[] = [
+            $posts[] = [
             'id' => $post->ID,
             'title' => get_the_title($post->ID),
             'content' => apply_filters('the_content', $post->post_content),
             'thumbnail' => get_the_post_thumbnail_url($post->ID, 'large'),
-            'media_gallery' => $media_gallery, // Adiciona a galeria de mídias aqui
+            'media_gallery' => $media_gallery,
             'likes' => fs_get_likes_count($post->ID),
-            'comments' => fs_get_comments_count($post->ID)
+            'comments' => fs_get_comments_count($post->ID),
+            'views' => fs_get_views_count($post->ID)
         ];
     }
     
@@ -214,8 +215,102 @@ function fs_get_likes_count($post_id) {
     return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE post_id = %d", $post_id));
 }
 
+function fs_upsert_user_profile($name, $email) {
+    global $wpdb;
+
+    $name = sanitize_text_field($name ?? '');
+    $email = sanitize_email($email ?? '');
+
+    if (!$email) {
+        return 0;
+    }
+
+    $table = $wpdb->prefix . 'feed_social_users';
+    $existing = $wpdb->get_row($wpdb->prepare("SELECT id, name FROM $table WHERE email = %s", $email));
+
+    if ($existing) {
+        $wpdb->update(
+            $table,
+            [
+                'name' => $name ?: $existing->name,
+                'updated_at' => current_time('mysql'),
+            ],
+            ['id' => (int) $existing->id],
+            ['%s', '%s'],
+            ['%d']
+        );
+
+        return (int) $existing->id;
+    }
+
+    $wpdb->insert(
+        $table,
+        [
+            'name' => $name,
+            'email' => $email,
+            'created_at' => current_time('mysql'),
+            'updated_at' => current_time('mysql'),
+        ],
+        ['%s', '%s', '%s', '%s']
+    );
+
+    return (int) $wpdb->insert_id;
+}
+
+function fs_get_user_like_count($email) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'feed_social_likes';
+    return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE email = %s", $email));
+}
+
+function fs_get_user_comment_count($email) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'feed_social_comments';
+    return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE email = %s", $email));
+}
+
 function fs_get_comments_count($post_id) {
     global $wpdb;
     $table = $wpdb->prefix . 'feed_social_comments';
     return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE post_id = %d", $post_id));
+}
+
+function fs_get_views_count($post_id) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'feed_social_views';
+    return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE post_id = %d", $post_id));
+}
+
+function fs_register_view($post_id) {
+    global $wpdb;
+
+    $post_id = absint($post_id);
+    if (!$post_id || get_post_type($post_id) !== 'feed-social') {
+        return false;
+    }
+
+    $table = $wpdb->prefix . 'feed_social_views';
+    $wpdb->insert($table, ['post_id' => $post_id, 'viewed_at' => current_time('mysql')], ['%d', '%s']);
+
+    return $wpdb->insert_id;
+}
+
+add_action('wp_ajax_fs_register_view', 'fs_ajax_register_view');
+add_action('wp_ajax_nopriv_fs_register_view', 'fs_ajax_register_view');
+
+function fs_ajax_register_view() {
+    $post_id = absint($_POST['post_id'] ?? 0);
+    fs_register_view($post_id);
+    wp_send_json_success(['views' => fs_get_views_count($post_id)]);
+}
+
+add_action('wp_ajax_fs_save_user_profile', 'fs_ajax_save_user_profile');
+add_action('wp_ajax_nopriv_fs_save_user_profile', 'fs_ajax_save_user_profile');
+
+function fs_ajax_save_user_profile() {
+    $name = sanitize_text_field($_POST['name'] ?? '');
+    $email = sanitize_email($_POST['email'] ?? '');
+    $id = fs_upsert_user_profile($name, $email);
+
+    wp_send_json_success(['id' => $id, 'name' => $name, 'email' => $email]);
 }

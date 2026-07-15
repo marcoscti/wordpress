@@ -596,11 +596,6 @@ msgstr "Estes são alguns dos próximos eventos"
 msgid "This immersive event celebrates the universal human experience through the lenses of history and ancestry, featuring a diverse array of photographers whose works capture the essence of different cultures and historical moments."
 msgstr "Este evento imersivo celebra a experiência humana universal através das lentes da história e da ancestralidade, apresentando uma diversa seleção de fotógrafos cujos trabalhos capturam a essência de diferentes culturas e momentos históricos."
 
-#: patterns/banner-about-book.php:26
-msgctxt "Pattern placeholder text."
-msgid "This exquisite compilation showcases a diverse array of photographs that capture the essence of different eras and cultures, reflecting the unique styles and perspectives of each artist. Fleckenstein’s evocative imagery, Strand’s groundbreaking modernist approach, and Kōno’s meticulous documentation of Japanese life come together in a harmonious blend that celebrates the art of photography. Each image in “The Stories Book” is accompanied by insightful commentary, providing historical context and revealing the stories behind the photographs. This collection is not only a visual feast but also a tribute to the power of photography to preserve and narrate the multifaceted experiences of humanity."
-msgstr "Esta primorosa compilação reúne uma diversa variedade de fotografias que capturam a essência de diferentes épocas e culturas, refletindo estilo e perspectivas únicas de cada artista. As imagens evocativas de Fleckenstein, a abordagem modernista inovadora de Strand e a meticulosa documentação da vida japonesa de Kōno se unem em uma seleção harmoniosa que celebra a arte da fotografia. Cada imagem em \"O Livro de Histórias\" é acompanhada de comentários informativos, que fornecem o contexto histórico e revelam as histórias por trás das fotografias. Esta coleção não é só uma celebração visual mas também um tributo à força da fotografia em preservar e narrar as multifacetadas experiências da humanidade."
-
 #: patterns/cta-events-list.php:106 patterns/cta-events-list.php:144
 msgid "Thornville, OH, USA"
 msgstr "Belo Horizonte, MG - Brasil"
@@ -634,6 +629,11 @@ msgstr "Minúsculo"
 #: patterns/grid-with-categories.php:22
 msgid "Top Categories"
 msgstr "Categorias principais"
+
+#: patterns/banner-about-book.php:26
+msgctxt "Pattern placeholder text."
+msgid "This exquisite compilation showcases a diverse array of photographs that capture the essence of different eras and cultures, reflecting the unique styles and perspectives of each artist. Fleckenstein’s evocative imagery, Strand’s groundbreaking modernist approach, and Kōno’s meticulous documentation of Japanese life come together in a harmonious blend that celebrates the art of photography. Each image in “The Stories Book” is accompanied by insightful commentary, providing historical context and revealing the stories behind the photographs. This collection is not only a visual feast but also a tribute to the power of photography to preserve and narrate the multifaceted experiences of humanity."
+msgstr "Esta primorosa compilação reúne uma diversa variedade de fotografias que capturam a essência de diferentes épocas e culturas, refletindo estilo e perspectivas únicas de cada artista. As imagens evocativas de Fleckenstein, a abordagem modernista inovadora de Strand e a meticulosa documentação da vida japonesa de Kōno se unem em uma seleção harmoniosa que celebra a arte da fotografia. Cada imagem em \"O Livro de Histórias\" é acompanhada de comentários informativos, que fornecem o contexto histórico e revelam as histórias por trás das fotografias. Esta coleção não é só uma celebração visual mas também um tributo à força da fotografia em preservar e narrar as multifacetadas experiências da humanidade."
 
 #: styles/05-twilight.json styles/colors/05-twilight.json
 msgctxt "Style variation name"
@@ -778,6 +778,25 @@ msgstr "Redes sociais"
 msgid "Something great is coming soon"
 msgstr "Algo grande está por vir"
 
+#: patterns/hidden-sidebar.php:38 patterns/page-portfolio-home.php:65
+#: patterns/page-portfolio-home.php:87 patterns/page-portfolio-home.php:121
+#: patterns/page-portfolio-home.php:154 patterns/page-portfolio-home.php:176
+#: patterns/page-portfolio-home.php:203 patterns/template-home-news-blog.php:40
+#: patterns/template-home-posts-grid-news-blog.php:35
+#: patterns/template-home-posts-grid-news-blog.php:60
+#: patterns/template-home-posts-grid-news-blog.php:78
+#: patterns/template-home-posts-grid-news-blog.php:103
+#: patterns/template-home-with-sidebar-news-blog.php:62
+#: patterns/template-home-with-sidebar-news-blog.php:119
+#: patterns/template-query-loop-news-blog.php:55
+#: patterns/template-query-loop-photo-blog.php:22
+#: patterns/template-query-loop-text-blog.php:19
+#: patterns/template-query-loop-vertical-header-blog.php:47
+#: patterns/template-query-loop.php:31
+msgctxt "Message explaining that there are no results returned from a search."
+msgid "Sorry, but nothing was found. Please try a search with different keywords."
+msgstr "Nada foi encontrado. Tente pesquisar palavras diferentes."
+
 #: patterns/cta-book-links.php:43
 msgctxt "Example brand name."
 msgid "Spotify"
@@ -824,25 +843,6 @@ msgstr "Estilo 4"
 msgctxt "Pattern description"
 msgid "RSVP for an upcoming event with a cover image and event details."
 msgstr "RSVP para um evento próximo com uma imagem de capa e detalhes do evento."
-
-#: patterns/hidden-sidebar.php:38 patterns/page-portfolio-home.php:65
-#: patterns/page-portfolio-home.php:87 patterns/page-portfolio-home.php:121
-#: patterns/page-portfolio-home.php:154 patterns/page-portfolio-home.php:176
-#: patterns/page-portfolio-home.php:203 patterns/template-home-news-blog.php:40
-#: patterns/template-home-posts-grid-news-blog.php:35
-#: patterns/template-home-posts-grid-news-blog.php:60
-#: patterns/template-home-posts-grid-news-blog.php:78
-#: patterns/template-home-posts-grid-news-blog.php:103
-#: patterns/template-home-with-sidebar-news-blog.php:62
-#: patterns/template-home-with-sidebar-news-blog.php:119
-#: patterns/template-query-loop-news-blog.php:55
-#: patterns/template-query-loop-photo-blog.php:22
-#: patterns/template-query-loop-text-blog.php:19
-#: patterns/template-query-loop-vertical-header-blog.php:47
-#: patterns/template-query-loop.php:31
-msgctxt "Message explaining that there are no results returned from a search."
-msgid "Sorry, but nothing was found. Please try a search with different keywords."
-msgstr "Nada foi encontrado. Tente pesquisar palavras diferentes."
 
 #: patterns/contact-info-locations.php:74
 msgid "Salt Lake City"

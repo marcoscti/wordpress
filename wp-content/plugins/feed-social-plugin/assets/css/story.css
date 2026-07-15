@@ -48,7 +48,15 @@
   transition: transform 0.2s ease-in-out;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.fs-story-thumb.inactive {
+  border-color: #ccc;
+}
 
+.fs-story-container .fs-story-thumb{
+  width: 120px;
+  height: 120px;
+  padding: 5px;
+}
 .fs-story-item:hover .fs-story-thumb {
   transform: scale(1.05);
 }
@@ -62,6 +70,7 @@
   text-overflow: ellipsis;
   width: 90px;
   font-family: "Poppins", sans-serif;
+
 }
 
 /* Botões de navegação do Swiper */
@@ -110,6 +119,7 @@
   color: #fff;
   font-weight: 600;
   text-shadow: 0.5px 0.5px black;
+  width: 100%;
 }
 .fs-story-modal-content img {
   max-width: 100%;
@@ -231,4 +241,17 @@
     right: 10px;
     z-index: 99;
   }
+}
+.fs-highlight-item{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #333;
+}
+.fs-highlight-item .fs-story-title{
+  display: block;
+  text-align: center;
+  margin-left: 4px;
 }
