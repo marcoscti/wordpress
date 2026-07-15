@@ -381,7 +381,6 @@ body.fs-video-modal-open {
     transform: none;
     border-radius: 0;
     flex-direction: column;
-    justify-content: space-between;
   }
 
   .fs-post-modal-left {
@@ -477,6 +476,56 @@ body.fs-video-modal-open {
     top: auto;
     right: auto;
   }
+}
+
+/* Mobile collapsed comments fixes: remove extra space and keep right column sized to content */
+@media (max-width: 768px) {
+  /* When content is collapsed, make right column hug content and not stretch */
+  .fs-post-modal.fs-mobile-content-collapsed .fs-post-modal-right {
+    align-self: flex-start;
+    height: auto !important;
+    max-height: none !important;
+    flex: 0 0 auto !important;
+  }
+
+  /* Ensure hidden comment/footer/form elements don't occupy space */
+  .fs-post-modal.fs-mobile-content-collapsed .fs-post-modal-comments,
+  .fs-post-modal.fs-mobile-content-collapsed .fs-comment-form,
+  .fs-post-modal.fs-mobile-content-collapsed .fs-post-modal-footer {
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Keep header and action buttons visible and compact */
+  .fs-post-modal.fs-mobile-content-collapsed .fs-post-modal-header,
+  .fs-post-modal.fs-mobile-content-collapsed .fs-post-modal-actions {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Make sure close button is visible on iPhone Safari (safe-area and z-index) */
+  .fs-post-modal-close {
+    
+    top: env(safe-area-inset-top, 12px);
+    right: env(safe-area-inset-right, 12px);
+    z-index: 10002;
+    opacity: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
 }
 
 /* Notification Toast */

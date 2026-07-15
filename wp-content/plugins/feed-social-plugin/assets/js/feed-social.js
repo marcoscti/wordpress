@@ -754,8 +754,8 @@ jQuery(document).ready(function ($) {
     $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
   });
 
-  $(document).on("click", "#fs-post-modal .fs-post-modal-media", function (event) {
-    const $modal = $("#fs-post-modal");
+  $(document).on("click", "#fs-post-modal .fs-post-modal-media img", function (event) {
+    const $modal = $("#fs-post-modal")
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
     if (!isMobile || $(event.target).closest(".fs-likes, .fs-comments-toggle, .fs-comment-form, textarea").length) {
