@@ -27,6 +27,20 @@ function fs_render_story_modal()
     </div>
     <?php
 }
+function fs_exist_story()
+{
+    $args = array(
+        'post_type'      => 'social_story',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    );
+
+    $stories_query = new WP_Query($args);
+
+    return $stories_query->have_posts();
+}
 function fs_render_story_shortcode($atts)
 {
     fs_enqueue_story_assets();
@@ -103,12 +117,21 @@ function fs_render_story_shortcode($atts)
 
             </div>
 
-    <?php
-
+        <?php
         endif;
     } else {
+        ?>
+        <div class="fs-story-container">
 
-        echo '<p></p>';
+            <a href="#"
+                class="fs-story-item fs-story-single">
+
+                <img
+                    src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>"
+                    class="fs-story-thumb inactive">
+            </a>
+        </div>
+    <?php
     }
 
 

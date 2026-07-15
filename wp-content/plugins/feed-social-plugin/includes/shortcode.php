@@ -138,10 +138,20 @@ function fs_render_feed_shortcode($atts)
             <div class="fs-post-modal-right">
 
                 <div class="fs-post-modal-header">
-                    <div class="fs-post-modal-container">
+                    <?php
+                        if(fs_exist_story()) {
+                    ?>
+                    <div class="fs-post-modal-container active">
                         <img src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>" alt="Avatar" class="fs-post-modal-avatar" width="35">
                     </div>
                     <strong>Iges+</strong>
+                    <?php }else{?>
+                    <div class="fs-post-modal-container inactive">
+                        <?php echo fs_exist_story(); ?>
+                        <img src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>" alt="Avatar" class="fs-post-modal-avatar" width="35">
+                    </div>
+                    <strong>Iges+</strong>
+                    <?}?>
                 </div>
 
                 <div class="fs-post-modal-comments"></div>

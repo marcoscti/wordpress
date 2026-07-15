@@ -800,10 +800,19 @@ jQuery(document).ready(function ($) {
   });
   $(document).on(
     "click",
-    "#fs-post-modal .fs-post-modal-overlay, #fs-post-modal .fs-post-modal-close",
+    "#fs-post-modal .fs-post-modal-overlay, #fs-post-modal .fs-post-modal-close, .fs-post-modal-container.inactive",
     function (e) {
       e.preventDefault();
       closePostModal();
+    },
+  );
+  $(document).on(
+    "click",
+    ".fs-post-modal-container.active",
+    function (e) {
+      e.preventDefault();
+      closePostModal();
+      $('.fs-story-item').click()
     },
   );
   $(document).on("keydown", function (event) {

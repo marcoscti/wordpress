@@ -8,7 +8,7 @@
 #fs-posts-container{
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
+  gap: 1px;
 }
 .fs-post-item {
   overflow: hidden;
@@ -817,6 +817,10 @@ body.fs-post-modal-open {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+  }
+  .fs-post-modal-container.inactive {
+    border-color: #ccc;
   }
   .fs-post-modal-container .fs-post-modal-avatar{
     width: 40px;
