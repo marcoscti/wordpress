@@ -5,6 +5,13 @@
   background-color: #fff;
   border-radius: 4px;
 }
+.fs-comments-loading{
+  text-align: center;
+}
+.fs-comments-loading svg path,
+.fs-comments-loading svg rect{
+  fill: #c8d400;
+}
 #fs-posts-container{
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -374,24 +381,25 @@ body.fs-video-modal-open {
     transform: none;
     border-radius: 0;
     flex-direction: column;
+    justify-content: space-between;
   }
 
   .fs-post-modal-left {
-    flex: 0 0 auto;
+    flex:unset!important;
     width: 100%;
     min-height: 55vh;
-    max-height: 60vh;
+    max-height: auto!important;
   }
 
   .fs-post-modal-right {
-    flex: 1 1 auto;
+    flex: unset!important;
     width: unset!important;
     min-width: 0;
     display: flex;
     flex-direction: column;
+    height: fit-content;
   }
   .fs-post-modal-actions {
-    padding: 10px 14px 0;
     margin-bottom: 0;
     order: 1;
   }
@@ -412,7 +420,6 @@ body.fs-video-modal-open {
     order: 2;
     position: sticky;
     bottom: 0;
-    background: #fff;
     z-index: 2;
   }
 
@@ -422,7 +429,6 @@ body.fs-video-modal-open {
     margin-bottom: 8px;
     position: sticky;
     bottom: 0;
-    background: #fff;
     z-index: 3;
   }
 
@@ -545,7 +551,7 @@ body.fs-video-modal-open {
   #fs-posts-container{
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
+  gap: 1px;
 }
 }
 .fs-feed-title{
@@ -610,10 +616,10 @@ body.fs-post-modal-open {
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:min(92vw, 1200px);
+    width:min(100vw, 1200px);
     max-width:1200px;
     height:min(95vh, 760px);
-    background:#fff;
+    /*background:#fff;*/
     display:flex;
     overflow:scroll;
     box-shadow:0 20px 60px rgba(0,0,0,.35);
@@ -629,7 +635,6 @@ body.fs-post-modal-open {
 }
 
 .fs-post-modal-left{
-
     flex: 1 1 auto;
     min-width: 0;
     width: auto;
@@ -681,14 +686,12 @@ body.fs-post-modal-open {
 }
 
 .fs-post-modal-right{
-
     flex: 0 0 360px;
     width: 360px;
     min-width: 320px;
     display:flex;
     flex-direction:column;
-    background:#fff;
-
+    background-color: #fff;
 }
 
 .fs-post-modal-comments{
@@ -701,11 +704,8 @@ body.fs-post-modal-open {
 }
 
 .fs-post-modal-footer{
-
     border-top:1px solid #ddd;
     padding:15px;
-    background:#fff;
-
 }
 
 .fs-post-modal-actions {
@@ -756,11 +756,11 @@ body.fs-post-modal-open {
   margin: 0 auto;
 }
 .fs-post-modal-close{
-    width:36px;
-    height:36px;
+    width:25px;
+    height:25px;
     border:none;
     border-radius:50%;
-    background:rgba(0,0,0,.6);
+    background:#dc3545;
     color:#fff;
     font-size:22px;
     cursor:pointer;
@@ -832,4 +832,5 @@ body.fs-post-modal-open {
     border-radius: 50%;
     object-fit: cover;
     display:block;
+    padding: 3px;
   }
