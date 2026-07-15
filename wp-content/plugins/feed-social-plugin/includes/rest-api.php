@@ -39,6 +39,21 @@ add_action('rest_api_init', function () {
             ],
         ],
     ]);
+
+    // Obter post por ID
+    register_rest_route($namespace, '/post/(?P<id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'fs_rest_get_post',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [
+                'required' => true,
+                'validate_callback' => function ($value) {
+                    return is_numeric($value) && (int) $value > 0;
+                },
+            ],
+        ],
+    ]);
 });
 
 function fs_rest_get_posts($request) {
@@ -313,4 +328,54 @@ function fs_ajax_save_user_profile() {
     $id = fs_upsert_user_profile($name, $email);
 
     wp_send_json_success(['id' => $id, 'name' => $name, 'email' => $email]);
+}
+
+function fs_rest_get_post($request) {
+    $id = absint($request->get_param('id'));
+    $post = get_post($id);
+
+    if (!$post || $post->post_type !== 'feed-social' || $post->post_status !== 'publish') {
+        return new WP_Error('not_found', 'Post não encontrado', ['status' => 404]);
+    }
+
+    $media_ids_string = get_post_meta($post->ID, '_fs_media_ids', true);
+    $media_ids_array = array_filter(explode(',', $media_ids_string));
+    $media_gallery = [];
+
+    foreach ($media_ids_array as $media_id) {
+        $media_id = (int) $media_id;
+        $media_url = wp_get_attachment_url($media_id);
+        $mime_type = get_post_mime_type($media_id);
+        if ($media_url) {
+            $is_video = $mime_type && strpos($mime_type, 'video') === 0;
+            $poster = '';
+
+            if ($is_video) {
+                $poster = get_the_post_thumbnail_url($media_id, 'large') ?: '';
+                if (!$poster && count($media_ids_array) === 1) {
+                    $poster = get_the_post_thumbnail_url($post->ID, 'large') ?: '';
+                }
+            }
+
+            $media_gallery[] = [
+                'id' => $media_id,
+                'url' => $media_url,
+                'type' => $mime_type,
+                'poster' => $poster,
+            ];
+        }
+    }
+
+    $response = [
+        'id' => $post->ID,
+        'title' => get_the_title($post->ID),
+        'content' => apply_filters('the_content', $post->post_content),
+        'thumbnail' => get_the_post_thumbnail_url($post->ID, 'large'),
+        'media_gallery' => $media_gallery,
+        'likes' => fs_get_likes_count($post->ID),
+        'comments' => fs_get_comments_count($post->ID),
+        'views' => fs_get_views_count($post->ID),
+    ];
+
+    return rest_ensure_response($response);
 }

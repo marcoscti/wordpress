@@ -517,6 +517,40 @@ jQuery(document).ready(function ($) {
     const postId = getRequestedPostId();
 
     if (!postId || hasOpenedPostFromUrl || !loadedPosts[postId]) {
+      // If post not loaded yet, try to request it directly from REST API (single post endpoint)
+      if (!postId || hasOpenedPostFromUrl) return false;
+
+      if (fs_feed_data.post_url) {
+        // Attempt to fetch single post by ID and open when available
+        fetch(fs_feed_data.post_url + '/' + encodeURIComponent(postId), {
+          headers: {
+            'X-WP-Nonce': fs_feed_data.rest_nonce
+          }
+        })
+          .then(function (resp) { return resp.json(); })
+          .then(function (data) {
+            if (data && data.id) {
+              // Normalize to expected post object and store
+              const post = {
+                id: data.id,
+                title: data.title || '',
+                content: data.content || '',
+                thumbnail: data.thumbnail || '',
+                media_gallery: Array.isArray(data.media_gallery) ? data.media_gallery : [],
+                likes: data.likes || 0,
+                comments: data.comments || 0,
+                views: data.views || 0
+              };
+              loadedPosts[post.id] = post;
+              hasOpenedPostFromUrl = true;
+              openPostModal(post);
+            }
+          })
+          .catch(function (err) {
+            console.error('Erro ao buscar post por ID:', err);
+          });
+      }
+
       return false;
     }
 

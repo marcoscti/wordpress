@@ -70,6 +70,7 @@ function fs_enqueue_feed_scripts()
 
     wp_localize_script('feed-social-js', 'fs_feed_data', [
         'rest_url' => get_rest_url(null, 'feed-social/v1/posts'),
+        'post_url' => get_rest_url(null, 'feed-social/v1/post'),
         'like_url' => get_rest_url(null, 'feed-social/v1/like'),
         'comment_url' => get_rest_url(null, 'feed-social/v1/comment'),
         'comments_url' => get_rest_url(null, 'feed-social/v1/comments'),
