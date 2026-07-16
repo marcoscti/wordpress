@@ -105,10 +105,11 @@ function fs_rest_get_posts($request) {
             }
         }
 
-            $posts[] = [
+        $posts[] = [
             'id' => $post->ID,
             'title' => get_the_title($post->ID),
             'content' => apply_filters('the_content', $post->post_content),
+            'legend' => fs_get_post_legend($post),
             'thumbnail' => get_the_post_thumbnail_url($post->ID, 'large'),
             'media_gallery' => $media_gallery,
             'likes' => fs_get_likes_count($post->ID),
@@ -222,6 +223,19 @@ function fs_rest_get_comments($request) {
             ];
         }, $rows ?: []),
     ]);
+}
+
+function fs_get_post_legend($post) {
+    $source = !empty($post->post_excerpt) ? $post->post_excerpt : $post->post_content;
+
+    if (empty($source)) {
+        return '';
+    }
+
+    $text = wp_strip_all_tags(strip_shortcodes($source));
+    $text = preg_replace('/\s+/', ' ', $text);
+
+    return trim($text);
 }
 
 function fs_get_likes_count($post_id) {
@@ -370,6 +384,7 @@ function fs_rest_get_post($request) {
         'id' => $post->ID,
         'title' => get_the_title($post->ID),
         'content' => apply_filters('the_content', $post->post_content),
+        'legend' => fs_get_post_legend($post),
         'thumbnail' => get_the_post_thumbnail_url($post->ID, 'large'),
         'media_gallery' => $media_gallery,
         'likes' => fs_get_likes_count($post->ID),

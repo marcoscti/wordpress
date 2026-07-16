@@ -403,6 +403,11 @@ body.fs-video-modal-open {
     order: 1;
   }
 
+  .fs-post-modal-legend {
+    padding: 10px 14px 0;
+    border-bottom: none;
+  }
+
   .fs-post-modal-comments {
     display: none;
     padding: 12px 14px 8px;
@@ -505,6 +510,19 @@ body.fs-video-modal-open {
     display: flex !important;
     align-items: center;
     gap: 6px;
+  }
+
+  .fs-post-legend.fs-legend-collapsed .fs-post-legend-content {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .fs-post-legend.is-expanded .fs-post-legend-content {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
 
   /* Make sure close button is visible on iPhone Safari (safe-area and z-index) */
@@ -743,6 +761,37 @@ body.fs-post-modal-open {
     background-color: #fff;
 }
 
+.fs-post-modal-legend {
+    padding: 12px 20px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.fs-post-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom:10px;
+}
+
+.fs-post-legend-content {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.fs-post-legend-toggle {
+    align-self: flex-start;
+    border: 0;
+    background: transparent;
+    color: #c8d400;
+    font-weight: 700;
+    padding: 0;
+    cursor: pointer;
+}
+
 .fs-post-modal-comments{
 
     flex:1 1 auto;
@@ -755,6 +804,7 @@ body.fs-post-modal-open {
 .fs-post-modal-footer{
     border-top:1px solid #ddd;
     padding:15px;
+    background-color: #fff;
 }
 
 .fs-post-modal-actions {

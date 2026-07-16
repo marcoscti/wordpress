@@ -163,7 +163,7 @@ function fs_render_feed_shortcode($atts)
                         <strong>Iges+</strong>
                     <?php } ?>
                 </div>
-
+                <div class="fs-post-modal-legend"></div>
                 <div class="fs-post-modal-comments"></div>
 
                 <div class="fs-post-modal-footer">
