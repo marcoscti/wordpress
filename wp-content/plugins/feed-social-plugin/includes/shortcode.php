@@ -161,7 +161,7 @@ function fs_render_feed_shortcode($atts)
                             <img src="<?php echo esc_url(FS_PLUGIN_URL . 'assets/images/icone-igesdf.png'); ?>" alt="Avatar" class="fs-post-modal-avatar" width="35">
                         </div>
                         <strong>Iges+</strong>
-                    <? } ?>
+                    <?php } ?>
                 </div>
 
                 <div class="fs-post-modal-comments"></div>

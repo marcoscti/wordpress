@@ -2,8 +2,8 @@
 
 Plugin WordPress para exibir um feed social com mídia, curtidas, comentários, scroll infinito e notificações em tempo real — sem serviços de terceiros para interações ou streaming.
 
-**Versão:** 1.3.0  
-**Autor:** Marcos  
+**Versão:** 3.0.2  
+**Autor:** Marcos Cordeiro
 **Requisitos:** WordPress 5.0+, PHP 7.4+, links permanentes ativos (não usar estrutura "simples")
 
 ---
