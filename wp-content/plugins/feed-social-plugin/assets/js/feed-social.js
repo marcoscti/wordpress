@@ -248,8 +248,9 @@ jQuery(document).ready(function ($) {
   }
 
   function getLegendText(post) {
-    if (typeof post?.legend === "string" && post.legend.trim()) {
-      return post.legend.trim();
+    console.log('Legended text: ', post.content)
+    if (typeof post?.content === "string" && post.content.trim()) {
+      return post.content.trim();
     }
 
     if (typeof post?.content === "string" && post.content.trim()) {
@@ -264,6 +265,7 @@ jQuery(document).ready(function ($) {
 
   function renderLegend(post) {
     const legendText = getLegendText(post);
+    
     const $legendContainer = $("#fs-post-modal .fs-post-modal-legend");
 
     if (!legendText) {
@@ -271,16 +273,11 @@ jQuery(document).ready(function ($) {
       return;
     }
 
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const collapseClass = isMobile ? "fs-legend-collapsed" : "";
-    const toggleButton = isMobile
-      ? '<button type="button" class="fs-post-legend-toggle">Leia mais</button>'
-      : "";
+    
 
     $legendContainer.html(`
-      <div class="fs-post-legend ${collapseClass}">
-        <p class="fs-post-legend-content">${escapeHtml(legendText)}</p>
-        ${toggleButton}
+      <div class="fs-post-legend">
+        <div class="fs-post-legend-content">${legendText}</div>
       </div>
     `);
   }
@@ -449,6 +446,7 @@ jQuery(document).ready(function ($) {
       $modal.removeClass("fs-mobile-content-collapsed");
       $modal.addClass("fs-comments-expanded");
       $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
+
       return;
     }
 
@@ -507,13 +505,13 @@ jQuery(document).ready(function ($) {
     $modal.find(".fs-post-modal-comments").html('<p class="fs-comments-loading"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"   width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>  <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0    C22.32,8.481,24.301,9.057,26.013,10.047z">    <animateTransform attributeType="xml"      attributeName="transform"      type="rotate"      from="0 20 20"      to="360 20 20"      dur="0.5s"      repeatCount="indefinite"/>    </path>  </svg></p>');
     $modal.find(".fs-post-modal-actions").html(`
         <button type="button" class="fs-likes${likedPosts.has(post.id) ? " fs-liked" : ""}">
-            <span class="fs-action-icon"><svg width="24" height="21" viewBox="0 0 24 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <span class="fs-action-icon"><svg width="15" height="19" viewBox="0 0 24 21" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M21.0951 2.67899C20.5631 2.1467 19.9314 1.72445 19.2361 1.43636C18.5408 1.14828 17.7956 1 17.043 1C16.2904 1 15.5452 1.14828 14.8499 1.43636C14.1547 1.72445 13.523 2.1467 12.9909 2.67899L11.8868 3.78315L10.7826 2.67899C9.70792 1.60431 8.25034 1.00056 6.73051 1.00056C5.21069 1.00056 3.75311 1.60431 2.67843 2.67899C1.60375 3.75366 1 5.21124 1 6.73107C1 8.25089 1.60375 9.70847 2.67843 10.7832L11.8868 19.9915L21.0951 10.7832C21.6274 10.2511 22.0496 9.61942 22.3377 8.92415C22.6258 8.22888 22.7741 7.48366 22.7741 6.73107C22.7741 5.97848 22.6258 5.23326 22.3377 4.53799C22.0496 3.84272 21.6274 3.21102 21.0951 2.67899Z" stroke="#e0245e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></span>
             <span class="fs-count">${formatCount(post.likes || 0)}</span>
         </button>
         <button type="button" class="fs-comments-toggle" aria-expanded="false">
-            <span class="fs-action-icon"><svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <span class="fs-action-icon"><svg width="15" height="15" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M19.5498 13.3C19.5498 13.8525 19.3303 14.3824 18.9396 14.7731C18.5489 15.1638 18.019 15.3833 17.4665 15.3833H4.96647L0.799805 19.55V2.88334C0.799805 2.3308 1.0193 1.8009 1.41 1.4102C1.8007 1.0195 2.3306 0.800003 2.88314 0.800003H17.4665C18.019 0.800003 18.5489 1.0195 18.9396 1.4102C19.3303 1.8009 19.5498 2.3308 19.5498 2.88334V13.3Z" stroke="#C8D400" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></span>
             <span class="fs-count">${formatCount(post.comments || 0)}</span>
