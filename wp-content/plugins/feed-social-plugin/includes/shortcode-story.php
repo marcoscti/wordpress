@@ -38,8 +38,27 @@ function fs_exist_story()
     );
 
     $stories_query = new WP_Query($args);
+    if($stories_query->have_posts()){
+        while ($stories_query->have_posts()) {
+            $stories_query->the_post();
 
-    return $stories_query->have_posts();
+            // Mantém expiração dos stories normais
+            $expires = get_post_meta(get_the_ID(), '_fs_story_expires', true);
+
+            if ($expires === 'yes') {
+
+                $post_time = get_post_time('U', true);
+                $expiration_time = $post_time + (24 * HOUR_IN_SECONDS);
+
+                if (time() >= $expiration_time) {
+                    continue;
+                }
+            }
+            return false;
+            
+        }
+    }
+    return ;
 }
 function fs_render_story_shortcode($atts)
 {
