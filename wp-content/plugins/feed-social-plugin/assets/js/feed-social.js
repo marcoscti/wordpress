@@ -248,7 +248,6 @@ jQuery(document).ready(function ($) {
   }
 
   function getLegendText(post) {
-    console.log('Legended text: ', post.content)
     if (typeof post?.content === "string" && post.content.trim()) {
       return post.content.trim();
     }
@@ -265,15 +264,13 @@ jQuery(document).ready(function ($) {
 
   function renderLegend(post) {
     const legendText = getLegendText(post);
-    
+
     const $legendContainer = $("#fs-post-modal .fs-post-modal-legend");
 
     if (!legendText) {
       $legendContainer.empty();
       return;
     }
-
-    
 
     $legendContainer.html(`
       <div class="fs-post-legend">
@@ -310,10 +307,11 @@ jQuery(document).ready(function ($) {
 
       return `
             <div class="fs-media-thumb fs-media-thumb-video">
-                ${poster
-          ? `<img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">`
-          : `<div class="fs-media-thumb-placeholder"></div>`
-        }
+                ${
+                  poster
+                    ? `<img src="${escapeHtml(poster)}" alt="${escapeHtml(postTitle)}">`
+                    : `<div class="fs-media-thumb-placeholder"></div>`
+                }
                 <span class="fs-media-thumb-play"></span>
             </div>
         `;
@@ -330,7 +328,9 @@ jQuery(document).ready(function ($) {
   function renderPost(post) {
     loadedPosts[post.id] = post;
     let mediaHtml = "";
-    const mediaGallery = Array.isArray(post.media_gallery) ? post.media_gallery : [];
+    const mediaGallery = Array.isArray(post.media_gallery)
+      ? post.media_gallery
+      : [];
     const postThumbnail = post.thumbnail || "";
 
     if (mediaGallery.length > 0) {
@@ -357,7 +357,10 @@ jQuery(document).ready(function ($) {
         openPostModal(post);
       });
 
-    if (!hasOpenedPostFromUrl && String(getRequestedPostId()) === String(post.id)) {
+    if (
+      !hasOpenedPostFromUrl &&
+      String(getRequestedPostId()) === String(post.id)
+    ) {
       hasOpenedPostFromUrl = true;
       openPostModal(post);
     }
@@ -372,18 +375,24 @@ jQuery(document).ready(function ($) {
   }
 
   function destroyModalSwiper() {
-    if (modalSwiperInstance && typeof modalSwiperInstance.destroy === "function") {
+    if (
+      modalSwiperInstance &&
+      typeof modalSwiperInstance.destroy === "function"
+    ) {
       modalSwiperInstance.destroy(true, true);
     }
     modalSwiperInstance = null;
   }
 
   function showCopyFeedback() {
-    const $feedback = $("<div class=\"fs-copy-feedback\">Link copiado!</div>");
+    const $feedback = $('<div class="fs-copy-feedback">Link copiado!</div>');
     $("body").append($feedback);
-    $feedback.fadeIn(120).delay(1800).fadeOut(180, function () {
-      $(this).remove();
-    });
+    $feedback
+      .fadeIn(120)
+      .delay(1800)
+      .fadeOut(180, function () {
+        $(this).remove();
+      });
   }
 
   function buildPostModalUrl(postId) {
@@ -470,7 +479,9 @@ jQuery(document).ready(function ($) {
         },
       });
     }
-    const mediaGallery = Array.isArray(post.media_gallery) ? post.media_gallery : [];
+    const mediaGallery = Array.isArray(post.media_gallery)
+      ? post.media_gallery
+      : [];
     const postThumbnail = post.thumbnail || "";
 
     let mediaHtml = "";
@@ -495,14 +506,23 @@ jQuery(document).ready(function ($) {
         `;
       mediaHtml += "</div>";
     } else if (mediaGallery.length === 1) {
-      mediaHtml = renderMediaItem(mediaGallery[0], post.title, postThumbnail, true);
+      mediaHtml = renderMediaItem(
+        mediaGallery[0],
+        post.title,
+        postThumbnail,
+        true,
+      );
     } else if (postThumbnail) {
       mediaHtml = `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
     }
 
     $modal.find(".fs-post-modal-media").html(mediaHtml);
     renderLegend(post);
-    $modal.find(".fs-post-modal-comments").html('<p class="fs-comments-loading"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"   width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>  <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0    C22.32,8.481,24.301,9.057,26.013,10.047z">    <animateTransform attributeType="xml"      attributeName="transform"      type="rotate"      from="0 20 20"      to="360 20 20"      dur="0.5s"      repeatCount="indefinite"/>    </path>  </svg></p>');
+    $modal
+      .find(".fs-post-modal-comments")
+      .html(
+        '<p class="fs-comments-loading"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"   width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>  <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0    C22.32,8.481,24.301,9.057,26.013,10.047z">    <animateTransform attributeType="xml"      attributeName="transform"      type="rotate"      from="0 20 20"      to="360 20 20"      dur="0.5s"      repeatCount="indefinite"/>    </path>  </svg></p>',
+      );
     $modal.find(".fs-post-modal-actions").html(`
         <button type="button" class="fs-likes${likedPosts.has(post.id) ? " fs-liked" : ""}">
             <span class="fs-action-icon"><svg width="15" height="19" viewBox="0 0 24 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -560,25 +580,29 @@ jQuery(document).ready(function ($) {
 
       if (fs_feed_data.post_url) {
         // Attempt to fetch single post by ID and open when available
-        fetch(fs_feed_data.post_url + '/' + encodeURIComponent(postId), {
+        fetch(fs_feed_data.post_url + "/" + encodeURIComponent(postId), {
           headers: {
-            'X-WP-Nonce': fs_feed_data.rest_nonce
-          }
+            "X-WP-Nonce": fs_feed_data.rest_nonce,
+          },
         })
-          .then(function (resp) { return resp.json(); })
+          .then(function (resp) {
+            return resp.json();
+          })
           .then(function (data) {
             if (data && data.id) {
               // Normalize to expected post object and store
               const post = {
                 id: data.id,
-                title: data.title || '',
-                content: data.content || '',
-                legend: data.legend || data.content || '',
-                thumbnail: data.thumbnail || '',
-                media_gallery: Array.isArray(data.media_gallery) ? data.media_gallery : [],
+                title: data.title || "",
+                content: data.content || "",
+                legend: data.legend || data.content || "",
+                thumbnail: data.thumbnail || "",
+                media_gallery: Array.isArray(data.media_gallery)
+                  ? data.media_gallery
+                  : [],
                 likes: data.likes || 0,
                 comments: data.comments || 0,
-                views: data.views || 0
+                views: data.views || 0,
               };
               loadedPosts[post.id] = post;
               hasOpenedPostFromUrl = true;
@@ -586,7 +610,7 @@ jQuery(document).ready(function ($) {
             }
           })
           .catch(function (err) {
-            console.error('Erro ao buscar post por ID:', err);
+            console.error("Erro ao buscar post por ID:", err);
           });
       }
 
@@ -653,7 +677,9 @@ jQuery(document).ready(function ($) {
   async function loadComments(postId) {
     const $list = $("#fs-post-modal .fs-post-modal-comments");
 
-    $list.html('<p class="fs-comments-loading"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"   width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>  <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0    C22.32,8.481,24.301,9.057,26.013,10.047z">    <animateTransform attributeType="xml"      attributeName="transform"      type="rotate"      from="0 20 20"      to="360 20 20"      dur="0.5s"      repeatCount="indefinite"/>    </path>  </svg></p>');
+    $list.html(
+      '<p class="fs-comments-loading"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"   width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>  <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0    C22.32,8.481,24.301,9.057,26.013,10.047z">    <animateTransform attributeType="xml"      attributeName="transform"      type="rotate"      from="0 20 20"      to="360 20 20"      dur="0.5s"      repeatCount="indefinite"/>    </path>  </svg></p>',
+    );
 
     try {
       const response = await fetch(
@@ -782,7 +808,6 @@ jQuery(document).ready(function ($) {
     }
   }
 
-
   $(document).on("click", "#fs-post-modal .fs-likes", function () {
     handleLike(currentPostId);
   });
@@ -803,17 +828,23 @@ jQuery(document).ready(function ($) {
     $(this).attr("aria-expanded", willExpand ? "true" : "false");
   });
 
-  $(document).on("click", "#fs-post-modal .fs-post-modal-footer button[type='submit']", function () {
-    const $modal = $("#fs-post-modal");
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  $(document).on(
+    "click",
+    "#fs-post-modal .fs-post-modal-footer button[type='submit']",
+    function () {
+      const $modal = $("#fs-post-modal");
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-    if (!isMobile) {
-      return;
-    }
+      if (!isMobile) {
+        return;
+      }
 
-    $modal.addClass("fs-comments-expanded").removeClass("fs-mobile-content-collapsed");
-    $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
-  });
+      $modal
+        .addClass("fs-comments-expanded")
+        .removeClass("fs-mobile-content-collapsed");
+      $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
+    },
+  );
 
   $(document).on("focus", "#fs-post-modal textarea", function () {
     const $modal = $("#fs-post-modal");
@@ -823,31 +854,38 @@ jQuery(document).ready(function ($) {
       return;
     }
 
-    $modal.addClass("fs-comments-expanded").removeClass("fs-mobile-content-collapsed");
+    $modal
+      .addClass("fs-comments-expanded")
+      .removeClass("fs-mobile-content-collapsed");
     $modal.find(".fs-comments-toggle").attr("aria-expanded", "true");
   });
 
-  $(document).on("click", "#fs-post-modal .fs-post-modal-media img", function (event) {
-    const $modal = $("#fs-post-modal")
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
-    if (!isMobile || $(event.target).closest(".fs-likes, .fs-comments-toggle, .fs-comment-form, textarea").length) {
-      return;
-    }
-
-    $modal.toggleClass("fs-mobile-content-collapsed");
-    $modal.toggleClass("fs-comments-expanded", false);
-    $modal.find(".fs-comments-toggle").attr("aria-expanded", "false");
-  });
   $(document).on(
-    "submit",
-    "#fs-post-modal .fs-comment-form",
-    function (e) {
-      e.preventDefault();
+    "click",
+    "#fs-post-modal .fs-post-modal-media img",
+    function (event) {
+      const $modal = $("#fs-post-modal");
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-      handleCommentSubmit($(this));
+      if (
+        !isMobile ||
+        $(event.target).closest(
+          ".fs-likes, .fs-comments-toggle, .fs-comment-form, textarea",
+        ).length
+      ) {
+        return;
+      }
+
+      $modal.toggleClass("fs-mobile-content-collapsed");
+      $modal.toggleClass("fs-comments-expanded", false);
+      $modal.find(".fs-comments-toggle").attr("aria-expanded", "false");
     },
   );
+  $(document).on("submit", "#fs-post-modal .fs-comment-form", function (e) {
+    e.preventDefault();
+
+    handleCommentSubmit($(this));
+  });
   if ($feedContainer.length && sentinelEl) {
     const observer = new IntersectionObserver(
       function (entries) {
@@ -870,19 +908,27 @@ jQuery(document).ready(function ($) {
   }
 
   initSse();
-  $(document).on("click", "#fs-post-modal .fs-post-modal-copy-link", function (e) {
-    e.preventDefault();
-    copyPostLink(currentPostId);
-  });
+  $(document).on(
+    "click",
+    "#fs-post-modal .fs-post-modal-copy-link",
+    function (e) {
+      e.preventDefault();
+      copyPostLink(currentPostId);
+    },
+  );
 
-  $(document).on("click", "#fs-post-modal .fs-post-legend-toggle", function (e) {
-    e.preventDefault();
-    const $legend = $(this).closest(".fs-post-legend");
-    const isExpanded = $legend.hasClass("is-expanded");
+  $(document).on(
+    "click",
+    "#fs-post-modal .fs-post-legend-toggle",
+    function (e) {
+      e.preventDefault();
+      const $legend = $(this).closest(".fs-post-legend");
+      const isExpanded = $legend.hasClass("is-expanded");
 
-    $legend.toggleClass("is-expanded", !isExpanded);
-    $(this).text(isExpanded ? "Leia mais" : "Leia menos");
-  });
+      $legend.toggleClass("is-expanded", !isExpanded);
+      $(this).text(isExpanded ? "Leia mais" : "Leia menos");
+    },
+  );
   $(document).on(
     "click",
     "#fs-post-modal .fs-post-modal-overlay, #fs-post-modal .fs-post-modal-close, .fs-post-modal-container.inactive",
@@ -891,15 +937,11 @@ jQuery(document).ready(function ($) {
       closePostModal();
     },
   );
-  $(document).on(
-    "click",
-    ".fs-post-modal-container.active",
-    function (e) {
-      e.preventDefault();
-      closePostModal();
-      $('.fs-story-item').click()
-    },
-  );
+  $(document).on("click", ".fs-post-modal-container.active", function (e) {
+    e.preventDefault();
+    closePostModal();
+    $(".fs-story-item").click();
+  });
   $(document).on("keydown", function (event) {
     if (event.key === "Escape") {
       closePostModal();
