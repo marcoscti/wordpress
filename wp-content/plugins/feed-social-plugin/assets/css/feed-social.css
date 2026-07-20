@@ -294,6 +294,9 @@ body.fs-video-modal-open {
   font-size: 0.7rem;
   padding: 0;
 }
+.fs-comment-edit span{
+  font-size: 1rem!important;
+}
 
 .fs-comment-item p {
   margin: 0;
@@ -564,7 +567,7 @@ body.fs-video-modal-open {
   }
 
   .fs-comment-form {
-    display: none;
+    display: none !important;
     margin-top: 8px;
     margin-bottom: 8px;
     position: sticky;
@@ -581,9 +584,12 @@ body.fs-video-modal-open {
   }
 
   .fs-post-modal.fs-comments-expanded .fs-post-modal-comments,
-  .fs-post-modal.fs-comments-expanded .fs-comment-form,
   .fs-post-modal.fs-comments-expanded .fs-post-modal-footer {
     display: block;
+  }
+
+  .fs-post-modal.fs-comments-expanded .fs-comment-form {
+    display: flex !important;
   }
 
   .fs-post-modal.fs-mobile-content-collapsed:not(.fs-comments-expanded)

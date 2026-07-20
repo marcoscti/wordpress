@@ -93,7 +93,7 @@ jQuery(document).ready(function ($) {
   function closeUserProfileModal() {
     const $modal = $("#fs-user-profile-overlay");
     if ($modal.length) {
-      $modal.attr("hidden", true);
+      $modal.attr("hidden", "hidden");
     }
   }
 
@@ -181,7 +181,7 @@ jQuery(document).ready(function ($) {
     );
     $nameInput.val(resolvedProfile.name || "");
     $emailInput.val(resolvedProfile.email || "");
-    $modal.attr("hidden", false);
+    $modal.removeAttr("hidden");
 
     $modal.off("submit", ".fs-user-profile-form").on("submit", ".fs-user-profile-form", function (event) {
       event.preventDefault();
@@ -213,7 +213,7 @@ jQuery(document).ready(function ($) {
     $modal.off("click", ".fs-user-profile-close").on("click", ".fs-user-profile-close", function (event) {
       event.preventDefault();
       event.stopPropagation();
-      $modal.attr("hidden", true);
+      $modal.attr("hidden", "hidden");
       if (resolvedOptions.onClose) {
         resolvedOptions.onClose();
       }
@@ -224,7 +224,7 @@ jQuery(document).ready(function ($) {
         return;
       }
 
-      $modal.attr("hidden", true);
+      $modal.attr("hidden", "hidden");
       if (resolvedOptions.onClose) {
         resolvedOptions.onClose();
       }
@@ -823,7 +823,7 @@ jQuery(document).ready(function ($) {
                     <div class="fs-comment-item" data-comment-id="${item.id}">
                         <div class="fs-comment-header">
                             <strong>${escapeHtml(item.name)}</strong>
-                            ${canEdit ? '<button type="button" class="fs-comment-edit">Editar</button>' : ""}
+                            ${canEdit ? '<button type="button" class="fs-comment-edit"><span class="dashicons dashicons-edit"></span> Editar</button>' : ""}
                         </div>
                         <p class="fs-comment-text">${escapeHtml(item.comment)}</p>
                     </div>
