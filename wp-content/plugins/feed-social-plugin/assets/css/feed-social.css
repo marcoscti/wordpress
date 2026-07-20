@@ -278,10 +278,67 @@ body.fs-video-modal-open {
   color: #333;
 }
 
+.fs-comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.fs-comment-edit {
+  border: none;
+  background: transparent;
+  color: #4f46e5;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0;
+}
+
 .fs-comment-item p {
   margin: 0;
   color: #555;
   line-height: 1.4;
+}
+
+.fs-comment-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fs-comment-edit-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 10px;
+  resize: vertical;
+  font-size: 12px;
+  font-family: "Poppins", sans-serif;
+}
+
+.fs-comment-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fs-comment-edit-submit,
+.fs-comment-edit-cancel {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.fs-comment-edit-submit {
+  background: #c8d400;
+  color: #111827;
+}
+
+.fs-comment-edit-cancel {
+  background: #e5e7eb;
+  color: #374151;
 }
 
 .fs-comments-empty,
@@ -290,6 +347,86 @@ body.fs-video-modal-open {
   margin: 0 0 12px;
   color: #888;
   font-size: 0.9em;
+}
+
+.fs-user-profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100001;
+  padding: 20px;
+}
+
+.fs-user-profile-overlay[hidden] {
+  display: none !important;
+}
+
+.fs-user-profile-card {
+  position: relative;
+  width: min(420px, 100%);
+  border-radius: 14px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.fs-user-profile-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.fs-user-profile-summary {
+  margin: 6px 0 12px;
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.fs-user-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fs-user-profile-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fs-user-profile-field {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: "Poppins", sans-serif;
+}
+
+.fs-user-profile-submit {
+  align-self: flex-start;
+  background: #c8d400;
+  color: #111827;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.fs-user-profile-submit:hover {
+  background: #aeb700;
 }
 
 .fs-comment-form textarea {

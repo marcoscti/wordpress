@@ -56,6 +56,7 @@ jQuery(document).ready(function ($) {
   const likedPosts = new Set(
     JSON.parse(localStorage.getItem("fs_liked_posts") || "[]"),
   );
+  let pendingProfileAction = null;
   const loadedPosts = {};
   let currentPostId = null;
   let modalSwiperInstance = null;
@@ -68,36 +69,54 @@ jQuery(document).ready(function ($) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  function getUserEmail(promptText) {
-    let email = localStorage.getItem("fs_user_email");
-    if (email && isValidEmail(email)) {
-      return email;
-    }
-
-    email = window.prompt(`Informe seu E-mail Institucional:`);
-    if (email && isValidEmail(email)) {
-      localStorage.setItem("fs_user_email", email.trim());
-      return email.trim();
+  function getUserEmail() {
+    const profile = getStoredUserProfile();
+    if (profile.email && isValidEmail(profile.email)) {
+      return profile.email;
     }
 
     return null;
   }
 
-  function saveUserProfile(name, email) {
+  function getStoredUserProfile() {
+    const sessionName = sessionStorage.getItem("fs_user_name") || "";
+    const sessionEmail = sessionStorage.getItem("fs_user_email") || "";
+    const localName = localStorage.getItem("fs_user_name") || "";
+    const localEmail = localStorage.getItem("fs_user_email") || "";
+
+    return {
+      name: sessionName || localName || "",
+      email: sessionEmail || localEmail || "",
+    };
+  }
+
+  function closeUserProfileModal() {
+    const $modal = $("#fs-user-profile-overlay");
+    if ($modal.length) {
+      $modal.attr("hidden", true);
+    }
+  }
+
+  function saveUserProfile(name, email, onSuccess) {
     const normalizedName = (name || "").trim();
     const normalizedEmail = (email || "").trim();
 
     if (!normalizedEmail) {
-      return;
+      return null;
     }
 
     if (normalizedName) {
+      sessionStorage.setItem("fs_user_name", normalizedName);
       localStorage.setItem("fs_user_name", normalizedName);
+    } else {
+      sessionStorage.removeItem("fs_user_name");
+      localStorage.removeItem("fs_user_name");
     }
 
+    sessionStorage.setItem("fs_user_email", normalizedEmail);
     localStorage.setItem("fs_user_email", normalizedEmail);
 
-    $.ajax({
+    return $.ajax({
       url: fs_feed_data.ajax_url,
       type: "POST",
       data: {
@@ -105,22 +124,116 @@ jQuery(document).ready(function ($) {
         name: normalizedName,
         email: normalizedEmail,
       },
+    }).done(function (response) {
+      const serverProfile = response && response.success && response.data
+        ? response.data
+        : null;
+
+      if (serverProfile && serverProfile.email) {
+        const syncedName = serverProfile.name || normalizedName;
+        const syncedEmail = serverProfile.email || normalizedEmail;
+
+        sessionStorage.setItem("fs_user_name", syncedName);
+        localStorage.setItem("fs_user_name", syncedName);
+        sessionStorage.setItem("fs_user_email", syncedEmail);
+        localStorage.setItem("fs_user_email", syncedEmail);
+      }
+
+      if (typeof onSuccess === "function") {
+        onSuccess(serverProfile || { name: normalizedName, email: normalizedEmail });
+      }
+    });
+  }
+
+  function displayUserProfile(profile, options) {
+    const resolvedOptions = options || {};
+    const $overlay = $("#fs-user-profile-overlay");
+    if (!$overlay.length) {
+      $("body").append(`
+        <div id="fs-user-profile-overlay" class="fs-user-profile-overlay" hidden>
+          <div class="fs-user-profile-card">
+            <button type="button" class="fs-user-profile-close" aria-label="Fechar">×</button>
+            <div class="fs-user-profile-summary"></div>
+            <form class="fs-user-profile-form">
+              <div class="fs-user-profile-fields">
+                <input class="fs-user-profile-field" type="text" name="fs_profile_name" placeholder="Seu nome" autocomplete="name">
+                <input class="fs-user-profile-field" type="email" name="fs_profile_email" placeholder="Seu e-mail" autocomplete="email" required>
+              </div>
+              <button type="submit" class="fs-user-profile-submit">Salvar dados</button>
+            </form>
+          </div>
+        </div>
+      `);
+    }
+
+    const $modal = $("#fs-user-profile-overlay");
+    const $summary = $modal.find(".fs-user-profile-summary");
+    const $nameInput = $modal.find('input[name="fs_profile_name"]');
+    const $emailInput = $modal.find('input[name="fs_profile_email"]');
+    const resolvedProfile = profile || getStoredUserProfile();
+    const hasEmail = Boolean(resolvedProfile.email && isValidEmail(resolvedProfile.email));
+    const displayName = resolvedProfile.name || resolvedProfile.email || "Seu perfil";
+
+    $summary.html(
+      hasEmail
+        ? `Você está interagindo como <strong>${escapeHtml(displayName)}</strong>.`
+        : "Informe seu nome e e-mail para comentar ou curtir."
+    );
+    $nameInput.val(resolvedProfile.name || "");
+    $emailInput.val(resolvedProfile.email || "");
+    $modal.attr("hidden", false);
+
+    $modal.off("submit", ".fs-user-profile-form").on("submit", ".fs-user-profile-form", function (event) {
+      event.preventDefault();
+
+      const name = $(this).find('input[name="fs_profile_name"]').val().trim();
+      const email = $(this).find('input[name="fs_profile_email"]').val().trim();
+
+      if (!name) {
+        window.alert("Informe seu nome.");
+        return;
+      }
+
+      if (!email || !isValidEmail(email)) {
+        window.alert("Informe um e-mail válido.");
+        return;
+      }
+
+      saveUserProfile(name, email, function (profile) {
+        closeUserProfileModal();
+
+        if (pendingProfileAction) {
+          const action = pendingProfileAction;
+          pendingProfileAction = null;
+          action();
+        }
+      });
+    });
+
+    $modal.off("click", ".fs-user-profile-close").on("click", ".fs-user-profile-close", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      $modal.attr("hidden", true);
+      if (resolvedOptions.onClose) {
+        resolvedOptions.onClose();
+      }
+    });
+
+    $modal.off("click").on("click", function (event) {
+      if (event.target !== this) {
+        return;
+      }
+
+      $modal.attr("hidden", true);
+      if (resolvedOptions.onClose) {
+        resolvedOptions.onClose();
+      }
     });
   }
 
   function getUserName() {
-    let name = localStorage.getItem("fs_user_name");
-    if (name) {
-      return name;
-    }
-
-    name = window.prompt(`Informe Seu Nome e Setor Ex: Marcos ASCOM`);
-    if (name) {
-      localStorage.setItem("fs_user_name", name.trim());
-      return name.trim();
-    }
-
-    return null;
+    const profile = getStoredUserProfile();
+    return profile.name || null;
   }
 
   function restHeaders() {
@@ -701,12 +814,18 @@ jQuery(document).ready(function ($) {
         return;
       }
 
+      const currentUserEmail = (getStoredUserProfile().email || "").toLowerCase();
+
       const items = data.comments
         .map(function (item) {
+          const canEdit = Boolean(item.email && currentUserEmail && String(item.email).toLowerCase() === currentUserEmail);
           return `
-                    <div class="fs-comment-item">
-                        <strong>${item.name}</strong>
-                        <p>${item.comment}</p>
+                    <div class="fs-comment-item" data-comment-id="${item.id}">
+                        <div class="fs-comment-header">
+                            <strong>${escapeHtml(item.name)}</strong>
+                            ${canEdit ? '<button type="button" class="fs-comment-edit">Editar</button>' : ""}
+                        </div>
+                        <p class="fs-comment-text">${escapeHtml(item.comment)}</p>
                     </div>
                 `;
         })
@@ -720,12 +839,45 @@ jQuery(document).ready(function ($) {
       console.error(error);
     }
   }
+  async function updateComment(commentId, postId, commentText) {
+    const $commentItem = $("#fs-post-modal .fs-comment-item[data-comment-id='" + commentId + "']");
+    if (!$commentItem.length) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${fs_feed_data.comment_url}/${commentId}`, {
+        method: "PUT",
+        headers: restHeaders(),
+        body: JSON.stringify({
+          post_id: postId,
+          email: getStoredUserProfile().email || "",
+          comment: commentText,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao editar comentário");
+      }
+
+      await loadComments(postId);
+    } catch (error) {
+      console.error(error);
+      window.alert("Não foi possível editar o comentário.");
+    }
+  }
+
   async function handleLike(postId) {
-    const email = getUserEmail(fs_feed_data.like_prompt);
+    const email = getUserEmail();
 
-    if (!email) return;
+    if (!email) {
+      pendingProfileAction = () => handleLike(postId);
+      displayUserProfile(getStoredUserProfile(), { onClose: () => {} });
+      return;
+    }
 
-    saveUserProfile("", email);
+    saveUserProfile(getUserName() || "", email);
 
     const $likes = $("#fs-post-modal .fs-likes");
 
@@ -767,10 +919,12 @@ jQuery(document).ready(function ($) {
   async function handleCommentSubmit($form) {
     const postId = currentPostId;
     const name = getUserName();
-    const email = getUserEmail(fs_feed_data.comment_email_prompt);
+    const email = getUserEmail();
     const comment = $form.find('textarea[name="comment"]').val().trim();
 
     if (!name || !email || !comment) {
+      pendingProfileAction = () => handleCommentSubmit($form);
+      displayUserProfile(getStoredUserProfile(), { onClose: () => {} });
       return;
     }
 
@@ -881,10 +1035,49 @@ jQuery(document).ready(function ($) {
       $modal.find(".fs-comments-toggle").attr("aria-expanded", "false");
     },
   );
+  $(document).on("keydown", "#fs-post-modal .fs-comment-form textarea", function (event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      $(this).closest("form").trigger("submit");
+    }
+  });
+
   $(document).on("submit", "#fs-post-modal .fs-comment-form", function (e) {
     e.preventDefault();
 
     handleCommentSubmit($(this));
+  });
+
+  $(document).on("click", "#fs-post-modal .fs-comment-edit", function () {
+    const $item = $(this).closest(".fs-comment-item");
+    const commentId = $item.data("comment-id");
+    const currentText = $item.find(".fs-comment-text").text().trim();
+
+    $item.html(`
+      <form class="fs-comment-edit-form">
+        <textarea class="fs-comment-edit-textarea" rows="3">${escapeHtml(currentText)}</textarea>
+        <div class="fs-comment-edit-actions">
+          <button type="submit" class="fs-comment-edit-submit">Salvar</button>
+          <button type="button" class="fs-comment-edit-cancel">Cancelar</button>
+        </div>
+      </form>
+    `);
+
+    $item.find(".fs-comment-edit-form").on("submit", function (event) {
+      event.preventDefault();
+      const updatedText = $(this).find(".fs-comment-edit-textarea").val().trim();
+      if (!updatedText) {
+        window.alert("O comentário não pode ficar vazio.");
+        return;
+      }
+
+      updateComment(commentId, currentPostId, updatedText);
+    });
+
+    $item.find(".fs-comment-edit-cancel").on("click", function (event) {
+      event.preventDefault();
+      loadComments(currentPostId);
+    });
   });
   if ($feedContainer.length && sentinelEl) {
     const observer = new IntersectionObserver(

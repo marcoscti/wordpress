@@ -25,6 +25,21 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true'
     ]);
 
+    // Editar comentário
+    register_rest_route($namespace, '/comment/(?P<id>\d+)', [
+        'methods' => 'PUT',
+        'callback' => 'fs_rest_update_comment',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [
+                'required' => true,
+                'validate_callback' => function ($value) {
+                    return is_numeric($value) && (int) $value > 0;
+                },
+            ],
+        ],
+    ]);
+
     // Listar comentários de um post
     register_rest_route($namespace, '/comments', [
         'methods' => 'GET',
@@ -209,7 +224,7 @@ function fs_rest_get_comments($request) {
     }
 
     $rows = $wpdb->get_results($wpdb->prepare(
-        "SELECT id, name, comment, created_at FROM $table WHERE post_id = %d ORDER BY created_at ASC",
+        "SELECT id, name, email, comment, created_at FROM $table WHERE post_id = %d ORDER BY created_at ASC",
         $post_id
     ));
 
@@ -218,10 +233,55 @@ function fs_rest_get_comments($request) {
             return [
                 'id' => (int) $row->id,
                 'name' => $row->name,
+                'email' => $row->email,
                 'comment' => $row->comment,
                 'created_at' => $row->created_at,
             ];
         }, $rows ?: []),
+    ]);
+}
+
+function fs_rest_update_comment($request) {
+    global $wpdb;
+
+    $comment_id = absint($request->get_param('id'));
+    $params = $request->get_json_params() ?: [];
+    $post_id = absint($params['post_id'] ?? 0);
+    $email = sanitize_email($params['email'] ?? '');
+    $comment = sanitize_textarea_field($params['comment'] ?? '');
+    $table = $wpdb->prefix . 'feed_social_comments';
+
+    if (empty($comment_id) || empty($post_id) || get_post_type($post_id) !== 'feed-social' || empty($email) || empty($comment)) {
+        return new WP_Error('invalid_data', 'Dados inválidos', ['status' => 400]);
+    }
+
+    $existing = $wpdb->get_row($wpdb->prepare("SELECT id, post_id, email FROM $table WHERE id = %d", $comment_id));
+    if (!$existing || (int) $existing->post_id !== $post_id) {
+        return new WP_Error('not_found', 'Comentário não encontrado', ['status' => 404]);
+    }
+
+    if (strtolower((string) $existing->email) !== strtolower((string) $email)) {
+        return new WP_Error('forbidden', 'Você só pode editar os seus próprios comentários', ['status' => 403]);
+    }
+
+    $updated = $wpdb->update(
+        $table,
+        ['comment' => $comment],
+        ['id' => $comment_id],
+        ['%s'],
+        ['%d']
+    );
+
+    if ($updated === false) {
+        return new WP_Error('db_error', 'Não foi possível atualizar o comentário', ['status' => 500]);
+    }
+
+    return rest_ensure_response([
+        'success' => true,
+        'comment' => [
+            'id' => $comment_id,
+            'comment' => $comment,
+        ],
     ]);
 }
 
