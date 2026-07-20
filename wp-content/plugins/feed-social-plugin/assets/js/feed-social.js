@@ -199,15 +199,43 @@ jQuery(document).ready(function ($) {
         return;
       }
 
-      saveUserProfile(name, email, function (profile) {
-        closeUserProfileModal();
+      const $form = $(this);
+      const $submitBtn = $form.find(".fs-user-profile-submit");
+      $submitBtn.prop("disabled", true).text("Salvando...");
+      $form.find("input").prop("disabled", true);
+
+      const savePromise = saveUserProfile(name, email, function (profile) {
+        $submitBtn.text("Carregando...");
+
+        const performReload = function() {
+          $("body").addClass("fs-reloading");
+          setTimeout(function () {
+            window.location.reload();
+          }, 600);
+        };
 
         if (pendingProfileAction) {
           const action = pendingProfileAction;
           pendingProfileAction = null;
-          action();
+          const actionResult = action();
+
+          if (actionResult && typeof actionResult.then === "function") {
+            actionResult.then(performReload).catch(performReload);
+          } else {
+            setTimeout(performReload, 1000);
+          }
+        } else {
+          performReload();
         }
       });
+
+      if (savePromise && typeof savePromise.fail === "function") {
+        savePromise.fail(function () {
+          $submitBtn.prop("disabled", false).text("Salvar dados");
+          $form.find("input").prop("disabled", false);
+          window.alert("Ocorreu um erro ao salvar o perfil. Tente novamente.");
+        });
+      }
     });
 
     $modal.off("click", ".fs-user-profile-close").on("click", ".fs-user-profile-close", function (event) {
