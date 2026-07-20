@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="search-input">
-                    <?php echo do_shortcode('[busca_noticias placeholder="Buscar na Intranet"]'); ?>
+                    <?php echo do_shortcode('[busca_noticias placeholder="Buscar na Intranet" post_type="noticia,post,page"]'); ?>
                 </div>
 
             </div>
