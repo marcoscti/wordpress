@@ -65,11 +65,11 @@ function fs_enqueue_feed_scripts()
         wp_enqueue_style('swiper-css');
     }
 
-    wp_enqueue_script('feed-social-js', FS_PLUGIN_URL . 'assets/js/feed-social.js', ['jquery'], '1.4.0', true);
-    wp_enqueue_style('feed-social-css', FS_PLUGIN_URL . 'assets/css/feed-social.css', [], '1.4.0');
+    wp_enqueue_script('feed-social-js', FS_PLUGIN_URL . 'assets/js/feed-social.js', ['jquery'], FS_DB_VERSION, true);
+    wp_enqueue_style('feed-social-css', FS_PLUGIN_URL . 'assets/css/feed-social.css', [], FS_DB_VERSION);
 
     wp_enqueue_script('emoji-area-js', FS_PLUGIN_URL . 'assets/js/jquery.emojiarea.min.js', ['jquery'], '3.2.1', true);
-    wp_enqueue_style('emoji-area-css', FS_PLUGIN_URL . 'assets/css/style.css', [], '1.4.0');
+    wp_enqueue_style('emoji-area-css', FS_PLUGIN_URL . 'assets/css/style.css', [], FS_DB_VERSION);
 
     wp_localize_script('feed-social-js', 'fs_feed_data', [
         'rest_url' => get_rest_url(null, 'feed-social/v1/posts'),
