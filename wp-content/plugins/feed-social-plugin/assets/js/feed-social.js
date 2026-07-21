@@ -125,9 +125,8 @@ jQuery(document).ready(function ($) {
         email: normalizedEmail,
       },
     }).done(function (response) {
-      const serverProfile = response && response.success && response.data
-        ? response.data
-        : null;
+      const serverProfile =
+        response && response.success && response.data ? response.data : null;
 
       if (serverProfile && serverProfile.email) {
         const syncedName = serverProfile.name || normalizedName;
@@ -140,7 +139,9 @@ jQuery(document).ready(function ($) {
       }
 
       if (typeof onSuccess === "function") {
-        onSuccess(serverProfile || { name: normalizedName, email: normalizedEmail });
+        onSuccess(
+          serverProfile || { name: normalizedName, email: normalizedEmail },
+        );
       }
     });
   }
@@ -171,81 +172,93 @@ jQuery(document).ready(function ($) {
     const $nameInput = $modal.find('input[name="fs_profile_name"]');
     const $emailInput = $modal.find('input[name="fs_profile_email"]');
     const resolvedProfile = profile || getStoredUserProfile();
-    const hasEmail = Boolean(resolvedProfile.email && isValidEmail(resolvedProfile.email));
-    const displayName = resolvedProfile.name || resolvedProfile.email || "Seu perfil";
+    const hasEmail = Boolean(
+      resolvedProfile.email && isValidEmail(resolvedProfile.email),
+    );
+    const displayName =
+      resolvedProfile.name || resolvedProfile.email || "Seu perfil";
 
     $summary.html(
       hasEmail
         ? `Você está interagindo como <strong>${escapeHtml(displayName)}</strong>.`
-        : "Informe seu nome e e-mail para comentar ou curtir."
+        : "Informe seu nome e e-mail para comentar ou curtir.",
     );
     $nameInput.val(resolvedProfile.name || "");
     $emailInput.val(resolvedProfile.email || "");
     $modal.removeAttr("hidden");
 
-    $modal.off("submit", ".fs-user-profile-form").on("submit", ".fs-user-profile-form", function (event) {
-      event.preventDefault();
+    $modal
+      .off("submit", ".fs-user-profile-form")
+      .on("submit", ".fs-user-profile-form", function (event) {
+        event.preventDefault();
 
-      const name = $(this).find('input[name="fs_profile_name"]').val().trim();
-      const email = $(this).find('input[name="fs_profile_email"]').val().trim();
+        const name = $(this).find('input[name="fs_profile_name"]').val().trim();
+        const email = $(this)
+          .find('input[name="fs_profile_email"]')
+          .val()
+          .trim();
 
-      if (!name) {
-        window.alert("Informe seu nome.");
-        return;
-      }
+        if (!name) {
+          window.alert("Informe seu nome.");
+          return;
+        }
 
-      if (!email || !isValidEmail(email)) {
-        window.alert("Informe um e-mail válido.");
-        return;
-      }
+        if (!email || !isValidEmail(email)) {
+          window.alert("Informe um e-mail válido.");
+          return;
+        }
 
-      const $form = $(this);
-      const $submitBtn = $form.find(".fs-user-profile-submit");
-      $submitBtn.prop("disabled", true).text("Salvando...");
-      $form.find("input").prop("disabled", true);
+        const $form = $(this);
+        const $submitBtn = $form.find(".fs-user-profile-submit");
+        $submitBtn.prop("disabled", true).text("Salvando...");
+        $form.find("input").prop("disabled", true);
 
-      const savePromise = saveUserProfile(name, email, function (profile) {
-        $submitBtn.text("Carregando...");
+        const savePromise = saveUserProfile(name, email, function (profile) {
+          $submitBtn.text("Carregando...");
 
-        const performReload = function() {
-          $("body").addClass("fs-reloading");
-          setTimeout(function () {
-            window.location.reload();
-          }, 600);
-        };
+          const performReload = function () {
+            $("body").addClass("fs-reloading");
+            setTimeout(function () {
+              window.location.reload();
+            }, 600);
+          };
 
-        if (pendingProfileAction) {
-          const action = pendingProfileAction;
-          pendingProfileAction = null;
-          const actionResult = action();
+          if (pendingProfileAction) {
+            const action = pendingProfileAction;
+            pendingProfileAction = null;
+            const actionResult = action();
 
-          if (actionResult && typeof actionResult.then === "function") {
-            actionResult.then(performReload).catch(performReload);
+            if (actionResult && typeof actionResult.then === "function") {
+              actionResult.then(performReload).catch(performReload);
+            } else {
+              setTimeout(performReload, 1000);
+            }
           } else {
-            setTimeout(performReload, 1000);
+            performReload();
           }
-        } else {
-          performReload();
+        });
+
+        if (savePromise && typeof savePromise.fail === "function") {
+          savePromise.fail(function () {
+            $submitBtn.prop("disabled", false).text("Salvar dados");
+            $form.find("input").prop("disabled", false);
+            window.alert(
+              "Ocorreu um erro ao salvar o perfil. Tente novamente.",
+            );
+          });
         }
       });
 
-      if (savePromise && typeof savePromise.fail === "function") {
-        savePromise.fail(function () {
-          $submitBtn.prop("disabled", false).text("Salvar dados");
-          $form.find("input").prop("disabled", false);
-          window.alert("Ocorreu um erro ao salvar o perfil. Tente novamente.");
-        });
-      }
-    });
-
-    $modal.off("click", ".fs-user-profile-close").on("click", ".fs-user-profile-close", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      $modal.attr("hidden", "hidden");
-      if (resolvedOptions.onClose) {
-        resolvedOptions.onClose();
-      }
-    });
+    $modal
+      .off("click", ".fs-user-profile-close")
+      .on("click", ".fs-user-profile-close", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $modal.attr("hidden", "hidden");
+        if (resolvedOptions.onClose) {
+          resolvedOptions.onClose();
+        }
+      });
 
     $modal.off("click").on("click", function (event) {
       if (event.target !== this) {
@@ -842,11 +855,17 @@ jQuery(document).ready(function ($) {
         return;
       }
 
-      const currentUserEmail = (getStoredUserProfile().email || "").toLowerCase();
+      const currentUserEmail = (
+        getStoredUserProfile().email || ""
+      ).toLowerCase();
 
       const items = data.comments
         .map(function (item) {
-          const canEdit = Boolean(item.email && currentUserEmail && String(item.email).toLowerCase() === currentUserEmail);
+          const canEdit = Boolean(
+            item.email &&
+            currentUserEmail &&
+            String(item.email).toLowerCase() === currentUserEmail,
+          );
           return `
                     <div class="fs-comment-item" data-comment-id="${item.id}">
                         <div class="fs-comment-header">
@@ -868,7 +887,9 @@ jQuery(document).ready(function ($) {
     }
   }
   async function updateComment(commentId, postId, commentText) {
-    const $commentItem = $("#fs-post-modal .fs-comment-item[data-comment-id='" + commentId + "']");
+    const $commentItem = $(
+      "#fs-post-modal .fs-comment-item[data-comment-id='" + commentId + "']",
+    );
     if (!$commentItem.length) {
       return;
     }
@@ -979,10 +1000,10 @@ jQuery(document).ready(function ($) {
       }
 
       $form.find('textarea[name="comment"]').val("");
-      const $emojiEditor = $form.find('.emoji-editor');
+      const $emojiEditor = $form.find(".emoji-editor");
       if ($emojiEditor.length) {
         $emojiEditor.html("");
-        $emojiEditor.addClass('emoji-editor-empty');
+        $emojiEditor.addClass("emoji-editor-empty");
       }
 
       loadedPosts[postId].comments = data.new_count;
@@ -1068,12 +1089,16 @@ jQuery(document).ready(function ($) {
       $modal.find(".fs-comments-toggle").attr("aria-expanded", "false");
     },
   );
-  $(document).on("keydown", "#fs-post-modal .fs-comment-form textarea", function (event) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      $(this).closest("form").trigger("submit");
-    }
-  });
+  $(document).on(
+    "keydown",
+    "#fs-post-modal .fs-comment-form textarea",
+    function (event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        $(this).closest("form").trigger("submit");
+      }
+    },
+  );
 
   $(document).on("submit", "#fs-post-modal .fs-comment-form", function (e) {
     e.preventDefault();
@@ -1084,7 +1109,7 @@ jQuery(document).ready(function ($) {
   $(document).on("click", "#fs-post-modal .fs-comment-edit", function () {
     const $item = $(this).closest(".fs-comment-item");
     const commentId = $item.data("comment-id");
-    $('.fs-comment-form').css({opacity:0});
+    $(".fs-comment-form").css({ opacity: 0 });
     // Clone and replace emoji images with their alt attributes to preserve emojis
     const $clone = $item.find(".fs-comment-text").clone();
     $clone.find("img").each(function () {
@@ -1115,21 +1140,27 @@ jQuery(document).ready(function ($) {
     }
 
     $item.find(".fs-comment-edit-form").on("submit", function (event) {
+      $(".fs-comment-edit-submit").html(
+        `<svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"   width="20px" height="20px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>  <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0    C22.32,8.481,24.301,9.057,26.013,10.047z">    <animateTransform attributeType="xml"      attributeName="transform"      type="rotate"      from="0 20 20"      to="360 20 20"      dur="0.5s"      repeatCount="indefinite"/>    </path>  </svg>`,
+      );
       event.preventDefault();
       const updatedText = $(this).find(".fs-comment-edit-textarea").val();
-      
+
       if (!updatedText) {
         window.alert("O comentário não pode ficar vazio.");
         return;
       }
 
       updateComment(commentId, currentPostId, updatedText);
+      setTimeout(() => {
+        $(".fs-comment-form").css({ opacity: 1 });
+      }, 2000);
     });
 
     $item.find(".fs-comment-edit-cancel").on("click", function (event) {
       event.preventDefault();
       loadComments(currentPostId);
-      $('.fs-comment-form').css({opacity:1});
+      $(".fs-comment-form").css({ opacity: 1 });
     });
   });
   if ($feedContainer.length && sentinelEl) {
@@ -1154,27 +1185,27 @@ jQuery(document).ready(function ($) {
   }
 
   // Handle placeholder for the emoji editor
-  const $commentForm = $('.fs-comment-form');
+  const $commentForm = $(".fs-comment-form");
   if ($commentForm.length) {
     const $textarea = $commentForm.find('textarea[name="comment"]');
-    const $editor = $commentForm.find('.emoji-editor');
+    const $editor = $commentForm.find(".emoji-editor");
     if ($textarea.length && $editor.length) {
-      const placeholderText = $textarea.attr('placeholder');
+      const placeholderText = $textarea.attr("placeholder");
       if (placeholderText) {
-        $editor.attr('data-placeholder', placeholderText);
+        $editor.attr("data-placeholder", placeholderText);
       }
-      
-      const updatePlaceholder = function($el) {
-        if ($el.text().trim() === '') {
-          $el.addClass('emoji-editor-empty');
+
+      const updatePlaceholder = function ($el) {
+        if ($el.text().trim() === "") {
+          $el.addClass("emoji-editor-empty");
         } else {
-          $el.removeClass('emoji-editor-empty');
+          $el.removeClass("emoji-editor-empty");
         }
       };
 
       updatePlaceholder($editor);
 
-      $editor.on('input keyup paste change focus blur', function() {
+      $editor.on("input keyup paste change focus blur", function () {
         updatePlaceholder($(this));
       });
     }
