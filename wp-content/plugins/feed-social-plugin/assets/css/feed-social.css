@@ -573,14 +573,13 @@ body.fs-video-modal-open {
     position: sticky;
     bottom: 0;
     z-index: 3;
+    position: relative;
   }
 
   .fs-comment-form button[type="submit"] {
-    width: 100%;
-    margin-top: 8px;
-    position: sticky;
-    bottom: 0;
-    flex: 1;
+    width: auto;
+    margin-top: 0;
+    position: static;
   }
 
   .fs-post-modal.fs-comments-expanded .fs-post-modal-comments,
@@ -589,7 +588,7 @@ body.fs-video-modal-open {
   }
 
   .fs-post-modal.fs-comments-expanded .fs-comment-form {
-    display: flex !important;
+    display: grid !important;
   }
 
   .fs-post-modal.fs-mobile-content-collapsed:not(.fs-comments-expanded)
@@ -1076,17 +1075,80 @@ body.fs-post-modal-open {
   padding: 3px;
 }
 .fs-comment-form {
-  display: flex!important;
-  column-gap: 4px;
+  display: grid !important;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 8px 6px;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+.fs-comment-form .emoji-button {
+  position: absolute;
+  left: 5px;
+  top: 13px;
+}
+.fs-comment-form textarea {
+  grid-row: 2;
+  grid-column: 1;
+}
+.fs-comment-form .emoji-editor {
+  grid-row: 2;
+  grid-column: 1;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px 10px 10px 40px;
+  font-size: 12px;
+  font-family: "Poppins", sans-serif;
+  outline: none;
+  min-height: 38px;
+  height: auto;
+  max-height: 120px;
+  overflow-y: auto;
+  background: #fff;
+  text-align: left;
+  resize: none;
+}
+.fs-comment-form .emoji-editor:focus {
+  border-color: #c8d400;
 }
 .fs-comment-form button[type="submit"]{
+  grid-row: 2;
+  grid-column: 2;
   height: 39px;
+  align-self: center;
 }
 .fs-comments-expanded .fs-comments-toggle{
   border-color: #c8d400;
 }
 .fs-comments-expanded .fs-comments-toggle .fs-action-icon svg{
   fill:#c8d400  ;
+}
+
+/* Position the emoji picker above the button and style it */
+.emoji-picker {
+  transform: translateY(calc(-100% - 40px)) !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  padding: 6px !important;
+}
+
+.emoji-picker .emoji-selector {
+  border-bottom: 1px solid #edf2f7 !important;
+  padding-bottom: 4px !important;
+}
+
+.emoji-picker .emoji-selector li a {
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  transition: background 0.2s !important;
+}
+
+.emoji-picker .emoji-selector li a:hover {
+  background: #f7fafc !important;
 }
 
 /* Subtle reload transition */

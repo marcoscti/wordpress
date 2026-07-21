@@ -979,6 +979,10 @@ jQuery(document).ready(function ($) {
       }
 
       $form.find('textarea[name="comment"]').val("");
+      const $emojiEditor = $form.find('.emoji-editor');
+      if ($emojiEditor.length) {
+        $emojiEditor.html("");
+      }
 
       loadedPosts[postId].comments = data.new_count;
       await loadComments(postId);
