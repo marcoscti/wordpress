@@ -1151,6 +1151,14 @@ body.fs-post-modal-open {
   background: #f7fafc !important;
 }
 
+/* Style the placeholder inside the contenteditable emoji-editor */
+.fs-comment-form .emoji-editor.emoji-editor-empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+  display: inline-block;
+}
+
 /* Subtle reload transition */
 body.fs-reloading {
   opacity: 0;

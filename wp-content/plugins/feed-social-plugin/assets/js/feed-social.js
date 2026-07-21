@@ -982,6 +982,7 @@ jQuery(document).ready(function ($) {
       const $emojiEditor = $form.find('.emoji-editor');
       if ($emojiEditor.length) {
         $emojiEditor.html("");
+        $emojiEditor.addClass('emoji-editor-empty');
       }
 
       loadedPosts[postId].comments = data.new_count;
@@ -1083,7 +1084,16 @@ jQuery(document).ready(function ($) {
   $(document).on("click", "#fs-post-modal .fs-comment-edit", function () {
     const $item = $(this).closest(".fs-comment-item");
     const commentId = $item.data("comment-id");
-    const currentText = $item.find(".fs-comment-text").text().trim();
+    
+    // Clone and replace emoji images with their alt attributes to preserve emojis
+    const $clone = $item.find(".fs-comment-text").clone();
+    $clone.find("img").each(function () {
+      const alt = $(this).attr("alt");
+      if (alt) {
+        $(this).replaceWith(alt);
+      }
+    });
+    const currentText = $clone.text().trim();
 
     $item.html(`
       <form class="fs-comment-edit-form">
@@ -1130,6 +1140,33 @@ jQuery(document).ready(function ($) {
     fetchPosts();
 
     $(window).on("scroll.fsFeed resize.fsFeed", checkAndLoadMore);
+  }
+
+  // Handle placeholder for the emoji editor
+  const $commentForm = $('.fs-comment-form');
+  if ($commentForm.length) {
+    const $textarea = $commentForm.find('textarea[name="comment"]');
+    const $editor = $commentForm.find('.emoji-editor');
+    if ($textarea.length && $editor.length) {
+      const placeholderText = $textarea.attr('placeholder');
+      if (placeholderText) {
+        $editor.attr('data-placeholder', placeholderText);
+      }
+      
+      const updatePlaceholder = function($el) {
+        if ($el.text().trim() === '') {
+          $el.addClass('emoji-editor-empty');
+        } else {
+          $el.removeClass('emoji-editor-empty');
+        }
+      };
+
+      updatePlaceholder($editor);
+
+      $editor.on('input keyup paste change focus blur', function() {
+        updatePlaceholder($(this));
+      });
+    }
   }
 
   initSse();
