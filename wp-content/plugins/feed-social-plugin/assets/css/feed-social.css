@@ -306,10 +306,18 @@ body.fs-video-modal-open {
 
 .fs-comment-edit-form {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 8px;
+  position: relative;
 }
-
+.fs-comment-edit-form .emoji-button{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+.fs-comment-edit-form .emoji-editor{
+  padding: 15px 5px 5px 40px!important;
+}
 .fs-comment-edit-textarea {
   width: 100%;
   box-sizing: border-box;

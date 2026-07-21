@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Feed Social
  * Description: Feed social com mídia, galeria, curtidas, comentários, scroll infinito e notificações em tempo real (SSE).
- * Version: 3.2.2
+ * Version: 3.2.4
  * Author URI: https://marcoscti.dev
  * Author: Marcos Cordeiro
  * Text Domain: feed-social
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) exit;
 
 define('FS_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('FS_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('FS_DB_VERSION', '3.2.2');
+define('FS_DB_VERSION', '3.2.4');
 
 require_once FS_PLUGIN_PATH . 'includes/database.php';
 require_once FS_PLUGIN_PATH . 'includes/post-type.php';
