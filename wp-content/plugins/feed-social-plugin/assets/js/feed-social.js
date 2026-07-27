@@ -146,7 +146,9 @@ jQuery(document).ready(function ($) {
     });
   }
 
+  //const user = fetch('/wp-json/feed-social/v1/user?email=alisson.teotonio@igesdf.org.br').then(res=>res.json()).then((data)=>{console.log(data.exists)})
   function displayUserProfile(profile, options) {
+    
     const resolvedOptions = options || {};
     const $overlay = $("#fs-user-profile-overlay");
     if (!$overlay.length) {
@@ -154,13 +156,19 @@ jQuery(document).ready(function ($) {
         <div id="fs-user-profile-overlay" class="fs-user-profile-overlay" hidden>
           <div class="fs-user-profile-card">
             <button type="button" class="fs-user-profile-close" aria-label="Fechar">×</button>
-            <div class="fs-user-profile-summary"></div>
+            <div class="fs-user-profile">Informe os dados para prosseguir</div>
             <form class="fs-user-profile-form">
               <div class="fs-user-profile-fields">
-                <input class="fs-user-profile-field" type="text" name="fs_profile_name" placeholder="Seu nome" autocomplete="name">
-                <input class="fs-user-profile-field" type="email" name="fs_profile_email" placeholder="Seu e-mail" autocomplete="email" required>
+                <div class="form-group">
+                  <label for="name">Seu nome e setor</label>
+                  <input class="fs-user-profile-field" id="name" type="text" name="fs_profile_name" placeholder="Ex: Marcos ASCOM" autocomplete="name">
+                </div>
+                <div>
+                <label for="email">E-mail Institucional</label>
+                <input class="fs-user-profile-field" type="email" name="fs_profile_email" placeholder="Ex: nome@igesdf.org.br" autocomplete="email" required id="email">
+                </div>
               </div>
-              <button type="submit" class="fs-user-profile-submit">Salvar dados</button>
+              <button type="submit" class="fs-user-profile-submit">Salvar</button>
             </form>
           </div>
         </div>

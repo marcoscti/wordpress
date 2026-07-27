@@ -54,6 +54,21 @@ add_action('rest_api_init', function () {
             ],
         ],
     ]);
+    // Busca usuário
+    register_rest_route($namespace, '/user', [
+    'methods' => 'GET',
+    'callback' => 'fs_exist_user',
+    'permission_callback' => '__return_true',
+    'args' => [
+        'email' => [
+            'required' => true,
+            'validate_callback' => function ($value) {
+                return is_email($value);
+            },
+            'sanitize_callback' => 'sanitize_email',
+        ],
+    ],
+]);
 
     // Obter post por ID
     register_rest_route($namespace, '/post/(?P<id>\d+)', [
@@ -369,7 +384,25 @@ function fs_get_views_count($post_id) {
     $table = $wpdb->prefix . 'feed_social_views';
     return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE post_id = %d", $post_id));
 }
+function fs_exist_user(WP_REST_Request $request)
+{
+    global $wpdb;
 
+    $email = sanitize_email($request->get_param('email'));
+
+    $table = $wpdb->prefix . 'feed_social_users';
+
+    $exists = (int) $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM $table WHERE email = %s",
+            $email
+        )
+    );
+
+    return [
+        'exists' => $exists > 0
+    ];
+}
 function fs_register_view($post_id) {
     global $wpdb;
 

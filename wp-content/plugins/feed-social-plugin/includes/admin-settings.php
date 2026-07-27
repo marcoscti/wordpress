@@ -12,7 +12,8 @@ add_action('admin_menu', function () {
     );
 });
 
-function fs_settings_page_callback() {
+function fs_settings_page_callback()
+{
     global $wpdb;
 
     $active_tab = 'posts';
@@ -30,6 +31,14 @@ function fs_settings_page_callback() {
         if ($user_id && $email) {
             $table = $wpdb->prefix . 'feed_social_users';
             $wpdb->update($table, ['name' => $name, 'email' => $email, 'updated_at' => current_time('mysql')], ['id' => $user_id], ['%s', '%s', '%s'], ['%d']);
+        }
+    }
+    if (isset($_POST['fs_user_delete']) && wp_verify_nonce($_POST['_wpnonce'] ?? '', 'fs_update_user')) {
+        $user_id = absint($_POST['user_id'] ?? 0);
+        $email = sanitize_email($_POST['email'] ?? '');
+        if ($user_id && $email) {
+            $table = $wpdb->prefix . 'feed_social_users';
+            $wpdb->delete($table, ['id' => $user_id], ['%d']);
         }
     }
 
@@ -64,7 +73,8 @@ function fs_settings_page_callback() {
                 echo '<td><input type="email" name="email" value="' . esc_attr($user->email) . '" /></td>';
                 echo '<td>' . esc_html(fs_get_user_like_count($user->email)) . '</td>';
                 echo '<td>' . esc_html(fs_get_user_comment_count($user->email)) . '</td>';
-                echo '<td><button type="submit" name="fs_user_update" class="button button-primary">Salvar</button></td>';
+                echo '<td><button type="submit" name="fs_user_update" class="button button-primary"><span class="dashicons dashicons-insert"></span> Salvar</button>&nbsp;
+                <button type="submit" name="fs_user_delete" class="button button-danger" style="border-color:red; color:red;"><span class="dashicons dashicons-trash"></span> Excluir</button></td>';
                 echo '</form></tr>';
             }
         } else {
