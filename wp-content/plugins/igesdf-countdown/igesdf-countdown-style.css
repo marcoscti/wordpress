@@ -1,0 +1,91 @@
+@font-face {
+  font-family: "Gazetta Medium";
+  src: url("assets/fonts/TipoType-GazzettaMedium.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gazetta Medium Slanted";
+  src: url("assets/fonts/TipoType-GazzettaMediumSlanted.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gazetta Bold";
+  src: url("assets/fonts/TipoType-GazzettaMediumSlanted.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.igesdf-countdown-background img {
+  width: 100%;
+}
+.simple-countdown {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.simple-countdown div {
+  text-align: center;
+}
+
+.simple-countdown span {
+  font-family: "Gazetta Bold";
+  display: block;
+  font-size: 250px;
+  width: 120px;
+  font-weight: 800;
+  line-height: 200px;
+  text-align: center;
+  color: #feec00;
+  text-shadow: 2px 4px 5px rgba(0, 0, 0, 0.5);
+}
+
+.simple-countdown small {
+  display: block;
+  font-size: 40px;
+  text-transform: uppercase;
+  font-family: "Gazetta Medium Slanted";
+  color: #ff4500;
+  line-height: 30px;
+}
+.igesdf-countdown-background {
+  position: relative;
+}
+.igesdf-countdown-container {
+  position: absolute;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 50px;
+}
+.igesdf-countdown-container div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.divider span {
+  margin-top: -40px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .simple-countdown span {
+    width: unset;
+    line-height: 40px;
+    font-size: 50px;
+  }
+  .simple-countdown small {
+    font-size: 20px;
+    line-height: unset;
+  }
+  .igesdf-countdown-container {
+    margin-top: 20px;
+  }
+}

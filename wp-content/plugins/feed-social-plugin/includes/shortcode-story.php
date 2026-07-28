@@ -16,7 +16,7 @@ function fs_render_story_modal()
         <div class="fs-story-modal-wrapper">
 
             <div class="fs-story-modal-content"></div>
-
+            <div class="fs-post-modal-actions"></div>
             <div class="fs-story-progress-bar-container"></div>
 
         </div>
@@ -38,7 +38,7 @@ function fs_exist_story()
     );
 
     $stories_query = new WP_Query($args);
-    if($stories_query->have_posts()){
+    if ($stories_query->have_posts()) {
         while ($stories_query->have_posts()) {
             $stories_query->the_post();
 
@@ -55,10 +55,9 @@ function fs_exist_story()
                 }
             }
             return false;
-            
         }
     }
-    return ;
+    return;
 }
 function fs_render_story_shortcode($atts)
 {

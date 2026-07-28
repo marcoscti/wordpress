@@ -6,7 +6,6 @@ jQuery(document).ready(function ($) {
   const $loadingText = $loadingIndicator.find(".fs-loading-text");
   const $noMorePostsText = $noMorePosts.find(".fs-no-more-posts-text");
   const sentinelEl = $scrollSentinel[0];
-
   let currentOffset = 0;
   let hasMore = true;
   let isLoading = false;
@@ -77,18 +76,20 @@ jQuery(document).ready(function ($) {
 
     return null;
   }
-
+  
   function getStoredUserProfile() {
+    
     const sessionName = sessionStorage.getItem("fs_user_name") || "";
     const sessionEmail = sessionStorage.getItem("fs_user_email") || "";
     const localName = localStorage.getItem("fs_user_name") || "";
     const localEmail = localStorage.getItem("fs_user_email") || "";
-
+    
     return {
       name: sessionName || localName || "",
       email: sessionEmail || localEmail || "",
     };
   }
+  $("#fs-user-data").text(`${getStoredUserProfile().name || getStoredUserProfile().email ? 'Interagindo como: '+getStoredUserProfile().name || getStoredUserProfile().email || '':''}`)
 
   function closeUserProfileModal() {
     const $modal = $("#fs-user-profile-overlay");
@@ -629,7 +630,7 @@ jQuery(document).ready(function ($) {
   function openPostModal(post) {
     currentPostId = post.id;
 
-    const $modal = $("#fs-post-modal");
+    const $modal = $("#fs-post-modal,#fs-story-modal");
 
     if (post.id) {
       $.ajax({
@@ -678,7 +679,7 @@ jQuery(document).ready(function ($) {
       mediaHtml = `<img src="${escapeHtml(postThumbnail)}" alt="${escapeHtml(post.title)}">`;
     }
 
-    $modal.find(".fs-post-modal-media").html(mediaHtml);
+    $modal.find(".fs-post-modal-media,.fs-story-modal").html(mediaHtml);
     renderLegend(post);
     $modal
       .find(".fs-post-modal-comments")
