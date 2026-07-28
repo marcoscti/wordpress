@@ -89,13 +89,38 @@ jQuery(document).ready(function ($) {
       email: sessionEmail || localEmail || "",
     };
   }
-  $("#fs-user-data").text(`${getStoredUserProfile().name || getStoredUserProfile().email ? 'Interagindo como: '+getStoredUserProfile().name || getStoredUserProfile().email || '':''}`)
 
-  function closeUserProfileModal() {
+  function renderUserProfileBadge() {
+    const profile = getStoredUserProfile();
+    const hasName = Boolean(profile.name && profile.name.trim());
+    const hasEmail = Boolean(profile.email && isValidEmail(profile.email));
+
+    const label = hasName
+      ? `Interagindo como: ${profile.name}`
+      : hasEmail
+        ? `Interagindo como: ${profile.email}`
+        : "Interagindo como: convidado";
+
+    if ($("#fs-user-data").length) {
+      $("#fs-user-data").text(label);
+    }
+
+    if ($("#fs-edit-user-profile").length) {
+      $("#fs-edit-user-profile").text(hasName || hasEmail ? "Editar" : "Cadastrar");
+    }
+  }
+
+  renderUserProfileBadge();
+
+  function hideUserProfileModal() {
     const $modal = $("#fs-user-profile-overlay");
     if ($modal.length) {
       $modal.attr("hidden", "hidden");
     }
+  }
+
+  function closeUserProfileModal() {
+    hideUserProfileModal();
   }
 
   function saveUserProfile(name, email, onSuccess) {
@@ -157,6 +182,7 @@ jQuery(document).ready(function ($) {
         <div id="fs-user-profile-overlay" class="fs-user-profile-overlay" hidden>
           <div class="fs-user-profile-card">
             <button type="button" class="fs-user-profile-close" aria-label="Fechar">×</button>
+            <div class="fs-user-profile-summary"></div>
             <div class="fs-user-profile">Informe os dados para prosseguir</div>
             <form class="fs-user-profile-form">
               <div class="fs-user-profile-fields">
@@ -194,6 +220,10 @@ jQuery(document).ready(function ($) {
     );
     $nameInput.val(resolvedProfile.name || "");
     $emailInput.val(resolvedProfile.email || "");
+    $emailInput.prop(
+      "disabled",
+      Boolean(resolvedOptions.editMode && hasEmail),
+    );
     $modal.removeAttr("hidden");
 
     $modal
@@ -259,26 +289,49 @@ jQuery(document).ready(function ($) {
       });
 
     $modal
-      .off("click", ".fs-user-profile-close")
-      .on("click", ".fs-user-profile-close", function (event) {
+      .off("click.fs-close")
+      .on("click.fs-close", ".fs-user-profile-close", function (event) {
         event.preventDefault();
         event.stopPropagation();
-        $modal.attr("hidden", "hidden");
+        hideUserProfileModal();
         if (resolvedOptions.onClose) {
           resolvedOptions.onClose();
         }
       });
 
-    $modal.off("click").on("click", function (event) {
-      if (event.target !== this) {
-        return;
-      }
+    $modal
+      .off("click.fs-overlay")
+      .on("click.fs-overlay", function (event) {
+        if (event.target !== this) {
+          return;
+        }
 
-      $modal.attr("hidden", "hidden");
-      if (resolvedOptions.onClose) {
-        resolvedOptions.onClose();
-      }
-    });
+        hideUserProfileModal();
+        if (resolvedOptions.onClose) {
+          resolvedOptions.onClose();
+        }
+      });
+
+    $(document)
+      .off("keydown.fs-profile-modal")
+      .on("keydown.fs-profile-modal", function (event) {
+        if (event.key === "Escape" && !$modal.attr("hidden")) {
+          hideUserProfileModal();
+          if (resolvedOptions.onClose) {
+            resolvedOptions.onClose();
+          }
+        }
+      });
+  }
+
+  $(document).on("click", "#fs-edit-user-profile", function (e) {
+    e.preventDefault();
+    displayUserProfile(getStoredUserProfile(), { onClose: () => {}, editMode: true });
+  });
+
+  function hasValidStoredProfile() {
+    const profile = getStoredUserProfile();
+    return Boolean(profile.name && profile.name.trim()) || Boolean(profile.email && isValidEmail(profile.email));
   }
 
   function getUserName() {
@@ -291,6 +344,15 @@ jQuery(document).ready(function ($) {
       "Content-Type": "application/json",
       "X-WP-Nonce": fs_feed_data.rest_nonce,
     };
+  }
+
+  function syncCommentEditorToTextarea($form) {
+    const $textarea = $form.find('textarea[name="comment"], textarea.fs-comment-edit-textarea');
+    if (!$textarea.length) {
+      return "";
+    }
+
+    return ($textarea.val() || "").trim();
   }
 
   function requestNotificationPermission() {
@@ -930,8 +992,10 @@ jQuery(document).ready(function ($) {
     const email = getUserEmail();
 
     if (!email) {
-      pendingProfileAction = () => handleLike(postId);
-      displayUserProfile(getStoredUserProfile(), { onClose: () => {} });
+      if (!hasValidStoredProfile()) {
+        pendingProfileAction = () => handleLike(postId);
+        displayUserProfile(getStoredUserProfile(), { onClose: () => {} });
+      }
       return;
     }
 
@@ -974,22 +1038,57 @@ jQuery(document).ready(function ($) {
       $likes.prop("disabled", false);
     }
   }
+  function getCommentFieldValue($form) {
+    const $textarea = $form.find('textarea[name="comment"], textarea.fs-comment-edit-textarea');
+    const $editor = $form.find(".emoji-editor");
+
+    if ($textarea.length) {
+      const textareaValue = ($textarea.val() || "").trim();
+      if (textareaValue) {
+        return textareaValue;
+      }
+    }
+
+    if ($editor.length && $editor[0]) {
+      const editorValue = ($editor[0].innerText || $editor[0].textContent || "").trim();
+      if ($textarea.length) {
+        $textarea.val(editorValue);
+      }
+      return editorValue;
+    }
+
+    return "";
+  }
+
   async function handleCommentSubmit($form) {
     const postId = currentPostId;
     const name = getUserName();
     const email = getUserEmail();
-    const comment = $form.find('textarea[name="comment"]').val().trim();
+    const comment = syncCommentEditorToTextarea($form);
 
     if (!name || !email || !comment) {
-      pendingProfileAction = () => handleCommentSubmit($form);
-      displayUserProfile(getStoredUserProfile(), { onClose: () => {} });
+      if (!hasValidStoredProfile()) {
+        pendingProfileAction = () => handleCommentSubmit($form);
+        displayUserProfile(getStoredUserProfile(), { onClose: () => {} });
+      }
       return;
     }
 
     saveUserProfile(name, email);
 
     const $submit = $form.find("button[type='submit']");
-    $submit.prop("disabled", true);
+    const originalSubmitHtml = $submit.html();
+    $submit.prop("disabled", true).html(
+      `<svg width="16" height="16" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="20" cy="20" r="18" stroke="#fff" stroke-width="4" fill="none" opacity="0.3"/><path d="M36 20c0-8.8-7.2-16-16-16" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.8s" repeatCount="indefinite"/></path></svg>`,
+    );
+
+    const normalizedComment = syncCommentEditorToTextarea($form) || getCommentFieldValue($form);
+
+    if (!normalizedComment) {
+      window.alert("Escreva um comentário antes de publicar.");
+      $submit.prop("disabled", false).html(originalSubmitHtml);
+      return;
+    }
 
     try {
       const response = await fetch(fs_feed_data.comment_url, {
@@ -999,7 +1098,7 @@ jQuery(document).ready(function ($) {
           post_id: postId,
           name: name,
           email: email,
-          comment: comment,
+          comment: normalizedComment,
         }),
       });
       const data = await response.json();
@@ -1008,12 +1107,8 @@ jQuery(document).ready(function ($) {
         throw new Error(data.message || "Erro ao comentar");
       }
 
-      $form.find('textarea[name="comment"]').val("");
-      const $emojiEditor = $form.find(".emoji-editor");
-      if ($emojiEditor.length) {
-        $emojiEditor.html("");
-        $emojiEditor.addClass("emoji-editor-empty");
-      }
+      $form.find('textarea[name="comment"], textarea.fs-comment-edit-textarea').val("");
+      $form.find('.emoji-editor').text('');
 
       loadedPosts[postId].comments = data.new_count;
       await loadComments(postId);
@@ -1021,7 +1116,7 @@ jQuery(document).ready(function ($) {
       console.error("Erro ao comentar:", error);
       window.alert("Não foi possível enviar o comentário. Tente novamente.");
     } finally {
-      $submit.prop("disabled", false);
+      $submit.prop("disabled", false).html(originalSubmitHtml);
     }
   }
 
@@ -1115,6 +1210,7 @@ jQuery(document).ready(function ($) {
     handleCommentSubmit($(this));
   });
 
+
   $(document).on("click", "#fs-post-modal .fs-comment-edit", function () {
     const $item = $(this).closest(".fs-comment-item");
     const commentId = $item.data("comment-id");
@@ -1130,8 +1226,7 @@ jQuery(document).ready(function ($) {
     const currentText = $clone.text().trim();
 
     $item.html(`
-      <form class="fs-comment-edit-form" data-emojiarea data-type="css" data-global-picker="false">
-        <i class="emoji emoji-smile emoji-button"><svg aria-label="Emoji" class="x1lliihq x1n2onr6 x1roi4f4" fill="#575756" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg></i>
+      <form class="fs-comment-edit-form">
         <textarea class="fs-comment-edit-textarea" rows="3">${escapeHtml(currentText)}</textarea>
         <div class="fs-comment-edit-actions">
           <button type="submit" class="fs-comment-edit-submit">Salvar</button>
@@ -1139,14 +1234,6 @@ jQuery(document).ready(function ($) {
         </div>
       </form>
     `);
-
-    // O plugin jquery.emojiarea só se auto-inicializa uma vez, no document ready.
-    // Como este formulário é criado dinamicamente (via $item.html acima), ele
-    // nunca é "visto" por aquela inicialização automática, então o botão de
-    // emoji fica sem funcionalidade. É preciso inicializar manualmente aqui.
-    if (typeof $.fn.emojiarea === "function") {
-      $item.find(".fs-comment-edit-form").emojiarea();
-    }
 
     $item.find(".fs-comment-edit-form").on("submit", function (event) {
       $(".fs-comment-edit-submit").html(
@@ -1193,32 +1280,6 @@ jQuery(document).ready(function ($) {
     $(window).on("scroll.fsFeed resize.fsFeed", checkAndLoadMore);
   }
 
-  // Handle placeholder for the emoji editor
-  const $commentForm = $(".fs-comment-form");
-  if ($commentForm.length) {
-    const $textarea = $commentForm.find('textarea[name="comment"]');
-    const $editor = $commentForm.find(".emoji-editor");
-    if ($textarea.length && $editor.length) {
-      const placeholderText = $textarea.attr("placeholder");
-      if (placeholderText) {
-        $editor.attr("data-placeholder", placeholderText);
-      }
-
-      const updatePlaceholder = function ($el) {
-        if ($el.text().trim() === "") {
-          $el.addClass("emoji-editor-empty");
-        } else {
-          $el.removeClass("emoji-editor-empty");
-        }
-      };
-
-      updatePlaceholder($editor);
-
-      $editor.on("input keyup paste change focus blur", function () {
-        updatePlaceholder($(this));
-      });
-    }
-  }
 
   initSse();
   $(document).on(

@@ -244,6 +244,35 @@ body.fs-video-modal-open {
   color: #333;
 }
 
+.fs-user-data-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.fs-user-data {
+  color: #878282;
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
+.fs-edit-user-profile {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #c8d400;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.fs-edit-user-profile:hover {
+  color: #a7b100;
+}
+
 .fs-likes.fs-liked {
   color: #e0245e;
 }
@@ -359,7 +388,11 @@ body.fs-video-modal-open {
   color: #888;
   font-size: 0.9em;
 }
-
+.fs-user-profile{
+  text-align: center;
+    font-weight: 600;
+    margin: 15px 0;
+}
 .fs-user-profile-overlay {
   position: fixed;
   inset: 0;

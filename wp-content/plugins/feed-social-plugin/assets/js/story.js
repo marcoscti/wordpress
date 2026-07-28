@@ -20,36 +20,34 @@ jQuery(document).ready(function ($) {
   const likedStories = new Set(
     JSON.parse(localStorage.getItem("fs_liked_posts") || "[]"),
   );
-    // Inicializa os carrosséis
-if (typeof Swiper !== "undefined") {
-
+  // Inicializa os carrosséis
+  if (typeof Swiper !== "undefined") {
     // Destaques
     new Swiper(".fs-highlight-carousel", {
-        slidesPerView: "auto",
-        spaceBetween: 15,
+      slidesPerView: "auto",
+      spaceBetween: 15,
 
-        navigation: {
-            nextEl: ".fs-highlight-carousel .swiper-button-next",
-            prevEl: ".fs-highlight-carousel .swiper-button-prev",
+      navigation: {
+        nextEl: ".fs-highlight-carousel .swiper-button-next",
+        prevEl: ".fs-highlight-carousel .swiper-button-prev",
+      },
+
+      breakpoints: {
+        320: {
+          slidesPerView: 4,
         },
-
-        breakpoints: {
-            320: {
-                slidesPerView: 4
-            },
-            480: {
-                slidesPerView: 6
-            },
-            768: {
-                slidesPerView: 10
-            },
-            1024: {
-                slidesPerView: 8
-            }
-        }
+        480: {
+          slidesPerView: 6,
+        },
+        768: {
+          slidesPerView: 10,
+        },
+        1024: {
+          slidesPerView: 8,
+        },
+      },
     });
-
-}
+  }
   function saveLikedStories() {
     localStorage.setItem("fs_liked_posts", JSON.stringify([...likedStories]));
   }
@@ -111,8 +109,10 @@ if (typeof Swiper !== "undefined") {
     const isLiked = likedStories.has(String(storyId));
     storyActions.html(`
       <button type="button" class="fs-likes${isLiked ? " fs-liked" : ""}" data-story-id="${storyId}">
-        <span aria-hidden="true">♥</span>
-        <span class="fs-count">${formatCount(likesCount)}</span>
+        <span aria-hidden="true">
+        <svg width="30" height="27" viewBox="0 0 30 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M26.9714 2.32755C26.2573 1.58965 25.4095 1.00429 24.4763 0.604924C23.5431 0.205556 22.5429 0 21.5328 0C20.5227 0 19.5224 0.205556 18.5892 0.604924C17.6561 1.00429 16.8082 1.58965 16.0941 2.32755L14.6121 3.85823L13.1301 2.32755C11.6877 0.837738 9.73133 0.000772219 7.69144 0.000772235C5.65154 0.000772251 3.69519 0.837738 2.25277 2.32755C0.810346 3.81735 1.51984e-08 5.83797 0 7.94487C-1.51984e-08 10.0518 0.810346 12.0724 2.25277 13.5622L14.6121 26.3275L26.9714 13.5622C27.6859 12.8246 28.2526 11.9489 28.6393 10.9851C29.0259 10.0213 29.225 8.98818 29.225 7.94487C29.225 6.90157 29.0259 5.86849 28.6393 4.90465C28.2526 3.94081 27.6859 3.0651 26.9714 2.32755Z" fill="#e0245e"/></svg>
+        </span>
       </button>
     `);
   }
@@ -138,9 +138,9 @@ if (typeof Swiper !== "undefined") {
         left: `${startX}px`,
         top: `${startY}px`,
         fontSize: `${size}px`,
-        '--x': `${offsetX}px`,
-        '--y': `${offsetY}px`,
-        '--rotation': `${rotation}deg`,
+        "--x": `${offsetX}px`,
+        "--y": `${offsetY}px`,
+        "--rotation": `${rotation}deg`,
       });
 
       burstContainer.append(heart);
@@ -155,7 +155,11 @@ if (typeof Swiper !== "undefined") {
 
     if (!email || !isValidEmail(email)) {
       name = window.prompt("Informe seu nome:", profile.name || "") || "";
-      email = window.prompt("Informe seu e-mail institucional:", profile.email || "") || "";
+      email =
+        window.prompt(
+          "Informe seu e-mail institucional:",
+          profile.email || "",
+        ) || "";
 
       if (!name || !email || !isValidEmail(email)) {
         window.alert("Informe seu nome e um e-mail válido para curtir.");
@@ -195,7 +199,11 @@ if (typeof Swiper !== "undefined") {
 
       saveLikedStories();
       $button.toggleClass("fs-liked", response && response.action === "liked");
-      $button.find(".fs-count").text(formatCount(response && response.new_count ? response.new_count : 0));
+      $button
+        .find(".fs-count")
+        .text(
+          formatCount(response && response.new_count ? response.new_count : 0),
+        );
     } finally {
       $button.prop("disabled", false);
     }
