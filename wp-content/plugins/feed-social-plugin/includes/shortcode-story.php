@@ -16,7 +16,7 @@ function fs_render_story_modal()
         <div class="fs-story-modal-wrapper">
 
             <div class="fs-story-modal-content"></div>
-            <div class="fs-post-modal-actions"></div>
+            <div class="fs-story-actions"></div>
             <div class="fs-story-progress-bar-container"></div>
 
         </div>
@@ -179,7 +179,9 @@ function fs_enqueue_story_assets()
 
     wp_localize_script('fs-story-script', 'fs_story_ajax', array(
         'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('fs_get_story_content')
+        'nonce' => wp_create_nonce('fs_get_story_content'),
+        'like_url' => get_rest_url(null, 'feed-social/v1/like'),
+        'rest_nonce' => wp_create_nonce('wp_rest')
     ));
 }
 
@@ -219,6 +221,7 @@ function fs_get_story_content_ajax()
     wp_send_json_success([
         'content' => $content,
         'has_video' => $has_video,
+        'likes' => fs_get_likes_count($story_id),
     ]);
 }
 function fs_register_highlight_shortcode()

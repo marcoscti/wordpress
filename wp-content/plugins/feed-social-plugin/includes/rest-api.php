@@ -166,7 +166,9 @@ function fs_rest_handle_like($request) {
     $email = sanitize_email($params['email'] ?? '');
     $table = $wpdb->prefix . 'feed_social_likes';
 
-    if (empty($post_id) || get_post_type($post_id) !== 'feed-social' || !is_email($email)) { // Corrigido de 'social_feed' para 'feed-social'
+    $post_type = get_post_type($post_id);
+
+    if (empty($post_id) || !in_array($post_type, ['feed-social', 'social_story'], true) || !is_email($email)) {
         return new WP_Error('invalid_data', 'Dados inválidos', ['status' => 400]);
     }
 

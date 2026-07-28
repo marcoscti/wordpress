@@ -10,10 +10,16 @@ jQuery(document).ready(function ($) {
   let videoStory = false;
   const modal = $("#fs-story-modal");
   const modalContent = modal.find(".fs-story-modal-content");
+  const storyActions = modal.find(".fs-story-actions");
   const closeBtn = modal.find(".fs-story-close");
   const prevBtn = modal.find(".fs-story-prev");
   const nextBtn = modal.find(".fs-story-next");
   const progressBarContainer = modal.find(".fs-story-progress-bar-container");
+  const burstContainer = $('<div class="fs-story-like-burst"></div>');
+  modal.append(burstContainer);
+  const likedStories = new Set(
+    JSON.parse(localStorage.getItem("fs_liked_posts") || "[]"),
+  );
     // Inicializa os carrosséis
 if (typeof Swiper !== "undefined") {
 
@@ -44,6 +50,157 @@ if (typeof Swiper !== "undefined") {
     });
 
 }
+  function saveLikedStories() {
+    localStorage.setItem("fs_liked_posts", JSON.stringify([...likedStories]));
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "");
+  }
+
+  function getStoredUserProfile() {
+    const sessionName = sessionStorage.getItem("fs_user_name") || "";
+    const sessionEmail = sessionStorage.getItem("fs_user_email") || "";
+    const localName = localStorage.getItem("fs_user_name") || "";
+    const localEmail = localStorage.getItem("fs_user_email") || "";
+
+    return {
+      name: sessionName || localName || "",
+      email: sessionEmail || localEmail || "",
+    };
+  }
+
+  function getUserEmail() {
+    const profile = getStoredUserProfile();
+    return profile.email && isValidEmail(profile.email) ? profile.email : null;
+  }
+
+  function saveUserProfile(name, email) {
+    const normalizedName = (name || "").trim();
+    const normalizedEmail = (email || "").trim();
+
+    if (!normalizedEmail) {
+      return null;
+    }
+
+    sessionStorage.setItem("fs_user_name", normalizedName);
+    localStorage.setItem("fs_user_name", normalizedName);
+    sessionStorage.setItem("fs_user_email", normalizedEmail);
+    localStorage.setItem("fs_user_email", normalizedEmail);
+
+    if (fs_story_ajax && fs_story_ajax.ajax_url) {
+      return $.post(fs_story_ajax.ajax_url, {
+        action: "fs_save_user_profile",
+        name: normalizedName,
+        email: normalizedEmail,
+      });
+    }
+
+    return null;
+  }
+
+  function formatCount(value) {
+    const count = Number(value) || 0;
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}k`;
+    }
+    return String(count);
+  }
+
+  function renderStoryActions(storyId, likesCount) {
+    const isLiked = likedStories.has(String(storyId));
+    storyActions.html(`
+      <button type="button" class="fs-likes${isLiked ? " fs-liked" : ""}" data-story-id="${storyId}">
+        <span aria-hidden="true">♥</span>
+        <span class="fs-count">${formatCount(likesCount)}</span>
+      </button>
+    `);
+  }
+
+  function createLikeBurst(button) {
+    if (!button || !button.length) {
+      return;
+    }
+
+    const rect = button[0].getBoundingClientRect();
+    const modalRect = modal[0].getBoundingClientRect();
+    const startX = rect.left - modalRect.left + rect.width / 2;
+    const startY = rect.top - modalRect.top + rect.height / 2;
+
+    for (let i = 0; i < 10; i++) {
+      const heart = $('<span class="fs-heart-pop">♥</span>');
+      const offsetX = (Math.random() - 0.5) * 80;
+      const offsetY = -(50 + Math.random() * 80);
+      const rotation = (Math.random() - 0.5) * 30;
+      const size = 16 + Math.random() * 12;
+
+      heart.css({
+        left: `${startX}px`,
+        top: `${startY}px`,
+        fontSize: `${size}px`,
+        '--x': `${offsetX}px`,
+        '--y': `${offsetY}px`,
+        '--rotation': `${rotation}deg`,
+      });
+
+      burstContainer.append(heart);
+      setTimeout(() => heart.remove(), 1100);
+    }
+  }
+
+  async function handleStoryLike(storyId) {
+    const profile = getStoredUserProfile();
+    let email = profile.email;
+    let name = profile.name;
+
+    if (!email || !isValidEmail(email)) {
+      name = window.prompt("Informe seu nome:", profile.name || "") || "";
+      email = window.prompt("Informe seu e-mail institucional:", profile.email || "") || "";
+
+      if (!name || !email || !isValidEmail(email)) {
+        window.alert("Informe seu nome e um e-mail válido para curtir.");
+        return;
+      }
+
+      saveUserProfile(name, email);
+    }
+
+    const $button = storyActions.find(`.fs-likes[data-story-id="${storyId}"]`);
+    if (!$button.length) {
+      return;
+    }
+
+    $button.prop("disabled", true);
+
+    try {
+      const response = await $.ajax({
+        url: fs_story_ajax.like_url,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-WP-Nonce": fs_story_ajax.rest_nonce || "",
+        },
+        data: JSON.stringify({
+          post_id: storyId,
+          email: email,
+        }),
+      });
+
+      if (response && response.action === "liked") {
+        likedStories.add(String(storyId));
+        createLikeBurst($button);
+      } else {
+        likedStories.delete(String(storyId));
+      }
+
+      saveLikedStories();
+      $button.toggleClass("fs-liked", response && response.action === "liked");
+      $button.find(".fs-count").text(formatCount(response && response.new_count ? response.new_count : 0));
+    } finally {
+      $button.prop("disabled", false);
+    }
+  }
+
   function createProgressBars() {
     progressBarContainer.empty();
     if (currentStories.length > 1) {
@@ -144,6 +301,7 @@ if (typeof Swiper !== "undefined") {
       function (response) {
         if (response.success) {
           modalContent.html(response.data.content);
+          renderStoryActions(storyId, response.data.likes || 0);
 
           if (response.data.has_video) {
             videoStory = true;
@@ -279,4 +437,12 @@ if (typeof Swiper !== "undefined") {
 
       loadStory(currentStories[0]);
     });
+
+  $(document).on("click", "#fs-story-modal .fs-likes", function (e) {
+    e.preventDefault();
+    const storyId = $(this).data("story-id");
+    if (storyId) {
+      handleStoryLike(storyId);
+    }
+  });
 });
