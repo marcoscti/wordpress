@@ -117,7 +117,7 @@ function fs_render_feed_shortcode($atts)
             <button type="button" class="fs-video-modal-backdrop" aria-label="<?php esc_attr_e('Fechar vídeo', 'feed-social'); ?>"></button>
             <div class="fs-video-modal-content">
                 <button type="button" class="fs-video-modal-close" aria-label="<?php esc_attr_e('Fechar', 'feed-social'); ?>">&times;</button>
-                <video class="fs-video-modal-player" controls playsinline></video>
+                <video class="fs-video-modal-player" controls playsinline controlsList="nodownload"></video>
             </div>
         </div>
     </div>
