@@ -2,8 +2,8 @@
 /*
 Plugin Name: IgesDF Countdown
 Description: Countdown simples com data inicial e final.
-Version: 1.0
-Author: Marcos
+Version: 1.0.0
+Author: Marcos Cordeiro
 */
 
 if (!defined('ABSPATH')) exit;
