@@ -2,7 +2,7 @@
 /*
 Plugin Name: IgesDF Countdown
 Description: Countdown simples com data inicial e final.
-Version: 1.0.0
+Version: 1.0.1
 Author: Marcos Cordeiro
 */
 
@@ -20,6 +20,7 @@ class SimpleCountdown {
         add_shortcode('simple_countdown',[$this,'shortcode']);
 
         add_action('wp_enqueue_scripts',[$this,'assets']);
+        add_action('admin_enqueue_scripts', [$this,'admin_assets']);
     }
 
     public function assets(){
@@ -49,6 +50,16 @@ class SimpleCountdown {
         );
     }
 
+    public function admin_assets($hook_suffix){
+
+        if ($hook_suffix !== 'settings_page_simple-countdown') {
+            return;
+        }
+
+        wp_enqueue_media();
+
+    }
+
     public function menu(){
 
         add_options_page(
@@ -73,6 +84,9 @@ class SimpleCountdown {
     public function page(){
 
         $settings = get_option($this->option);
+        $background_image = !empty($settings['background_image'])
+            ? $settings['background_image']
+            : plugin_dir_url(__FILE__) . 'assets/images/banner_semnumero.png';
 
         ?>
 
@@ -118,6 +132,35 @@ class SimpleCountdown {
 
                     </tr>
 
+                    <tr>
+
+                        <th>Imagem de fundo</th>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                id="simple-countdown-background-image"
+                                name="<?php echo $this->option; ?>[background_image]"
+                                value="<?php echo esc_attr($settings['background_image'] ?? ''); ?>"
+                                class="regular-text"
+                            >
+                            <button type="button" class="button" id="select-background-image">Selecionar imagem</button>
+                            <p class="description">Use a mídia nativa do WordPress. Se nenhuma imagem for escolhida, será usada a imagem padrão do plugin.</p>
+
+                            <div style="margin-top: 10px;">
+                                <img
+                                    id="simple-countdown-background-preview"
+                                    src="<?php echo esc_url($background_image); ?>"
+                                    alt="Pré-visualização da imagem de fundo"
+                                    style="max-width: 300px; height: auto;"
+                                >
+                            </div>
+
+                        </td>
+
+                    </tr>
+
                 </table>
 
                 <?php submit_button(); ?>
@@ -125,6 +168,36 @@ class SimpleCountdown {
             </form>
 
         </div>
+
+        <script>
+        jQuery(function($){
+            var frame;
+
+            $('#select-background-image').on('click', function(e){
+                e.preventDefault();
+
+                if (frame) {
+                    frame.open();
+                    return;
+                }
+
+                frame = wp.media({
+                    title: 'Selecionar imagem de fundo',
+                    button: { text: 'Usar imagem' },
+                    library: { type: 'image' },
+                    multiple: false
+                });
+
+                frame.on('select', function(){
+                    var attachment = frame.state().get('selection').first().toJSON();
+                    $('#simple-countdown-background-image').val(attachment.url);
+                    $('#simple-countdown-background-preview').attr('src', attachment.url).show();
+                });
+
+                frame.open();
+            });
+        });
+        </script>
 
         <?php
 
@@ -134,11 +207,16 @@ class SimpleCountdown {
 
         ob_start();
 
+        $settings = get_option($this->option);
+        $background_image = !empty($settings['background_image'])
+            ? $settings['background_image']
+            : plugin_dir_url(__FILE__) . 'assets/images/banner_semnumero.png';
+
         ?>
 
         <div class="simple-countdown">
             <div class="igesdf-countdown-background">
-                <img src="<?php echo plugin_dir_url(__FILE__) . 'assets/images/banner_semnumero.png'; ?>" alt="">
+                <img src="<?php echo esc_url($background_image); ?>" alt="">
             </div>
             <div class="igesdf-countdown-container">
                 <div>
