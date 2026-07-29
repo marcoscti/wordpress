@@ -524,6 +524,7 @@ jQuery(document).ready(function ($) {
                 autoplay
                 playsinline
                 preload="metadata"
+                controlsList="nodownload"
                 poster="${escapeHtml(poster)}"
                 src="${escapeHtml(media.url)}">
             </video>
