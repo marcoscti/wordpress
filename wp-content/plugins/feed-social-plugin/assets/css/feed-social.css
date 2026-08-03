@@ -951,11 +951,14 @@ body.fs-post-modal-open {
   flex-direction: column;
   margin-bottom: 10px;
   font-size: 0.875rem;
+  max-height: 450px;
 }
 .fs-post-legend p {
   margin-bottom: 8px;
 }
-
+.fs-post-legend-content{
+  overflow-y: scroll;
+}
 .fs-post-legend-content p {
   margin: 0 0 10px 0;
   color: #4b5563;
