@@ -14,6 +14,11 @@ define('HP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HP_HOMENAGEM_PER_PAGE', 12);
 
 add_action('init', 'hp_register_homenagem_cpt');
+add_action('wp_enqueue_scripts', 'meu_plugin_carregar_dashicons');
+function meu_plugin_carregar_dashicons()
+{
+    wp_enqueue_style('dashicons');
+}
 function hp_register_homenagem_cpt()
 {
     if (post_type_exists('homenagem')) {
