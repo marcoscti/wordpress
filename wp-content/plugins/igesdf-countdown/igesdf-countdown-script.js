@@ -2,8 +2,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!SimpleCountdown.start || !SimpleCountdown.end) return;
 
-    const start = new Date(SimpleCountdown.start).getTime();
-    const end = new Date(SimpleCountdown.end).getTime();
+    function parseLocalDateTime(value) {
+        if (!value) return null;
+
+        const [datePart, timePart = "00:00"] = value.split("T");
+        const [year, month, day] = datePart.split("-").map(Number);
+        const [hour, minute] = timePart.split(":").map(Number);
+
+        return new Date(year, month - 1, day, hour, minute);
+    }
+
+    const start = parseLocalDateTime(SimpleCountdown.start);
+    const end = parseLocalDateTime(SimpleCountdown.end);
+
+    if (!start || !end || end <= start) return;
+
+    const startTime = start.getTime();
+    const endTime = end.getTime();
 
     let interval = null;
 
@@ -11,12 +26,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const now = Date.now();
 
         // Antes da data de início
-        if (now < start) {
+        if (now < startTime) {
             return;
         }
 
         // Após a data final
-        if (now >= end) {
+        if (now >= endTime) {
             clearInterval(interval);
 
             document.getElementById("sc-days").innerHTML = "00";
@@ -27,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const distance = end - now;
+        const distance = endTime - now;
 
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -44,14 +59,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const now = Date.now();
 
-    if (now >= start && now < end) {
+    if (now >= startTime && now < endTime) {
         interval = setInterval(update, 1000);
-    } else if (now < start) {
+    } else if (now < startTime) {
         // Aguarda chegar a data de início
         setTimeout(() => {
             update();
             interval = setInterval(update, 1000);
-        }, start - now);
+        }, startTime - now);
     }
 
 });
