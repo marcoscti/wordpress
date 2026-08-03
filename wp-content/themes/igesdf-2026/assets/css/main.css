@@ -266,7 +266,7 @@ footer{
 }
 
 .lp-story-card {
-    min-height: 280px;
+    min-height: 200px;
     background: #ffffff;
     border: 1px solid rgba(19, 53, 88, 0.08);
 }
@@ -290,6 +290,13 @@ footer{
 .lp-story-card .btn-outline-primary {
     border-radius: 999px;
     padding: 0.55rem 1rem;
+}
+
+.lp-cards .btn-load-more {
+    min-width: 220px;
+    border-radius: 999px;
+    padding: 0.85rem 1.75rem;
+    font-weight: 600;
 }
 
 .lp-featured {

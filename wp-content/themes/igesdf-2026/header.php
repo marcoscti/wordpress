@@ -9,7 +9,7 @@
 
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
-    <header class="py-3 mb-4">
+    <header class="py-3">
         <div class="container">
 
             <div class="header-content">

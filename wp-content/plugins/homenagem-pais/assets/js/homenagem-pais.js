@@ -85,37 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Delegation for open and like buttons
     document.addEventListener('click', function (e) {
-        const openBtn = e.target.closest('.btn-open');
         const likeBtn = e.target.closest('.btn-like');
-
-        if (openBtn) {
-            const id = openBtn.getAttribute('data-id');
-            if (!id) return;
-
-            openBtn.disabled = true;
-            const originalText = openBtn.textContent;
-            openBtn.textContent = 'Carregando...';
-
-            const fd = new FormData();
-            fd.append('action', 'hp_get_homenagem');
-            fd.append('id', id);
-
-            fetch(window.HomenagemPais.ajax_url, { method: 'POST', body: fd })
-                .then(r => r.json()).then(json => {
-                    if (!json.success) {
-                        showToast(json.data && json.data.message ? json.data.message : 'Erro ao carregar', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
-                        return;
-                    }
-                    const d = json.data;
-                    showHomenagemModal(d);
-                }).catch(err => {
-                    console.error(err);
-                    showToast('Erro ao carregar', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
-                }).finally(() => {
-                    openBtn.disabled = false;
-                    openBtn.textContent = originalText;
-                });
-        }
+        const openBtn = e.target.closest('.btn-open');
 
         if (likeBtn) {
             const id = likeBtn.getAttribute('data-id');
@@ -146,6 +117,75 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (!likeBtn.textContent.includes('Curtir (')) {
                         const likes = likeBtn.getAttribute('data-likes') || '0';
                         likeBtn.textContent = 'Curtir (' + likes + ')';
+                    }
+                });
+        }
+
+        if (openBtn && !likeBtn) {
+            const id = openBtn.getAttribute('data-id');
+            if (!id) return;
+
+            openBtn.disabled = true;
+            const originalText = openBtn.textContent;
+            openBtn.textContent = 'Carregando...';
+
+            const fd = new FormData();
+            fd.append('action', 'hp_get_homenagem');
+            fd.append('id', id);
+
+            fetch(window.HomenagemPais.ajax_url, { method: 'POST', body: fd })
+                .then(r => r.json()).then(json => {
+                    if (!json.success) {
+                        showToast(json.data && json.data.message ? json.data.message : 'Erro ao carregar', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
+                        return;
+                    }
+                    const d = json.data;
+                    showHomenagemModal(d);
+                }).catch(err => {
+                    console.error(err);
+                    showToast('Erro ao carregar', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
+                }).finally(() => {
+                    openBtn.disabled = false;
+                    openBtn.textContent = originalText;
+                });
+        }
+
+        const loadMoreBtn = e.target.closest('.btn-load-more');
+        if (loadMoreBtn) {
+            const page = parseInt(loadMoreBtn.getAttribute('data-page'), 10) || 1;
+            loadMoreBtn.disabled = true;
+            const originalText = loadMoreBtn.textContent;
+            loadMoreBtn.textContent = 'Carregando...';
+
+            const fd = new FormData();
+            fd.append('action', 'hp_load_more_homenagens');
+            fd.append('page', page + 1);
+
+            fetch(window.HomenagemPais.ajax_url, { method: 'POST', body: fd })
+                .then(r => r.json()).then(json => {
+                    if (!json.success) {
+                        showToast(json.data && json.data.message ? json.data.message : 'Erro ao carregar mais', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
+                        return;
+                    }
+
+                    const grid = document.getElementById('hp-homenagem-grid');
+                    if (grid) {
+                        grid.insertAdjacentHTML('beforeend', json.data.html);
+                    }
+
+                    if (json.data.has_more) {
+                        loadMoreBtn.setAttribute('data-page', json.data.next_page);
+                        loadMoreBtn.textContent = 'Carregar mais';
+                    } else {
+                        loadMoreBtn.remove();
+                    }
+                }).catch(err => {
+                    console.error(err);
+                    showToast('Erro ao carregar mais', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
+                }).finally(() => {
+                    if (document.body.contains(loadMoreBtn)) {
+                        loadMoreBtn.disabled = false;
+                        loadMoreBtn.textContent = originalText;
                     }
                 });
         }

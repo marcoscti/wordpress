@@ -7,24 +7,6 @@ get_header();
 
 <section class="lp-hero mb-5">
     <div class="lp-hero-bg" style="background-image:url('<?php echo get_template_directory_uri(); ?>/assets/images/hero.jpg');"></div>
-    <div class="container lp-hero-content">
-        <div class="row align-items-center">
-            <div class="col-lg-6 text-white">
-                
-            </div>
-            <div class="col-lg-6 text-lg-end mt-4 mt-lg-0">
-                <div class="hero-cta-card shadow-sm p-4 bg-white rounded-4 text-dark d-inline-block text-start">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h2 class="mb-1">Enviar Homenagem</h2>
-                            <p class="mb-0 text-muted">Conte sua história para nosso painel de pais.</p>
-                        </div>
-                        <div class="btn btn-primary">Enviar homenagem</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </section>
 
 <section class="lp-form container my-5">
@@ -35,6 +17,7 @@ get_header();
                     <div class="col-md-5 pe-md-4 mb-4 mb-md-0">
                         <h2>Compartilhe sua história</h2>
                         <p class="text-muted">Conte para nós: o que é ser pai para você? Sua mensagem pode inspirar outras pessoas.</p>
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/father.png" alt="Pai">
                     </div>
                     <div class="col-md-7">
                         <form id="homenagem-form" class="homenagem-pais-form" enctype="multipart/form-data">
@@ -67,12 +50,15 @@ get_header();
                     </div>
                     <button class="btn btn-outline-primary btn-sm" onclick="window.scrollTo({top: document.getElementById('homenagem-form').offsetTop - 100, behavior:'smooth'})">Enviar homenagem</button>
                 </div>
-                <div class="row gx-4 gy-4">
+                <div class="row gx-4 gy-4" id="hp-homenagem-grid">
                     <?php
+                    $posts_per_page = defined('HP_HOMENAGEM_PER_PAGE') ? HP_HOMENAGEM_PER_PAGE : 12;
                     $q = new WP_Query([
                         'post_type' => 'homenagem',
                         'post_status' => 'publish',
-                        'posts_per_page' => 12
+                        'posts_per_page' => $posts_per_page,
+                        'orderby' => 'date',
+                        'order' => 'DESC',
                     ]);
 
                     if ($q->have_posts()) {
@@ -87,7 +73,7 @@ get_header();
                             $likes = intval(get_post_meta($pid, 'homenagem_likes', true));
                     ?>
                             <div class="col-md-4">
-                                <div class="card lp-story-card h-100 shadow-sm border-0 rounded-4 p-3 btn-open" data-id="<?php echo $pid; ?>">
+                                <div class="card lp-story-card h-100 shadow-sm border rounded-4 p-3 btn-open" data-id="<?php echo $pid; ?>">
                                     <div class="d-flex align-items-center gap-3 mb-3">
                                         <img src="<?php echo esc_url($thumb); ?>" class="avatar rounded-circle" alt="<?php echo esc_attr($name); ?>">
                                         <div>
@@ -109,46 +95,12 @@ get_header();
                     }
                     ?>
                 </div>
+                <?php if ($q->max_num_pages > 1) : ?>
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-primary btn-load-more" data-page="1">Carregar mais</button>
+                    </div>
+                <?php endif; ?>
             </section>
-            <?php
-            global $wpdb;
-            $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type='homenagem'");
-            $parents = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key='homenagem_name'");
-            $parents_count = count(array_filter(array_unique($parents)));
-            $messages = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} m ON p.ID=m.post_id AND m.meta_key='homenagem_message' WHERE post_type='homenagem' AND COALESCE(m.meta_value,'') != ''");
-            $units = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key='homenagem_unit' AND COALESCE(meta_value,'') != ''");
-            $units_count = count(array_unique($units));
-            ?>
-            <div class="row gx-3 gy-3 lp-stats mt-4">
-                <div class="col-6 col-md-3">
-                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                        <div class="stat-icon">&#10084;</div>
-                        <h3><?php echo intval($total); ?></h3>
-                        <p>Homenagens recebidas</p>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                        <div class="stat-icon">&#127968;</div>
-                        <h3><?php echo intval($parents_count); ?></h3>
-                        <p>Pais participantes</p>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                        <div class="stat-icon">&#128172;</div>
-                        <h3><?php echo intval($messages); ?></h3>
-                        <p>Mensagens</p>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                        <div class="stat-icon">&#128214;</div>
-                        <h3><?php echo intval($units_count); ?></h3>
-                        <p>Unidades representadas</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -205,6 +157,48 @@ if (!empty($featured)) : ?>
         </div>
     </section>
 <?php endif; ?>
-
+<section class="my-4">
+    <div class="container">
+        <h2 class="mb-3">Números que nos enchem de orgulho</h2>
+        <?php
+            global $wpdb;
+            $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type='homenagem'");
+            $parents = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key='homenagem_name'");
+            $parents_count = count(array_filter(array_unique($parents)));
+            $messages = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} m ON p.ID=m.post_id AND m.meta_key='homenagem_message' WHERE post_type='homenagem' AND COALESCE(m.meta_value,'') != ''");
+            $units = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key='homenagem_unit' AND COALESCE(meta_value,'') != ''");
+            $units_count = count(array_unique($units));
+            ?>
+            <div class="row gx-3 gy-3 lp-stats mt-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
+                        <div class="stat-icon">&#10084;</div>
+                        <h3><?php echo intval($total); ?></h3>
+                        <p>Homenagens recebidas</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
+                        <div class="stat-icon">&#127968;</div>
+                        <h3><?php echo intval($parents_count); ?></h3>
+                        <p>Pais participantes</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
+                        <div class="stat-icon">&#128172;</div>
+                        <h3><?php echo intval($messages); ?></h3>
+                        <p>Mensagens</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
+                        <div class="stat-icon">&#128214;</div>
+                        <h3><?php echo intval($units_count); ?></h3>
+                        <p>Unidades representadas</p>
+                    </div>
+                </div>
+            </div>
+    </div>
 <?php
 get_footer();

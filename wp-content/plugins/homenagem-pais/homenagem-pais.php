@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Homenagem Pais
  * Description: Registra o Custom Post Type `homenagem` e provê endpoint AJAX para submissão de homenagens (para uso em landing pages).
@@ -10,6 +11,7 @@ if (!defined('ABSPATH')) exit;
 
 define('HP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HP_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('HP_HOMENAGEM_PER_PAGE', 12);
 
 add_action('init', 'hp_register_homenagem_cpt');
 function hp_register_homenagem_cpt()
@@ -30,7 +32,7 @@ function hp_register_homenagem_cpt()
         'search_items' => __('Pesquisar homenagens', 'homenagem-pais'),
         'not_found' => __('Nenhuma homenagem encontrada', 'homenagem-pais'),
         'not_found_in_trash' => __('Nenhuma homenagem no lixo', 'homenagem-pais'),
-        'menu_name' => __('Homenagem', 'homenagem-pais'),
+        'menu_name' => __('Dia dos Pais', 'homenagem-pais'),
     );
 
     $args = array(
@@ -46,7 +48,7 @@ function hp_register_homenagem_cpt()
         'hierarchical' => false,
         'menu_position' => 20,
         'supports' => array('title', 'editor', 'thumbnail'),
-        'menu_icon' => 'dashicons-heart',
+        'menu_icon' => 'dashicons-businessperson',
         'show_in_rest' => true,
     );
 
@@ -151,6 +153,76 @@ function hp_get_homenagem()
         'media_url' => $media_url,
         'likes' => $likes,
     ));
+}
+
+// AJAX: carregar mais homenagens
+add_action('wp_ajax_hp_load_more_homenagens', 'hp_load_more_homenagens');
+add_action('wp_ajax_nopriv_hp_load_more_homenagens', 'hp_load_more_homenagens');
+function hp_load_more_homenagens()
+{
+    $page = max(1, intval($_POST['page'] ?? 1));
+
+    $query = new WP_Query([
+        'post_type' => 'homenagem',
+        'post_status' => 'publish',
+        'posts_per_page' => HP_HOMENAGEM_PER_PAGE,
+        'paged' => $page,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    ]);
+
+    if (!$query->have_posts()) {
+        wp_send_json_error(array('message' => 'Sem mais homenagens'), 404);
+    }
+
+    $html = hp_render_homenagem_cards($query->posts);
+    $has_more = $query->max_num_pages > $page;
+
+    wp_send_json_success(array(
+        'html' => $html,
+        'has_more' => $has_more,
+        'next_page' => $page + 1,
+    ));
+}
+
+function hp_render_homenagem_card($post)
+{
+    $pid = $post->ID;
+    $name = get_post_meta($pid, 'homenagem_name', true) ?: get_the_title($pid);
+    $unit = get_post_meta($pid, 'homenagem_unit', true);
+    $message = get_post_meta($pid, 'homenagem_message', true) ?: $post->post_excerpt ?: $post->post_content;
+    $short = mb_substr(strip_tags($message), 0, 70);
+    $thumb = get_the_post_thumbnail_url($pid, 'thumbnail') ?: get_template_directory_uri() . '/assets/images/default-avatar.png';
+    $likes = intval(get_post_meta($pid, 'homenagem_likes', true));
+
+    ob_start();
+?>
+    <div class="col-md-4">
+        <div class="card lp-story-card h-100 shadow-sm border-0 rounded-4 p-3 btn-open" data-id="<?php echo esc_attr($pid); ?>">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <img src="<?php echo esc_url($thumb); ?>" class="avatar rounded-circle" alt="<?php echo esc_attr($name); ?>">
+                <div>
+                    <h5 class="mb-1"><?php echo esc_html($name); ?></h5>
+                    <p class="text-muted small mb-0"><?php echo esc_html($unit); ?></p>
+                </div>
+            </div>
+            <p class="card-text text-secondary mb-4">“<?php echo esc_html($short); ?>...”</p>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+                <button class="btn btn-sm btn-outline-primary btn-like" type="button" data-id="<?php echo esc_attr($pid); ?>" data-likes="<?php echo esc_attr($likes); ?>">Curtir (<?php echo esc_html($likes); ?>)</button>
+            </div>
+        </div>
+    </div>
+<?php
+    return ob_get_clean();
+}
+
+function hp_render_homenagem_cards($posts)
+{
+    $html = '';
+    foreach ($posts as $post) {
+        $html .= hp_render_homenagem_card($post);
+    }
+    return $html;
 }
 
 // AJAX: curtir homenagem
