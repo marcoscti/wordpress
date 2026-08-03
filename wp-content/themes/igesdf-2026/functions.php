@@ -403,8 +403,13 @@ function create_post_types()
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
     );
     register_post_type('convenio', $args_convenio);
+    
+    
 }
 add_action('init', 'create_post_types');
+
+// AJAX handler para submissão de homenagens (frontend)
+ 
 
 // Mostra os posts personalizados nas consultas padrões do wordpress
 function add_my_post_types_to_query($query)

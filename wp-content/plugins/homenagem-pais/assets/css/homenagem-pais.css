@@ -1,0 +1,52 @@
+.hp-homenagem-modal-dialog {
+    max-width: 100%;
+    width: auto;
+    margin: 1rem;
+}
+
+.hp-homenagem-modal-content {
+    min-height: 60vh;
+    max-height: 90vh;
+}
+
+.hp-homenagem-modal-body {
+    overflow-y: auto;
+    max-height: calc(90vh - 180px);
+}
+
+#hp-toast-container .toast {
+    min-width: 220px;
+    margin-bottom: 0.75rem;
+    border-radius: 0.75rem;
+}
+
+#hp-toast-container .toast-body {
+    padding: 1rem 1.25rem;
+}
+
+@media (max-width: 767px) {
+    .hp-homenagem-modal-content {
+        max-height: 85vh;
+    }
+    .hp-homenagem-modal-body {
+        max-height: calc(85vh - 170px);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .hp-homenagem-modal-content {
+        max-height: 88vh;
+    }
+    .hp-homenagem-modal-body {
+        max-height: calc(88vh - 170px);
+    }
+}
+
+@media (min-width: 1200px) {
+    .hp-homenagem-modal-content {
+        max-height: 90vh;
+    }
+    .hp-homenagem-modal-body {
+        max-height: calc(90vh - 180px);
+    }
+}
