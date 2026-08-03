@@ -2,7 +2,7 @@
 /*
 Plugin Name: IgesDF Countdown
 Description: Countdown simples com data inicial e final.
-Version: 1.0.2
+Version: 1.0.3
 Author: Marcos Cordeiro
 */
 
@@ -219,25 +219,25 @@ class SimpleCountdown {
                 <img src="<?php echo esc_url($background_image); ?>" alt="">
             </div>
             <div class="igesdf-countdown-container">
-                <div>
-                <span id="sc-days">00</span>
-                <small>Dias</small>
-            </div>
+                <div id="sc-days-wrapper">
+                    <span id="sc-days">00</span>
+                    <small>Dias</small>
+                </div>
                 <div class="divider"><span>:</span></div>
-            <div>
-                <span id="sc-hours">00</span>
-                <small>Horas</small>
-            </div>
+                <div id="sc-hours-wrapper">
+                    <span id="sc-hours">00</span>
+                    <small>Horas</small>
+                </div>
                 <div class="divider"><span>:</span></div>
-            <div>
-                <span id="sc-minutes">00</span>
-                <small>Minutos</small>
-            </div>
+                <div id="sc-minutes-wrapper">
+                    <span id="sc-minutes">00</span>
+                    <small>Minutos</small>
+                </div>
                 <div class="divider"><span>:</span></div>
-            <div>
-                <span id="sc-seconds">00</span>
-                <small>Segundos</small>
-            </div>
+                <div id="sc-seconds-wrapper">
+                    <span id="sc-seconds">00</span>
+                    <small>Segundos</small>
+                </div>
             </div>
 
         </div>

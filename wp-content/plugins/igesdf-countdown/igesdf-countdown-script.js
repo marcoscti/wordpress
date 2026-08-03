@@ -19,8 +19,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const startTime = start.getTime();
     const endTime = end.getTime();
+    const dayMs = 1000 * 60 * 60 * 24;
+    const hourMs = 1000 * 60 * 60;
+    const minuteMs = 1000 * 60;
 
     let interval = null;
+
+    const dayUnit = document.getElementById("sc-days-wrapper");
+    const hourUnit = document.getElementById("sc-hours-wrapper");
+    const minuteUnit = document.getElementById("sc-minutes-wrapper");
+    const secondUnit = document.getElementById("sc-seconds-wrapper");
+
+    function updateVisibility(distance) {
+        if (dayUnit) {
+            dayUnit.style.display = "block";
+        }
+
+        if (hourUnit) {
+            hourUnit.style.display = "block";
+        }
+
+        if (minuteUnit) {
+            minuteUnit.style.display = "block";
+        }
+
+        if (secondUnit) {
+            secondUnit.style.display = "block";
+        }
+    }
 
     function update() {
         const now = Date.now();
@@ -39,20 +65,24 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("sc-minutes").innerHTML = "00";
             document.getElementById("sc-seconds").innerHTML = "00";
 
+            updateVisibility(0);
+
             return;
         }
 
         const distance = endTime - now;
 
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const days = Math.floor(distance / dayMs);
+        const hours = Math.floor((distance % dayMs) / hourMs);
+        const minutes = Math.floor((distance % hourMs) / minuteMs);
+        const seconds = Math.floor((distance % minuteMs) / 1000);
 
-        document.getElementById("sc-days").textContent = String(days).padStart(2, "0");
-        document.getElementById("sc-hours").textContent = String(hours).padStart(2, "0");
-        document.getElementById("sc-minutes").textContent = String(minutes).padStart(2, "0");
-        document.getElementById("sc-seconds").textContent = String(seconds).padStart(2, "0");
+        updateVisibility(distance);
+
+        document.getElementById("sc-days").textContent = String(Math.max(days, 0)).padStart(2, "0");
+        document.getElementById("sc-hours").textContent = String(Math.max(hours, 0)).padStart(2, "0");
+        document.getElementById("sc-minutes").textContent = String(Math.max(minutes, 0)).padStart(2, "0");
+        document.getElementById("sc-seconds").textContent = String(Math.max(seconds, 0)).padStart(2, "0");
     }
 
     update();
