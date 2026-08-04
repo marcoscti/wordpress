@@ -10,22 +10,23 @@ get_header();
 </section>
 
 <section class="lp-form container my-5">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center custom">
         <div class="col-xl-12">
-            <div class="card lp-form-card  p-4 border-0">
+            <div class="card lp-form-card  p-4 shadow rounded-4">
                 <div class="row gx-4">
                     <div class="col-md-5 pe-md-4 mb-4 mb-md-0">
-                        <h2>Compartilhe sua história</h2>
+                        <h2 class="h1 lp-dia-dos-pais-title">Compartilhe sua história</h2>
                         <p class="text-muted">Conte para nós: o que é ser pai para você? Sua mensagem pode inspirar outras pessoas.</p>
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/father.png" alt="Pai">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/father.png" alt="Pai" class="img-fluid">
                     </div>
                     <div class="col-md-7">
                         <form id="homenagem-form" class="homenagem-pais-form" enctype="multipart/form-data">
-                            <div class="mb-3">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6 col-sm-12">
                                 <label class="form-label">Seu nome</label>
                                 <input type="text" name="h_name" class="form-control" required placeholder="Digite seu nome">
                             </div>
-                            <div class="mb-3">
+                            <div class="col-md-6 col-sm-12">
                                 <label class="form-label">Unidade de trabalho</label>
                                 <select name="h_unit" class="form-select form-control" required>
                                     <option value="">Selecione uma unidade</option>
@@ -49,6 +50,7 @@ get_header();
                                     <option value="UPA Vicente Pires">UPA Vicente Pires</option>
                                 </select>
                             </div>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Foto ou vídeo (máx 40s)</label>
                                 <input type="file" name="h_media" accept="image/*,video/*" class="form-control">
@@ -65,10 +67,10 @@ get_header();
             <section class="lp-cards container my-5">
                 <div class="d-flex align-items-center justify-content-between mb-4 flex-column flex-md-row gap-3">
                     <div>
-                        <h3>O que nossos pais dizem</h3>
+                        <h2 class="h1 lp-dia-dos-pais-title">O que nossos pais dizem</h2>
                         <p class="text-muted mb-0">Histórias reais de carinho e inspiração.</p>
                     </div>
-                    <button class="btn btn-outline-primary btn-sm" onclick="window.scrollTo({top: document.getElementById('homenagem-form').offsetTop - 100, behavior:'smooth'})"><span class="dashicons dashicons-upload"></span> Enviar homenagem</button>
+                    
                 </div>
                 <div class="row gx-4 gy-4" id="hp-homenagem-grid">
                     <?php
@@ -89,13 +91,19 @@ get_header();
                             $unit = get_post_meta($pid, 'homenagem_unit', true);
                             $message = get_post_meta($pid, 'homenagem_message', true) ?: get_the_excerpt();
                             $short = mb_substr(strip_tags($message), 0, 70);
-                            $thumb = get_the_post_thumbnail_url($pid, 'thumbnail') ?: get_template_directory_uri() . '/assets/images/default-avatar.png';
+                            $preview = function_exists('hp_get_homenagem_preview_data') ? hp_get_homenagem_preview_data($pid) : array('type' => 'default', 'url' => get_template_directory_uri() . '/assets/images/default-avatar.png');
                             $likes = intval(get_post_meta($pid, 'homenagem_likes', true));
                     ?>
                             <div class="col-md-4">
                                 <div class="card lp-story-card h-100 shadow-sm border rounded-4 p-3 btn-open" data-id="<?php echo $pid; ?>">
                                     <div class="d-flex align-items-center gap-3 mb-3">
-                                        <img src="<?php echo esc_url($thumb); ?>" class="avatar rounded-circle" alt="<?php echo esc_attr($name); ?>">
+                                        <?php if ($preview['type'] === 'video') : ?>
+                                            <div class="hp-card-preview hp-card-preview--video" aria-label="Vídeo">
+                                                <span class="dashicons dashicons-format-video"></span>
+                                            </div>
+                                        <?php else : ?>
+                                            <img src="<?php echo esc_url($preview['url']); ?>" class="avatar rounded-circle" alt="<?php echo esc_attr($name); ?>">
+                                        <?php endif; ?>
                                         <div>
                                             <h5 class="mb-1"><?php echo esc_html($name); ?></h5>
                                             <p class="text-muted small mb-0"><?php echo esc_html($unit); ?></p>
@@ -141,7 +149,7 @@ if (!empty($featured)) : ?>
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="featured-info text-white">
                         <span class="eyebrow eyebrow-light">Homenagem em destaque</span>
-                        <h2 class="text-white">“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
+                        <h2 class="text-white lp-dia-dos-pais-title">“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
                         <p class="text-white-50">Descubra como nossas homenagens mostram a força do amor e da presença todos os dias.</p>
                     </div>
                 </div>
@@ -179,7 +187,7 @@ if (!empty($featured)) : ?>
 <?php endif; ?>
 <section class="my-4 py-4">
     <div class="container">
-        <h2 class="mb-3">Números que nos enchem de orgulho</h2>
+        <h2 class="mb-3 h1 lp-dia-dos-pais-title">Números que nos enchem de orgulho</h2>
         <?php
         global $wpdb;
         $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type='homenagem'");
@@ -193,28 +201,28 @@ if (!empty($featured)) : ?>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
                     <div class="stat-icon">&#10084;</div>
-                    <h3><?php echo intval($total); ?></h3>
+                    <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($total); ?></h3>
                     <p>Homenagens recebidas</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
                     <div class="stat-icon">&#127968;</div>
-                    <h3><?php echo intval($parents_count); ?></h3>
+                    <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($parents_count); ?></h3>
                     <p>Pais participantes</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
                     <div class="stat-icon">&#128172;</div>
-                    <h3><?php echo intval($messages); ?></h3>
+                    <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($messages); ?></h3>
                     <p>Mensagens</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
                     <div class="stat-icon">&#128214;</div>
-                    <h3><?php echo intval($units_count); ?></h3>
+                    <h3 class="lp-dia-dos-pais-text h1" ><?php echo intval($units_count); ?></h3>
                     <p>Unidades representadas</p>
                 </div>
             </div>

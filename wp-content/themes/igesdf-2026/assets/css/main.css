@@ -1,364 +1,389 @@
-:root{
-    --primary-color: #0094c6;
-    --white: #fff;
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Noto+Serif+Ottoman+Siyaq&display=swap');
+:root {
+  --primary-color: #0094c6;
+  --white: #fff;
 }
-body{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Open Sans', sans-serif;
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
 }
-header{
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: var(--primary-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-footer{
-    background-color: var(--primary-color);
+footer {
+  background-color: var(--primary-color);
 }
-.btn-igesdf-main{
-    color: var(--white)!important;
+.btn-igesdf-main {
+  color: var(--white) !important;
 }
-.igesdf-container{
-    height: 100%;
-    min-height: 100dvh;
+.igesdf-container {
+  height: 100%;
+  min-height: 100dvh;
 }
-.noticia-template-default .igesdf-container{
-    max-width: 1024px!important;
-    width: 100%;
+.noticia-template-default .igesdf-container {
+  max-width: 1024px !important;
+  width: 100%;
 }
-.noticia-template-default .content .wp-caption-text{
-    font-size: .9rem;
-    font-style: italic;
+.noticia-template-default .content .wp-caption-text {
+  font-size: 0.9rem;
+  font-style: italic;
 }
 .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .logo img {
-    max-height: 60px;
-    width: auto;
+  max-height: 60px;
+  width: auto;
 }
 
 .search-input {
-    flex: 1;
-    max-width: 350px;
+  flex: 1;
+  max-width: 350px;
 }
 
 /* garante que o campo ocupe a largura disponível */
 .search-input form,
 .search-input .input-group,
 .search-input input {
-    width: 100%;
+  width: 100%;
 }
 .navbar-nav .sub-menu {
-    display: none;
-    list-style: none;
-    padding-left: 15px;
+  display: none;
+  list-style: none;
+  padding-left: 15px;
 }
 
 .navbar-nav .sub-menu {
-    display: none;
-    list-style: none;
-    padding-left: 20px;
-    margin-top: 10px;
+  display: none;
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 10px;
 }
 
 .navbar-nav .menu-item-has-children.active > .sub-menu {
-    display: block;
+  display: block;
 }
 
 .navbar-nav .menu-item-has-children > a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .navbar-nav .menu-item-has-children > a::after {
-    content: "\f107";
-    font-family: FontAwesome;
-    transition: .3s;
+  content: "\f107";
+  font-family: FontAwesome;
+  transition: 0.3s;
 }
 
 .navbar-nav .menu-item-has-children.active > a::after {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 /* Mobile */
 @media (max-width: 991.98px) {
+  .header-content {
+    flex-wrap: wrap;
+  }
 
-    .header-content {
-        flex-wrap: wrap;
-    }
+  .search-input {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-top: 15px;
+    order: 3;
+  }
 
-    .search-input {
-        flex: 0 0 100%;
-        max-width: 100%;
-        margin-top: 15px;
-        order: 3;
-    }
-
-    .logo {
-        order: 2;
-    }
-
+  .logo {
+    order: 2;
+  }
 }
 .icon-404 {
-    font-size: 5rem;
-    margin-bottom: 1rem;
+  font-size: 5rem;
+  margin-bottom: 1rem;
 }
-.offcanvas.offcanvas-start.show{
-    background-color: var(--primary-color);
+.offcanvas.offcanvas-start.show {
+  background-color: var(--primary-color);
 }
 .offcanvas-body {
-    margin: 0px;
-    font-size: 1.2rem;
-    padding: 0px!important ;
+  margin: 0px;
+  font-size: 1.2rem;
+  padding: 0px !important ;
 }
 .offcanvas-body ul li {
-    padding: 10px 0;
-	width: 100%;
-    text-align: left;
+  padding: 10px 0;
+  width: 100%;
+  text-align: left;
 }
-.offcanvas-body ul li a{
-    padding: 10px;
-    text-decoration: none;
-    color: var(--white);
+.offcanvas-body ul li a {
+  padding: 10px;
+  text-decoration: none;
+  color: var(--white);
 }
-.offcanvas-body ul li:hover{
-    background-color: rgba(255, 255, 255, 0.1);
+.offcanvas-body ul li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
-.igesdf-container .navigation{
-    justify-content:center;
+.igesdf-container .navigation {
+  justify-content: center;
 }
-.igesdf-container .page-numbers{
-    padding:10px 15px;
-    border:1px solid var(--primary-color);
-    color:var(--primary-color);
-    font-weight:600;
-    text-decoration:none;
-    cursor:pointer;
+.igesdf-container .page-numbers {
+  padding: 10px 15px;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
 }
-.igesdf-container .page-numbers.current{
-    background-color:var(--primary-color);
-    color:var(--white);
+.igesdf-container .page-numbers.current {
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
-.igesdf-container .card-body .h5 a{
-    text-decoration:none;
-    color:var(--primary-color)
+.igesdf-container .card-body .h5 a {
+  text-decoration: none;
+  color: var(--primary-color);
 }
 
 /* LP Dia dos Pais styles */
 .lp-hero {
-    position: relative;
-    min-height: 520px;
-    overflow: hidden;
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
 }
 
 .lp-hero-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.55);
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.55);
 }
 
 .lp-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(4, 15, 34, 0.8) 0%, rgba(33, 72, 119, 0.55) 55%, rgba(16, 39, 62, 0.8) 100%);
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(4, 15, 34, 0.8) 0%,
+    rgba(33, 72, 119, 0.55) 55%,
+    rgba(16, 39, 62, 0.8) 100%
+  );
 }
 
 .lp-hero-content {
-    position: relative;
-    z-index: 1;
-    padding: 5rem 0;
+  position: relative;
+  z-index: 1;
+  padding: 5rem 0;
 }
 
 .lp-hero .eyebrow {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: #f4d8c0;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #f4d8c0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
 
 .lp-hero h1 {
-    font-size: clamp(3rem, 3.5vw, 4.5rem);
-    line-height: 1.02;
-    max-width: 18rem;
-    margin-bottom: 1rem;
+  font-size: clamp(3rem, 3.5vw, 4.5rem);
+  line-height: 1.02;
+  max-width: 18rem;
+  margin-bottom: 1rem;
 }
 
 .lp-hero .lead {
-    max-width: 35rem;
-    color: rgba(255, 255, 255, 0.88);
+  max-width: 35rem;
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .hero-cta-card {
-    max-width: 100%;
-    min-width: 320px;
+  max-width: 100%;
+  min-width: 320px;
 }
 
 .hero-cta-card h2 {
-    font-size: 1.4rem;
-    margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .lp-form-card {
-    background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .lp-form-card .form-label {
-    font-weight: 600;
-    color: #1c3051;
+  font-weight: 600;
+  color: #1c3051;
 }
 
 .lp-form-card .form-control {
-    border-radius: 1rem;
-    border: 1px solid rgba(19, 53, 88, 0.18);
-    padding: 1rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(19, 53, 88, 0.18);
+  padding: 1rem 0.95rem;
 }
 
 .lp-form-card textarea.form-control {
-    min-height: 180px;
+  min-height: 180px;
 }
 
 .lp-form-card .btn-primary {
-    border-radius: 999px;
-    padding: 0.95rem 1.5rem;
+  border-radius: 999px;
+  padding: 0.95rem 1.5rem;
 }
 
 .lp-stats .stat-card {
-    min-height: 180px;
-    background: #ffffff;
-    border: 1px solid rgba(19, 53, 88, 0.08);
+  min-height: 180px;
+  background: #ffffff;
+  border: 1px solid rgba(19, 53, 88, 0.08);
 }
 
 .lp-stats .stat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    margin-bottom: 1rem;
-    border-radius: 50%;
-    background: rgba(240, 196, 147, 0.14);
-    color: #d39d5e;
-    font-size: 1.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: rgba(240, 196, 147, 0.14);
+  color: #d39d5e;
+  font-size: 1.65rem;
 }
 
 .lp-cards h3,
 .lp-featured h2,
 .lp-numbers h3 {
-    color: #10294a;
+  color: #10294a;
 }
 
 .lp-cards .row {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .lp-story-card {
-    min-height: 200px;
-    background: #ffffff;
-    border: 1px solid rgba(19, 53, 88, 0.08);
+  min-height: 200px;
+  background: #ffffff;
+  border: 1px solid rgba(19, 53, 88, 0.08);
 }
 
 .lp-story-card .avatar {
-    width: 56px;
-    height: 56px;
-    object-fit: cover;
-    border: 3px solid #ffffff;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .lp-story-card h5 {
-    margin-bottom: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .lp-story-card p {
-    line-height: 1.6;
+  line-height: 1.6;
 }
 
 .lp-story-card .btn-outline-primary {
-    border-radius: 999px;
-    padding: 0.55rem 1rem;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
 }
 
 .lp-cards .btn-load-more {
-    min-width: 220px;
-    border-radius: 999px;
-    padding: 0.85rem 1.75rem;
-    font-weight: 600;
+  min-width: 220px;
+  border-radius: 999px;
+  padding: 0.85rem 1.75rem;
+  font-weight: 600;
 }
 
 .lp-featured {
-    background: linear-gradient(135deg, #071f3c 0%, #0c3c6c 100%);
-    color: #ffffff;
-    padding: 2rem 0;
+  background: linear-gradient(135deg, #071f3c 0%, #0c3c6c 100%);
+  color: #ffffff;
+  padding: 2rem 0;
 }
 
 .lp-featured .featured-info h2 {
-    font-size: clamp(2rem, 2.2vw, 2.8rem);
-    line-height: 1.1;
+  font-size: clamp(2rem, 2.2vw, 2.8rem);
+  line-height: 1.1;
 }
 
 .lp-featured .carousel-inner {
-    border-radius: 24px;
-    overflow: hidden;
+  border-radius: 24px;
+  overflow: hidden;
 }
 
 .lp-featured .carousel-caption {
-    background: rgba(0, 0, 0, 0.45);
-    padding: 1rem;
-    border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1rem;
+  border-radius: 1rem;
 }
 
 .lp-featured .carousel-caption h5,
 .lp-featured .carousel-caption p {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .lp-numbers .number-card {
-    min-height: 180px;
-    background: #ffffff;
-    border: 1px solid rgba(19, 53, 88, 0.08);
+  min-height: 180px;
+  background: #ffffff;
+  border: 1px solid rgba(19, 53, 88, 0.08);
 }
 
 .lp-numbers .display-5 {
-    color: #10294a;
-    font-weight: 700;
+  color: #10294a;
+  font-weight: 700;
 }
 
 @media (max-width: 991.98px) {
-    .lp-hero {
-        min-height: 420px;
-    }
+  .lp-hero {
+    min-height: 420px;
+  }
 
-    .lp-hero-content {
-        padding: 3rem 0;
-    }
+  .lp-hero-content {
+    padding: 3rem 0;
+  }
 
-    .lp-hero h1 {
-        max-width: 100%;
-    }
+  .lp-hero h1 {
+    max-width: 100%;
+  }
 
-    .hero-cta-card {
-        width: 100%;
-    }
+  .hero-cta-card {
+    width: 100%;
+  }
 
-    .lp-form-card {
-        padding: 2rem 1.5rem;
-    }
+  .lp-form-card {
+    padding: 2rem 1.5rem;
+  }
 
-    .lp-featured .featured-info {
-        margin-bottom: 1.5rem;
-    }
+  .lp-featured .featured-info {
+    margin-bottom: 1.5rem;
+  }
+}
+.page-template-lp-dia-dos-pais .custom {
+  position: relative;
+  top: -150px;
+}
+.lp-dia-dos-pais-text {
+  font-family: "Noto Serif Ottoman Siyaq", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.lp-dia-dos-pais-title {
+  font-family: "Noto Serif Ottoman Siyaq", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.lp-dia-dos-pais-title::after {
+  display: block;
+  content: url("data:image/svg+xml,%3Csvg width='150' height='39.140999' viewBox='0 0 39.687499 10.356056' version='1.1' id='svg1' xml:space='preserve' inkscape:version='1.4.2 (f4327f4, 2025-05-13)' sodipodi:docname='heart.svg' xmlns:inkscape='http://www.inkscape.org/namespaces/inkscape' xmlns:sodipodi='http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3E%3Csodipodi:namedview id='namedview1' pagecolor='%23ffffff' bordercolor='%23000000' borderopacity='0.25' inkscape:showpageshadow='2' inkscape:pageopacity='0.0' inkscape:pagecheckerboard='0' inkscape:deskcolor='%23d1d1d1' inkscape:document-units='mm' inkscape:zoom='5.7513468' inkscape:cx='68.331821' inkscape:cy='63.898077' inkscape:window-width='1920' inkscape:window-height='1009' inkscape:window-x='-8' inkscape:window-y='-8' inkscape:window-maximized='1' inkscape:current-layer='layer1' /%3E%3Cdefs id='defs1' /%3E%3Cg inkscape:label='Camada 1' inkscape:groupmode='layer' id='layer1'%3E%3Cpath style='fill:%23000000;stroke-width:0.175438' d='M 16.903613,10.284226 C 15.48657,10.128826 14.134507,9.7325406 12.86527,9.1005756 11.958298,8.6490007 11.474903,8.3327107 9.9729169,7.2081457 8.6985369,6.2539808 8.1799069,5.9122358 7.5655279,5.6218358 6.6504189,5.1892958 5.9859139,5.0253759 4.9742549,4.9826109 3.2453371,4.9095609 1.7502362,5.3973758 0.81986724,6.3381458 c -0.366426,0.37053 -0.6730575,0.9031349 -0.6730575,1.1690699 0,0.10665 -0.019275,0.15513 -0.056745,0.14265 -0.1610219,-0.0537 -0.09936,-0.48903 0.13089,-0.9241199 0.1919925,-0.362805 0.84649346,-0.993645 1.29039746,-1.243755 1.5628229,-0.8805299 3.9505057,-0.9830699 5.9104157,-0.253845 0.966044,0.35943 1.615767,0.751635 3.1650361,1.9105349 1.772067,1.325565 2.900693,1.9729799 4.181591,2.3987099 1.254418,0.4169252 2.325118,0.5634004 3.822296,0.5228854 1.322028,-0.0357 2.20352,-0.2029052 3.35891,-0.6368704 1.549146,-0.5818499 2.871671,-1.4649899 4.178944,-2.7905998 0.639949,-0.648915 0.617241,-0.55476 0.251199,-1.041525 -0.905145,-1.2036899 -1.399518,-2.8581148 -1.21242,-4.0573648 0.09083,-0.58220995 0.213486,-0.89912992 0.449629,-1.16177991 0.341591,-0.37993498 0.670497,-0.46456497 1.064394,-0.27388498 0.220467,0.10679999 0.351593,0.28727998 0.434231,0.59789997 l 0.05498,0.20662497 0.162486,-0.19561497 c 0.451249,-0.54323998 1.144351,-0.62009997 1.572963,-0.174435 0.243372,0.25304997 0.320362,0.52190992 0.31327,1.09402492 -0.0093,0.755295 -0.272383,1.6232849 -0.787693,2.5993799 -0.279596,0.52962 -0.708606,1.1909699 -1.004966,1.5492299 -0.222054,0.26844 -0.221826,0.269115 0.217025,0.639495 0.358278,0.302385 1.030455,0.6544199 1.46784,0.7687499 0.397509,0.10395 1.232245,0.10185 1.787083,-0.0045 0.883851,-0.1693499 1.393257,-0.3482699 3.643793,-1.2798899 1.314542,-0.544155 2.147462,-0.751365 3.040361,-0.75636 0.995808,-0.006 1.662746,0.306 1.969395,0.919995 0.22064,0.441795 0.178361,0.72141 -0.176736,1.1688299 -0.166117,0.20931 -0.215946,0.24369 -0.353155,0.24369 -0.211157,0 -0.299922,-0.141 -0.16683,-0.26499 0.113985,-0.1062 0.375072,-0.6540749 0.375121,-0.7871699 5.6e-5,-0.154875 -0.160699,-0.494415 -0.319977,-0.67581 -0.31855,-0.36282 -0.960408,-0.482805 -1.816687,-0.33963 -0.760391,0.1272 -1.469135,0.37095 -3.03625,1.04442 -1.150686,0.494505 -2.141819,0.8092499 -3.011337,0.9562799 -0.615147,0.1041 -1.619304,0.0735 -2.143661,-0.06495 -0.475456,-0.1257 -1.22563,-0.5009399 -1.592938,-0.7969199 l -0.286463,-0.230835 -0.615296,0.615705 C 25.392183,7.9478407 24.40338,8.6687707 23.242916,9.2390406 21.387377,10.150876 19.110579,10.526281 16.903613,10.284271 Z M 27.20557,5.3812658 c 0.78149,-1.0725749 1.376469,-2.3403448 1.540685,-3.2828698 0.141885,-0.81438 -0.08396,-1.63210491 -0.45075,-1.63210491 -0.161019,0 -0.447141,0.35333996 -0.747114,0.92261991 -0.409616,0.777375 -0.45639,0.841245 -0.616025,0.841245 -0.219654,0 -0.241369,-0.0816 -0.1176,-0.44217 0.194978,-0.567945 0.11838,-1.18841992 -0.184033,-1.4908349 -0.186233,-0.18623999 -0.292625,-0.16881 -0.508368,0.08325 -0.497207,0.58087495 -0.531554,2.1344999 -0.07775,3.5165248 0.245175,0.74664 0.777784,1.7696399 0.920317,1.7676899 0.01899,-1.8e-4 0.12726,-0.1278 0.240623,-0.283335 z' id='path1' /%3E%3C/g%3E%3C/svg%3E");
+}
+.text-white .lp-dia-dos-pais-title::after{
+    filter: invert(98%) sepia(4%) saturate(316%) hue-rotate(212deg) brightness(120%) contrast(100%);
 }

@@ -1,52 +1,145 @@
 .hp-homenagem-modal-dialog {
-    max-width: 100%;
-    width: auto;
-    margin: 1rem;
+  max-width: 100%;
+  width: auto;
+  margin: 1rem;
 }
 
 .hp-homenagem-modal-content {
-    min-height: 60vh;
-    max-height: 90vh;
+  min-height: 60vh;
+  max-height: 90vh;
+  border: 0;
+  border-radius: 1.25rem;
+  overflow: hidden;
 }
 
 .hp-homenagem-modal-body {
-    overflow-y: auto;
-    max-height: calc(90vh - 180px);
+  overflow-y: auto;
+  max-height: calc(90vh - 180px);
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.hp-card-preview {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+  color: #fff;
+  font-size: 1.55rem;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.16);
+}
+
+.hp-card-preview--video {
+  background: linear-gradient(135deg, #0f766e, #2563eb);
+}
+
+.hp-modal-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+.hp-modal-wrapper:first-child {
+  flex: 2;
+}
+.hp-modal-wrapper:last-child {
+  flex: 1;
+}
+
+.hp-modal-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.hp-modal-media img,
+.hp-modal-media video {
+  max-height: 90dvhpx;
+  object-fit: cover;
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+}
+
+.hp-modal-media--empty {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.hp-modal-content-body {
+  padding: 0 0.2rem;
+}
+
+.hp-modal-message {
+  line-height: 1.75;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+.hp-modal-message p {
+  margin-bottom: 0.9rem;
 }
 
 #hp-toast-container .toast {
-    min-width: 220px;
-    margin-bottom: 0.75rem;
-    border-radius: 0.75rem;
+  min-width: 220px;
+  margin-bottom: 0.75rem;
+  border-radius: 0.75rem;
 }
 
 #hp-toast-container .toast-body {
-    padding: 1rem 1.25rem;
+  padding: 1rem 1.25rem;
 }
 
 @media (max-width: 767px) {
-    .hp-homenagem-modal-content {
-        max-height: 85vh;
-    }
-    .hp-homenagem-modal-body {
-        max-height: calc(85vh - 170px);
-    }
+  .hp-homenagem-modal-content {
+    max-height: 85vh;
+  }
+  .hp-homenagem-modal-body {
+    max-height: calc(85vh - 170px);
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
-    .hp-homenagem-modal-content {
-        max-height: 88vh;
-    }
-    .hp-homenagem-modal-body {
-        max-height: calc(88vh - 170px);
-    }
+  .hp-homenagem-modal-content {
+    max-height: 88vh;
+  }
+  .hp-homenagem-modal-body {
+    max-height: calc(88vh - 170px);
+  }
 }
 
 @media (min-width: 1200px) {
-    .hp-homenagem-modal-content {
-        max-height: 90vh;
-    }
-    .hp-homenagem-modal-body {
-        max-height: calc(90vh - 180px);
-    }
+  .hp-homenagem-modal-content {
+    max-height: 90vh;
+  }
+  .hp-homenagem-modal-body {
+    max-height: calc(90vh - 180px);
+  }
+}
+#hp-homenagem-grid .card:hover {
+  cursor: pointer;
+  border-color: #00b3c4 !important;
+}
+.btn-like {
+  border-color: transparent !important;
+}
+.btn-like:hover {
+  background-color: unset !important;
+}
+.btn-load-more,
+.homenagem-pais-form button[type="submit"] {
+  background-color: #0094c6 !important;
+  border-color: #0094c6 !important;
+  color: #fff !important;
+}
+.btn-load-more:hover,
+.homenagem-pais-form button[type="submit"]:hover {
+  background-color: #00536e !important;
+  border-color: #00536e !important;
 }

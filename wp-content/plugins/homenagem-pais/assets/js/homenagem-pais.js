@@ -202,13 +202,9 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable hp-homenagem-modal-dialog">
               <div class="modal-content hp-homenagem-modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">Homenagem</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body hp-homenagem-modal-body"> </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
               </div>
             </div>`;
             document.body.appendChild(modal);
@@ -216,21 +212,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const body = modal.querySelector('.modal-body');
         let mediaHtml = '';
-        if (data.media_url) {
-            const isVideo = data.media_url.match(/\.(mp4|webm|ogg)(\?|$)/i) || data.media_url.indexOf('video') !== -1;
-            if (isVideo) {
-                mediaHtml = `<video controls style="max-width:100%;height:auto"><source src="${data.media_url}"></video>`;
-            } else {
-                mediaHtml = `<img src="${data.media_url}" style="max-width:100%;height:auto" />`;
-            }
+        const mediaType = data.media_type || '';
+        const isVideo = mediaType === 'video' || (data.media_url && (data.media_url.match(/\.(mp4|webm|ogg)(\?|$)/i) || data.media_url.indexOf('video') !== -1));
+
+        if (data.media_url && isVideo) {
+            mediaHtml = `<div class="hp-modal-media"><video controls playsinline controlsList="nodownload"><source src="${data.media_url}"></video></div>`;
+        } else if (data.media_url) {
+            mediaHtml = `<div class="hp-modal-media"><img src="${data.media_url}" alt="${escapeHtml(data.name || data.title)}" class="img-fluid" /></div>`;
+        } else {
+            mediaHtml = `<div class="hp-modal-media hp-modal-media--empty"><span class="dashicons dashicons-format-video" style="font-size:2.2rem"></span></div>`;
         }
 
         body.innerHTML = `
-            <div class="mb-3">${mediaHtml}</div>
-            <h5>${escapeHtml(data.name || data.title)}</h5>
-            <p class="text-muted">${escapeHtml(data.unit || '')}</p>
-            <div>${data.message}</div>
-            <div class="mt-3"><button class="btn btn-sm btn-outline-primary btn-like" data-id="${data.id}">Curtir (${data.likes})</button></div>
+            <div class="hp-modal-wrapper">
+                <div>${mediaHtml}</div>
+                <div class="hp-modal-content-body">
+                <div class="mt-4"><button class="btn btn-sm btn-outline-primary btn-like rounded" data-id="${data.id}">🧡 ${data.likes}</button></div>
+                    <h4 class="fw-bold mb-2">${escapeHtml(data.name || data.title)}</h4>
+                    <p class="text-muted mb-3">${escapeHtml(data.unit || '')}</p>
+                    <div class="hp-modal-message">${data.message}</div>
+                </div>
+            </div>
         `;
 
         const bsModal = new bootstrap.Modal(modal);
@@ -255,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container = document.createElement('div');
             container.id = 'hp-toast-container';
             container.style.position = 'fixed';
-            container.style.top = '1rem';
+            container.style.bottom = '1rem';
             container.style.right = '1rem';
             container.style.zIndex = 1080;
             document.body.appendChild(container);

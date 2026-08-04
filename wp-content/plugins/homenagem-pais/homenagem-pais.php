@@ -145,8 +145,9 @@ function hp_get_homenagem()
     $name = get_post_meta($id, 'homenagem_name', true) ?: get_the_title($id);
     $unit = get_post_meta($id, 'homenagem_unit', true);
     $message = get_post_meta($id, 'homenagem_message', true) ?: $post->post_content;
-    $media_id = get_post_meta($id, 'homenagem_media_id', true);
-    $media_url = $media_id ? wp_get_attachment_url($media_id) : (get_the_post_thumbnail_url($id) ?: '');
+    $preview = hp_get_homenagem_preview_data($id);
+    $media_url = $preview['url'];
+    $media_type = $preview['type'];
     $likes = intval(get_post_meta($id, 'homenagem_likes', true));
 
     wp_send_json_success(array(
@@ -156,6 +157,7 @@ function hp_get_homenagem()
         'unit' => $unit,
         'message' => wp_kses_post($message),
         'media_url' => $media_url,
+        'media_type' => $media_type,
         'likes' => $likes,
     ));
 }
@@ -190,6 +192,39 @@ function hp_load_more_homenagens()
     ));
 }
 
+function hp_get_homenagem_preview_data($pid)
+{
+    $thumb = get_the_post_thumbnail_url($pid, 'thumbnail');
+    $media_id = get_post_meta($pid, 'homenagem_media_id', true);
+    $media_type = '';
+    $media_url = '';
+
+    if ($media_id) {
+        $mime = get_post_mime_type($media_id);
+        if ($mime && strpos($mime, 'video/') === 0) {
+            $media_type = 'video';
+            $media_url = wp_get_attachment_url($media_id);
+        } elseif ($mime && strpos($mime, 'image/') === 0) {
+            $media_type = 'image';
+            $media_url = wp_get_attachment_url($media_id);
+        }
+    }
+
+    if ($media_type === 'video') {
+        return array('type' => 'video', 'url' => $media_url);
+    }
+
+    if ($thumb) {
+        return array('type' => 'image', 'url' => $thumb);
+    }
+
+    if ($media_type === 'image' && $media_url) {
+        return array('type' => 'image', 'url' => $media_url);
+    }
+
+    return array('type' => 'default', 'url' => get_template_directory_uri() . '/assets/images/default-avatar.png');
+}
+
 function hp_render_homenagem_card($post)
 {
     $pid = $post->ID;
@@ -197,7 +232,7 @@ function hp_render_homenagem_card($post)
     $unit = get_post_meta($pid, 'homenagem_unit', true);
     $message = get_post_meta($pid, 'homenagem_message', true) ?: $post->post_excerpt ?: $post->post_content;
     $short = mb_substr(strip_tags($message), 0, 70);
-    $thumb = get_the_post_thumbnail_url($pid, 'thumbnail') ?: get_template_directory_uri() . '/assets/images/default-avatar.png';
+    $preview = hp_get_homenagem_preview_data($pid);
     $likes = intval(get_post_meta($pid, 'homenagem_likes', true));
 
     ob_start();
@@ -205,7 +240,13 @@ function hp_render_homenagem_card($post)
     <div class="col-md-4">
         <div class="card lp-story-card h-100 shadow-sm border-0 rounded-4 p-3 btn-open" data-id="<?php echo esc_attr($pid); ?>">
             <div class="d-flex align-items-center gap-3 mb-3">
-                <img src="<?php echo esc_url($thumb); ?>" class="avatar rounded-circle" alt="<?php echo esc_attr($name); ?>">
+                <?php if ($preview['type'] === 'video') : ?>
+                    <div class="hp-card-preview hp-card-preview--video" aria-label="Vídeo">
+                        <span class="dashicons dashicons-format-video"></span>
+                    </div>
+                <?php else : ?>
+                    <img src="<?php echo esc_url($preview['url']); ?>" class="avatar rounded-circle" alt="<?php echo esc_attr($name); ?>">
+                <?php endif; ?>
                 <div>
                     <h5 class="mb-1"><?php echo esc_html($name); ?></h5>
                     <p class="text-muted small mb-0"><?php echo esc_html($unit); ?></p>
@@ -213,7 +254,7 @@ function hp_render_homenagem_card($post)
             </div>
             <p class="card-text text-secondary mb-4">“<?php echo esc_html($short); ?>...”</p>
             <div class="d-flex justify-content-between align-items-center mt-auto">
-                <button class="btn btn-sm btn-outline-primary btn-like" type="button" data-id="<?php echo esc_attr($pid); ?>" data-likes="<?php echo esc_attr($likes); ?>">Curtir (<?php echo esc_html($likes); ?>)</button>
+                <button class="btn btn-sm btn-outline-primary btn-like" type="button" data-id="<?php echo esc_attr($pid); ?>" data-likes="<?php echo esc_attr($likes); ?>">(<?php echo esc_html($likes); ?>)</button>
             </div>
         </div>
     </div>
