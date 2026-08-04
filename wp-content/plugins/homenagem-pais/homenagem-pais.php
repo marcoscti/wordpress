@@ -144,7 +144,7 @@ function hp_get_homenagem()
 
     $name = get_post_meta($id, 'homenagem_name', true) ?: get_the_title($id);
     $unit = get_post_meta($id, 'homenagem_unit', true);
-    $message = get_post_meta($id, 'homenagem_message', true) ?: $post->post_content;
+    $message = hp_get_homenagem_message($id, $post);
     $preview = hp_get_homenagem_preview_data($id);
     $media_url = $preview['url'];
     $media_type = $preview['type'];
@@ -214,15 +214,43 @@ function hp_get_homenagem_preview_data($pid)
         return array('type' => 'video', 'url' => $media_url);
     }
 
-    if ($thumb) {
-        return array('type' => 'image', 'url' => $thumb);
-    }
-
     if ($media_type === 'image' && $media_url) {
         return array('type' => 'image', 'url' => $media_url);
     }
 
+    if ($thumb) {
+        return array('type' => 'image', 'url' => $thumb);
+    }
+
     return array('type' => 'default', 'url' => get_template_directory_uri() . '/assets/images/default-avatar.png');
+}
+
+function hp_get_homenagem_message($pid, $post = null)
+{
+    $message = get_post_meta($pid, 'homenagem_message', true);
+
+    if (!empty($message)) {
+        $post_content = get_post_field('post_content', $pid, 'raw');
+        if (!empty($post_content) && $post_content !== $message) {
+            return $post_content;
+        }
+
+        return $message;
+    }
+
+    if ($post instanceof WP_Post) {
+        $message = $post->post_content;
+    }
+
+    if (empty($message)) {
+        $message = get_post_field('post_content', $pid, 'raw');
+    }
+
+    if (empty($message)) {
+        $message = get_post_field('post_excerpt', $pid, 'raw');
+    }
+
+    return $message ?: '';
 }
 
 function hp_render_homenagem_card($post)
@@ -230,7 +258,7 @@ function hp_render_homenagem_card($post)
     $pid = $post->ID;
     $name = get_post_meta($pid, 'homenagem_name', true) ?: get_the_title($pid);
     $unit = get_post_meta($pid, 'homenagem_unit', true);
-    $message = get_post_meta($pid, 'homenagem_message', true) ?: $post->post_excerpt ?: $post->post_content;
+    $message = hp_get_homenagem_message($pid, $post);
     $short = mb_substr(strip_tags($message), 0, 70);
     $preview = hp_get_homenagem_preview_data($pid);
     $likes = intval(get_post_meta($pid, 'homenagem_likes', true));
@@ -252,9 +280,9 @@ function hp_render_homenagem_card($post)
                     <p class="text-muted small mb-0"><?php echo esc_html($unit); ?></p>
                 </div>
             </div>
-            <p class="card-text text-secondary mb-4">“<?php echo esc_html($short); ?>...”</p>
+            <p class="card-text text-secondary mb-0 lp-dia-dos-pais-text">“<?php echo esc_html($short); ?>...”</p>
             <div class="d-flex justify-content-between align-items-center mt-auto">
-                <button class="btn btn-sm btn-outline-primary btn-like" type="button" data-id="<?php echo esc_attr($pid); ?>" data-likes="<?php echo esc_attr($likes); ?>">(<?php echo esc_html($likes); ?>)</button>
+                <button class="btn btn-sm btn-outline-primary btn-like test" type="button" data-id="<?php echo esc_attr($pid); ?>" data-likes="<?php echo esc_attr($likes); ?>">(<?php echo esc_html($likes); ?>)</button>
             </div>
         </div>
     </div>
@@ -319,4 +347,17 @@ function hp_save_homenagem_meta($post_id)
     } else {
         delete_post_meta($post_id, 'homenagem_featured');
     }
+}
+
+add_action('save_post_homenagem', 'hp_sync_homenagem_message_meta', 20);
+function hp_sync_homenagem_message_meta($post_id)
+{
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (wp_is_post_revision($post_id)) return;
+
+    $post = get_post($post_id);
+    if (!$post || $post->post_type !== 'homenagem') return;
+
+    $content = wp_kses_post($post->post_content);
+    update_post_meta($post_id, 'homenagem_message', $content);
 }

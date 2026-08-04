@@ -125,9 +125,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const id = openBtn.getAttribute('data-id');
             if (!id) return;
 
-            openBtn.disabled = true;
-            const originalText = openBtn.textContent;
-            openBtn.textContent = 'Carregando...';
+            openBtn.classList.add('is-loading');
+            openBtn.setAttribute('aria-busy', 'true');
+            if (!openBtn.querySelector('.hp-card-loader')) {
+                openBtn.insertAdjacentHTML('beforeend', `
+                    <div class="hp-card-loader" aria-hidden="true">
+                        <svg viewBox="0 0 50 50" class="hp-card-loader-svg">
+                            <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4"></circle>
+                        </svg>
+                    </div>
+                `);
+            }
 
             const fd = new FormData();
             fd.append('action', 'hp_get_homenagem');
@@ -145,8 +153,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error(err);
                     showToast('Erro ao carregar', { autohide: true, delay: 3000, className: 'bg-danger text-white' });
                 }).finally(() => {
-                    openBtn.disabled = false;
-                    openBtn.textContent = originalText;
+                    openBtn.classList.remove('is-loading');
+                    openBtn.removeAttribute('aria-busy');
+                    const loader = openBtn.querySelector('.hp-card-loader');
+                    if (loader) {
+                        loader.remove();
+                    }
                 });
         }
 
@@ -216,20 +228,20 @@ document.addEventListener('DOMContentLoaded', function () {
         const isVideo = mediaType === 'video' || (data.media_url && (data.media_url.match(/\.(mp4|webm|ogg)(\?|$)/i) || data.media_url.indexOf('video') !== -1));
 
         if (data.media_url && isVideo) {
-            mediaHtml = `<div class="hp-modal-media"><video controls playsinline controlsList="nodownload"><source src="${data.media_url}"></video></div>`;
+            mediaHtml = `<div class="hp-modal-media"><video controls playsinline controlsList="nodownload" preload="metadata"><source src="${data.media_url}"></video></div>`;
         } else if (data.media_url) {
-            mediaHtml = `<div class="hp-modal-media"><img src="${data.media_url}" alt="${escapeHtml(data.name || data.title)}" class="img-fluid" /></div>`;
+            const highResUrl = data.media_url.replace(/-\d+x\d+(?=\.[a-zA-Z0-9]+$)/, '');
+            mediaHtml = `<div class="hp-modal-media"><img src="${highResUrl}" alt="${escapeHtml(data.name || data.title)}" class="img-fluid" /></div>`;
         } else {
             mediaHtml = `<div class="hp-modal-media hp-modal-media--empty"><span class="dashicons dashicons-format-video" style="font-size:2.2rem"></span></div>`;
         }
 
         body.innerHTML = `
-            <div class="hp-modal-wrapper">
-                <div>${mediaHtml}</div>
-                <div class="hp-modal-content-body">
-                <div class="mt-4"><button class="btn btn-sm btn-outline-primary btn-like rounded" data-id="${data.id}">🧡 ${data.likes}</button></div>
-                    <h4 class="fw-bold mb-2">${escapeHtml(data.name || data.title)}</h4>
-                    <p class="text-muted mb-3">${escapeHtml(data.unit || '')}</p>
+            <div class="hp-modal-shell">
+                <div class="hp-modal-media-column">${mediaHtml}</div>
+                <div class="hp-modal-content-column">
+                    <h4 class="fw-bold mb-0">${escapeHtml(data.name || data.title)} <button class="btn btn-sm btn-outline-primary btn-like rounded" data-id="${data.id}">🧡 ${data.likes}</button></h4>
+                    <small class="text-muted mb-3">${escapeHtml(data.unit || '')}</small>
                     <div class="hp-modal-message">${data.message}</div>
                 </div>
             </div>

@@ -36,15 +36,35 @@
   background: linear-gradient(135deg, #0f766e, #2563eb);
 }
 
-.hp-modal-wrapper {
+.hp-modal-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 1.4rem;
+  align-items: start;
+}
+
+.hp-modal-media-column {
+  position: sticky;
+  top: 0;
+  align-self: start;
+}
+
+.hp-modal-content-column {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  min-width: 0;
 }
-.hp-modal-wrapper:first-child {
-  flex: 2;
+
+.hp-modal-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
 }
-.hp-modal-wrapper:last-child {
-  flex: 1;
+
+.hp-modal-content-header .btn-like {
+  margin-left: auto;
 }
 
 .hp-modal-media {
@@ -53,17 +73,14 @@
   justify-content: center;
   min-height: 240px;
   width: 100%;
-  border-radius: 1rem;
   overflow: hidden;
-  padding: 1rem;
 }
 
 .hp-modal-media img,
 .hp-modal-media video {
-  max-height: 90dvhpx;
-  object-fit: cover;
-  border-radius: 1rem;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+  width: 100%;
+  object-fit: contain;
+  border-radius: 0.75rem;
 }
 
 .hp-modal-media--empty {
@@ -103,6 +120,26 @@
   .hp-homenagem-modal-body {
     max-height: calc(85vh - 170px);
   }
+  .hp-modal-shell {
+    grid-template-columns: 1fr;
+  }
+  .hp-modal-media-column {
+    position: static;
+  }
+  #hp-homenagem-grid .avatar,
+  #hp-homenagem-grid .hp-card-preview {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.2rem;
+  }
+  #hp-homenagem-grid .card {
+    padding: 0.9rem !important;
+  }
+  #hp-homenagem-grid .card .d-flex.align-items-center.gap-3 {
+    gap: 0.7rem !important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
@@ -126,6 +163,43 @@
   cursor: pointer;
   border-color: #00b3c4 !important;
 }
+
+#hp-homenagem-grid .card.is-loading {
+  background: linear-gradient(135deg, #edf7ff 0%, #e9f2ff 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 147, 198, 0.16);
+}
+
+.hp-card-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: inherit;
+  z-index: 2;
+  backdrop-filter: blur(2px);
+}
+
+.hp-card-loader-svg {
+  width: 42px;
+  height: 42px;
+  color: #0094c6;
+  animation: hp-spin 0.9s linear infinite;
+}
+
+.hp-card-loader-svg circle {
+  stroke-linecap: round;
+  stroke-dasharray: 110;
+  stroke-dashoffset: 30;
+}
+
+@keyframes hp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .btn-like {
   border-color: transparent !important;
 }
@@ -142,4 +216,9 @@
 .homenagem-pais-form button[type="submit"]:hover {
   background-color: #00536e !important;
   border-color: #00536e !important;
+}
+.modal-body.hp-homenagem-modal-body,
+.modal-content.hp-homenagem-modal-content{
+    max-height: max-content!important;
+    height: auto!important;
 }

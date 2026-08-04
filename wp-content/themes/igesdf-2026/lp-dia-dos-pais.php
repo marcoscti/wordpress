@@ -23,33 +23,33 @@ get_header();
                         <form id="homenagem-form" class="homenagem-pais-form" enctype="multipart/form-data">
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6 col-sm-12">
-                                <label class="form-label">Seu nome</label>
-                                <input type="text" name="h_name" class="form-control" required placeholder="Digite seu nome">
-                            </div>
-                            <div class="col-md-6 col-sm-12">
-                                <label class="form-label">Unidade de trabalho</label>
-                                <select name="h_unit" class="form-select form-control" required>
-                                    <option value="">Selecione uma unidade</option>
-                                    <option value="Hospital Cidade do Sol">Hospital Cidade do Sol</option>
-                                    <option value="Hospital de Base">Hospital de Base</option>
-                                    <option value="Hospital Regional de Santa Maria">Hospital Regional de Santa Maria</option>
-                                    <option value="PO 700">PO 700</option>
-                                    <option value="SIA">SIA</option>
-                                    <option value="UPA Brazlândia">UPA Brazlândia</option>
-                                    <option value="UPA Ceilândia I">UPA Ceilândia I</option>
-                                    <option value="UPA Ceilândia II">UPA Ceilândia II</option>
-                                    <option value="UPA Gama">UPA Gama</option>
-                                    <option value="UPA Núcleo Bandeirante">UPA Núcleo Bandeirante</option>
-                                    <option value="UPA Paranoá">UPA Paranoá</option>
-                                    <option value="UPA Planaltina">UPA Planaltina</option>
-                                    <option value="UPA Riacho Fundo II">UPA Riacho Fundo II</option>
-                                    <option value="UPA Recanto das Emas">UPA Recanto das Emas</option>
-                                    <option value="UPA Samambaia">UPA Samambaia</option>
-                                    <option value="UPA São Sebastião">UPA São Sebastião</option>
-                                    <option value="UPA Sobradinho">UPA Sobradinho</option>
-                                    <option value="UPA Vicente Pires">UPA Vicente Pires</option>
-                                </select>
-                            </div>
+                                    <label class="form-label">Seu nome</label>
+                                    <input type="text" name="h_name" class="form-control" required placeholder="Digite seu nome">
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <label class="form-label">Unidade de trabalho</label>
+                                    <select name="h_unit" class="form-select form-control" required>
+                                        <option value="">Selecione uma unidade</option>
+                                        <option value="Hospital Cidade do Sol">Hospital Cidade do Sol</option>
+                                        <option value="Hospital de Base">Hospital de Base</option>
+                                        <option value="Hospital Regional de Santa Maria">Hospital Regional de Santa Maria</option>
+                                        <option value="PO 700">PO 700</option>
+                                        <option value="SIA">SIA</option>
+                                        <option value="UPA Brazlândia">UPA Brazlândia</option>
+                                        <option value="UPA Ceilândia I">UPA Ceilândia I</option>
+                                        <option value="UPA Ceilândia II">UPA Ceilândia II</option>
+                                        <option value="UPA Gama">UPA Gama</option>
+                                        <option value="UPA Núcleo Bandeirante">UPA Núcleo Bandeirante</option>
+                                        <option value="UPA Paranoá">UPA Paranoá</option>
+                                        <option value="UPA Planaltina">UPA Planaltina</option>
+                                        <option value="UPA Riacho Fundo II">UPA Riacho Fundo II</option>
+                                        <option value="UPA Recanto das Emas">UPA Recanto das Emas</option>
+                                        <option value="UPA Samambaia">UPA Samambaia</option>
+                                        <option value="UPA São Sebastião">UPA São Sebastião</option>
+                                        <option value="UPA Sobradinho">UPA Sobradinho</option>
+                                        <option value="UPA Vicente Pires">UPA Vicente Pires</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Foto ou vídeo (máx 40s)</label>
@@ -70,7 +70,7 @@ get_header();
                         <h2 class="h1 lp-dia-dos-pais-title">O que nossos pais dizem</h2>
                         <p class="text-muted mb-0">Histórias reais de carinho e inspiração.</p>
                     </div>
-                    
+
                 </div>
                 <div class="row gx-4 gy-4" id="hp-homenagem-grid">
                     <?php
@@ -109,7 +109,7 @@ get_header();
                                             <p class="text-muted small mb-0"><?php echo esc_html($unit); ?></p>
                                         </div>
                                     </div>
-                                    <p class="card-text text-secondary mb-4">“<?php echo esc_html($short); ?>...”</p>
+                                    <p class="card-text text-secondary mb-0 lp-dia-dos-pais-text">“<?php echo esc_html($short); ?>...”</p>
                                     <div class="d-flex justify-content-between align-items-center mt-auto">
                                         <button class="btn btn-sm btn-outline-primary btn-like" data-id="<?php echo $pid; ?>" data-likes="<?php echo $likes; ?>">&#10084; <?php echo $likes; ?></button>
                                     </div>
@@ -222,7 +222,7 @@ if (!empty($featured)) : ?>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
                     <div class="stat-icon">&#128214;</div>
-                    <h3 class="lp-dia-dos-pais-text h1" ><?php echo intval($units_count); ?></h3>
+                    <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($units_count); ?></h3>
                     <p>Unidades representadas</p>
                 </div>
             </div>
