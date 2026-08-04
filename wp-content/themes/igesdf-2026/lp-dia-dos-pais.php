@@ -121,7 +121,7 @@ if (!empty($featured)) : ?>
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="featured-info text-white">
                         <span class="eyebrow eyebrow-light">Homenagem em destaque</span>
-                        <h2>“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
+                        <h2 class="text-white">“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
                         <p class="text-white-50">Descubra como nossas homenagens mostram a força do amor e da presença todos os dias.</p>
                     </div>
                 </div>
@@ -157,7 +157,7 @@ if (!empty($featured)) : ?>
         </div>
     </section>
 <?php endif; ?>
-<section class="my-4">
+<section class="my-4 py-4">
     <div class="container">
         <h2 class="mb-3">Números que nos enchem de orgulho</h2>
         <?php
@@ -200,5 +200,6 @@ if (!empty($featured)) : ?>
             </div>
         </div>
     </div>
+</section>
     <?php
     get_footer();
