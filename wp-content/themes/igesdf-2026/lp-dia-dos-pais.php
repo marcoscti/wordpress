@@ -23,11 +23,31 @@ get_header();
                         <form id="homenagem-form" class="homenagem-pais-form" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label class="form-label">Seu nome</label>
-                                <input type="text" name="h_name" class="form-control" required>
+                                <input type="text" name="h_name" class="form-control" required placeholder="Digite seu nome">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Unidade de trabalho</label>
-                                <input type="text" name="h_unit" class="form-control" placeholder="Ex: PO 700">
+                                <select name="h_unit" class="form-select form-control" required>
+                                    <option value="">Selecione uma unidade</option>
+                                    <option value="Hospital Cidade do Sol">Hospital Cidade do Sol</option>
+                                    <option value="Hospital de Base">Hospital de Base</option>
+                                    <option value="Hospital Regional de Santa Maria">Hospital Regional de Santa Maria</option>
+                                    <option value="PO 700">PO 700</option>
+                                    <option value="SIA">SIA</option>
+                                    <option value="UPA Brazlândia">UPA Brazlândia</option>
+                                    <option value="UPA Ceilândia I">UPA Ceilândia I</option>
+                                    <option value="UPA Ceilândia II">UPA Ceilândia II</option>
+                                    <option value="UPA Gama">UPA Gama</option>
+                                    <option value="UPA Núcleo Bandeirante">UPA Núcleo Bandeirante</option>
+                                    <option value="UPA Paranoá">UPA Paranoá</option>
+                                    <option value="UPA Planaltina">UPA Planaltina</option>
+                                    <option value="UPA Riacho Fundo II">UPA Riacho Fundo II</option>
+                                    <option value="UPA Recanto das Emas">UPA Recanto das Emas</option>
+                                    <option value="UPA Samambaia">UPA Samambaia</option>
+                                    <option value="UPA São Sebastião">UPA São Sebastião</option>
+                                    <option value="UPA Sobradinho">UPA Sobradinho</option>
+                                    <option value="UPA Vicente Pires">UPA Vicente Pires</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Foto ou vídeo (máx 40s)</label>
