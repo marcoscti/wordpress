@@ -155,12 +155,9 @@ footer {
 /* LP Dia dos Pais styles */
 .lp-hero {
   position: relative;
-  min-height: 520px;
   overflow: hidden;
 }
-.lp-hero-bg {
-  
-}
+
 .lp-hero-bg {
   position: absolute;
   inset: 0;

@@ -5,8 +5,11 @@ Template Name: LP Dia dos Pais
 get_header();
 ?>
 
-<section class="lp-hero mb-5">
-    <div class="lp-hero-bg" style="background-image:url('<?php echo get_template_directory_uri(); ?>/assets/images/hero.jpg');"></div>
+<section class="lp-hero">
+    <picture>
+    <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.jpg">
+    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero.jpg" alt="">
+</picture>
 </section>
 
 <section class="lp-form container my-5">
