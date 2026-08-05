@@ -1,9 +1,18 @@
-/*
-Theme Name: IgesDF 2026
-Author: Marcos Cordeiro
-Version: 1.4.0
-Text Domain: meu-tema
-*/
+/**
+ * Theme Name:        IgesDF 2026
+ * Theme URI:         https://github.com/marcoscti/wordpress/tree/f45ace132eb2007d810f9e134aa5661565ba03bb/wp-content/themes/igesdf-2026
+ * Description:       Tema desenvolvido para o site do Instituto de Gestão Estratégica de Saúde do Distrito Federal (IGESDF) para o ano de 2026.
+ * Version:           2.0.0
+ * Author:            Marcos Cordeiro
+ * Author URI:        https://github.com/marcoscti
+ * Tags:              intranet, igesdf, wordpress, theme, custom, responsive, accessibility
+ * Text Domain:       igesdf-2026
+ * Tested up to:      7.0
+ * Requires at least: 5.8
+ * Requires PHP:      7.4
+ * License:           GNU General Public License v2.0 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 html,
 body,
