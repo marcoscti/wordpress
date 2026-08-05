@@ -202,9 +202,20 @@
 
 .btn-like {
   border-color: transparent !important;
+  color: #000 !important;
 }
 .btn-like:hover {
   background-color: unset !important;
+  color: #000 !important;
+}
+.btn-like svg {
+  vertical-align: middle;
+}
+.btn-like.liked svg path {
+  fill: currentColor !important;
+}
+.btn-like.liked {
+  color: #0094c6 !important;
 }
 .btn-load-more,
 .homenagem-pais-form button[type="submit"] {

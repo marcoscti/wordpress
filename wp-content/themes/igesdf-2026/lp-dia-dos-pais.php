@@ -7,9 +7,9 @@ get_header();
 
 <section class="lp-hero">
     <picture>
-    <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.jpg">
-    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero.jpg" alt="">
-</picture>
+        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.jpg">
+        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero.jpg" alt="">
+    </picture>
 </section>
 
 <section class="lp-form container my-5">
@@ -114,7 +114,9 @@ get_header();
                                     </div>
                                     <p class="card-text text-secondary mb-0 lp-dia-dos-pais-text">“<?php echo esc_html($short); ?>...”</p>
                                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <button class="btn btn-sm btn-outline-primary btn-like" data-id="<?php echo $pid; ?>" data-likes="<?php echo $likes; ?>">&#10084; <?php echo $likes; ?></button>
+                                        <button class="btn btn-sm btn-outline-primary btn-like" data-id="<?php echo $pid; ?>" data-likes="<?php echo $likes; ?>"><svg height="15" viewBox="0 0 34 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M28.9181 4.24906C28.2054 3.53604 27.3592 2.97043 26.4279 2.58452C25.4965 2.19862 24.4983 2 23.4902 2C22.4821 2 21.4838 2.19862 20.5525 2.58452C19.6211 2.97043 18.7749 3.53604 18.0623 4.24906L16.5832 5.72813L15.1041 4.24906C13.6646 2.80949 11.7121 2.00075 9.67622 2.00075C7.64036 2.00075 5.68788 2.80949 4.24831 4.24906C2.80874 5.68863 2 7.64111 2 9.67697C2 11.7128 2.80874 13.6653 4.24831 15.1049L16.5832 27.4398L28.9181 15.1049C29.6311 14.3922 30.1967 13.546 30.5826 12.6147C30.9685 11.6833 31.1671 10.6851 31.1671 9.67697C31.1671 8.66884 30.9685 7.6706 30.5826 6.73926C30.1967 5.80792 29.6311 4.96174 28.9181 4.24906Z" stroke="#0094c6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg> <?php echo $likes; ?></button>
                                     </div>
                                 </div>
                             </div>
