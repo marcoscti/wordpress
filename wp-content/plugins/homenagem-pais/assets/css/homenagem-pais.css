@@ -1,3 +1,6 @@
+:root {
+  --primary-color: #EC6608;
+}
 .hp-homenagem-modal-dialog {
   max-width: 100%;
   width: auto;

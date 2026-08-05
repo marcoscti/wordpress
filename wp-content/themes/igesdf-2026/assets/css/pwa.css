@@ -1,23 +1,15 @@
-#modalPWA img{
-
-    border-radius:20px;
-
+#modalPWA img {
+  border-radius: 20px;
 }
 
-#modalPWA .modal-content{
-
-    border-radius:25px;
-
+#modalPWA .modal-content {
+  border-radius: 25px;
 }
 
-#modalPWA h3{
-
-    font-weight:700;
-
+#modalPWA h3 {
+  font-weight: 700;
 }
 
-#modalPWA p{
-
-    font-size:15px;
-
+#modalPWA p {
+  font-size: 15px;
 }

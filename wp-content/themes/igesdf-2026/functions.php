@@ -23,7 +23,6 @@ add_action('wp_footer', function () {
 add_action('wp_footer', function () {
 
     get_template_part('template-parts/modal-pwa');
-
 });
 function meu_tema_setup()
 {
@@ -66,7 +65,15 @@ function meu_tema_assets()
         'main-css',
         get_template_directory_uri() . '/assets/css/main.css',
         [],
-        '1.0'
+        wp_get_theme()->get('Version'),
+        'all'
+    );
+    wp_enqueue_style(
+        'landing-pages-css',
+        get_template_directory_uri() . '/assets/css/landing-pages.css',
+        [],
+        wp_get_theme()->get('Version'),
+        'all'
     );
     wp_enqueue_script(
         'bootstrap-js',
@@ -79,22 +86,22 @@ function meu_tema_assets()
         'main-js',
         get_template_directory_uri() . '/assets/js/main.js',
         ['jquery'],
-        '1.0',
+        wp_get_theme()->get('Version'),
         true
     );
     wp_enqueue_script(
-    'pwa-js',
-    get_template_directory_uri() . '/assets/js/pwa.js',
-    ['bootstrap-js'],
-    '1.0',
-    true
-);
-wp_enqueue_style(
-    'pwa-css',
-    get_template_directory_uri() . '/assets/css/pwa.css',
-    [],
-    '1.0'
-);
+        'pwa-js',
+        get_template_directory_uri() . '/assets/js/pwa.js',
+        ['bootstrap-js'],
+        '1.0',
+        true
+    );
+    wp_enqueue_style(
+        'pwa-css',
+        get_template_directory_uri() . '/assets/css/pwa.css',
+        [],
+        '1.0'
+    );
 }
 /**
  * Adiciona classes Bootstrap aos itens do menu
@@ -403,13 +410,11 @@ function create_post_types()
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
     );
     register_post_type('convenio', $args_convenio);
-    
-    
 }
 add_action('init', 'create_post_types');
 
 // AJAX handler para submissão de homenagens (frontend)
- 
+
 
 // Mostra os posts personalizados nas consultas padrões do wordpress
 function add_my_post_types_to_query($query)

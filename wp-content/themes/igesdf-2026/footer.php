@@ -1,4 +1,4 @@
-<footer class="py-3">
+<footer class="py-3" id="<?php echo "footer-" . pathinfo(get_page_template_slug(), PATHINFO_FILENAME); ?>">
     <div class="container">
         <div class="d-flex justify-content-center mb-3">
             <a href="<?php echo home_url(); ?>">

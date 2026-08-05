@@ -7,9 +7,9 @@
     <?php wp_head(); ?>
 </head>
 
-<body <?php body_class(); ?>>
+<body <?php body_class(); ?> id="<?php echo pathinfo("body-" .get_page_template_slug(), PATHINFO_FILENAME); ?>">
     <?php wp_body_open(); ?>
-    <header class="py-3">
+    <header class="py-3" id="<?php echo pathinfo("header-" .get_page_template_slug(), PATHINFO_FILENAME); ?>">
         <div class="container">
 
             <div class="header-content">
@@ -60,15 +60,12 @@
 
                 <li class=""><a href="https://institutodegestaoestrategica.app.questorpublico.com.br" class="color-primary" target="_blank"><i class="fa fa-money" aria-hidden="true"></i> Contracheque</a></li>
 
-                <li class=""><a href="http://igesdf/intranet/coronavirus/" class="color-primary"><i class="fa fa-heartbeat" aria-hidden="true"></i> COVID-19</a></li>
-
-                <li class=""><a href="http://igesdf/uptodate/" class="color-primary"><i class="fa fa-refresh" aria-hidden="true"></i> Up to date</a></li>
                 <?php
                 if (is_user_logged_in()):
                 ?>
-                    <li class=""><a href="http://igesdf/intranet/wp-admin" class="color-primary"><i class="fa fa-lock" aria-hidden="true"></i> Admin</a></li>
+                    <li class=""><a href="<?php echo admin_url(); ?>" class="color-primary"><i class="fa fa-lock" aria-hidden="true"></i> Admin</a></li>
                 <?php else: ?>
-                    <li class=""><a href="http://igesdf/intranet/wp-login.php" class="color-primary"><i class="fa fa-user" aria-hidden="true"></i> Login</a></li>
+                    <li class=""><a href="<?php echo wp_login_url(); ?>" class="color-primary"><i class="fa fa-user" aria-hidden="true"></i> Login</a></li>
                 <?php
                 endif;
                 ?>
