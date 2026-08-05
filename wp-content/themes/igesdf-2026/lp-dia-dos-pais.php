@@ -59,7 +59,7 @@ get_header();
                                 <input type="file" name="h_media" accept="image/*,video/*" class="form-control">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">O que é ser pai para você?</label>
+                                <label class="form-label">Qual o maior legado de ser pai?</label>
                                 <textarea name="h_message" class="form-control" rows="5" maxlength="1000" required></textarea>
                             </div>
                             <button class="btn btn-primary btn-lg w-100" type="submit"><span class="dashicons dashicons-upload"></span> Enviar homenagem</button>
@@ -155,9 +155,7 @@ if (!empty($featured)) : ?>
                     <div class="featured-info text-white">
                         <span class="eyebrow eyebrow-light mb-2">Homenagem em destaque</span>
                         <h2 class="text-white lp-dia-dos-pais-title mt-2">“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
-                        <p class="text-dark">
-                            Histórias reais de amor, cuidado e inspiração.
-                        </p>
+                        
                     </div>
                 </div>
                 <div class="col-lg-6">
