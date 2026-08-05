@@ -7,8 +7,8 @@ get_header();
 
 <section class="lp-hero">
     <picture>
-        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.jpg">
-        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero.jpg" alt="">
+        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.png">
+        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero.png" alt="">
     </picture>
 </section>
 
@@ -19,7 +19,7 @@ get_header();
                 <div class="row gx-4">
                     <div class="col-md-5 pe-md-4 mb-4 mb-md-0">
                         <h2 class="h1 lp-dia-dos-pais-title">Compartilhe sua história</h2>
-                        <p class="text-muted">Conte para nós: o que é ser pai para você? Sua mensagem pode inspirar outras pessoas.</p>
+                        <p class="text-muted"><b>Conte para nós:</b> Qual o maior legado de ser pai?</p>
                         <img src="<?php echo get_template_directory_uri(); ?>/assets/images/father.png" alt="Pai" class="img-fluid">
                     </div>
                     <div class="col-md-7">
@@ -153,9 +153,11 @@ if (!empty($featured)) : ?>
             <div class="row align-items-center gx-4">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="featured-info text-white">
-                        <span class="eyebrow eyebrow-light">Homenagem em destaque</span>
-                        <h2 class="text-white lp-dia-dos-pais-title">“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
-                        <p class="text-white-50">Descubra como nossas homenagens mostram a força do amor e da presença todos os dias.</p>
+                        <span class="eyebrow eyebrow-light mb-2">Homenagem em destaque</span>
+                        <h2 class="text-white lp-dia-dos-pais-title mt-2">“Ser pai é amar de um jeito que não cabe no peito, mas que transforma tudo ao redor.”</h2>
+                        <p class="text-dark">
+                            Histórias reais de amor, cuidado e inspiração.
+                        </p>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -192,7 +194,7 @@ if (!empty($featured)) : ?>
 <?php endif; ?>
 <section class="my-4 py-4">
     <div class="container">
-        <h2 class="mb-3 h1 lp-dia-dos-pais-title">Números que nos enchem de orgulho</h2>
+        <h2 class="mb-3 h1 lp-dia-dos-pais-title">Onde há cuidado, há resultados</h2>
         <?php
         global $wpdb;
         $total = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type='homenagem'");
@@ -205,28 +207,28 @@ if (!empty($featured)) : ?>
         <div class="row gx-3 gy-3 lp-stats mt-4">
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon">&#10084;</div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/coracao.svg" class="img-fluid"></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($total); ?></h3>
                     <p>Homenagens recebidas</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon">&#127968;</div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/pais.svg" alt="" srcset=""></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($parents_count); ?></h3>
                     <p>Pais participantes</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon">&#128172;</div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/msg.svg" alt="" srcset=""></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($messages); ?></h3>
                     <p>Mensagens</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon">&#128214;</div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/unidades.svg" alt="" srcset=""></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($units_count); ?></h3>
                     <p>Unidades representadas</p>
                 </div>

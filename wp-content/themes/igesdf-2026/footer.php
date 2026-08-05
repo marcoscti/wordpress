@@ -24,7 +24,7 @@
             <li><a href="https://www.linkedin.com/company/igesdf/" target="_blank"><img width="30" src="<?php echo get_template_directory_uri(); ?>/assets/images/linkedin.png" alt="LinkedIn" class="lp-copa-2026-image"></a></li>
         </ul>
         </p>
-        <p class="m-0 text-center text-white">Instituto de Gestão Estratégica de Saúde do Distrito Federal IgesDF. <br>Todos os direitos reservados.</p>
+        <p class="m-0 text-center text-white">Instituto de Gestão Estratégica de Saúde do Distrito Federal IgesDF. <br>&copy; <?php echo date('Y'); ?> - Todos os direitos reservados.</p>
     </div>
 </footer>
 <?php wp_footer(); ?>

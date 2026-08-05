@@ -1,7 +1,7 @@
 header#header-lp-dia-dos-pais,
 footer#footer-lp-dia-dos-pais {
-    background: linear-gradient(135deg, #071f3c 0%, #0c3c6c 100%) !important;
+    background: linear-gradient(135deg, #Ec6608 0%, #b85a18 100%) !important;
 }
 body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show{
-    background-color: #071f3c !important;
+    background-color: #Ec6608 !important;
 }
