@@ -368,15 +368,19 @@ jQuery(document).ready(function ($) {
       return false;
     }
 
-    const notification = new Notification(fs_feed_data.notification_title, {
-      body: post.excerpt || fs_feed_data.notification_body,
+    const title = post.type === 'social_story' ? fs_feed_data.notification_title_story : fs_feed_data.notification_title;
+    const body = post.excerpt || (post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body);
+    const targetUrl = post.url || fs_feed_data.feed_page_url;
+
+    const notification = new Notification(title, {
+      body,
       icon: post.thumbnail || undefined,
       tag: "fs-post-" + post.id,
     });
 
     notification.onclick = function () {
       window.focus();
-      window.location.href = fs_feed_data.feed_page_url;
+      window.location.href = targetUrl;
       notification.close();
     };
 
@@ -386,14 +390,17 @@ jQuery(document).ready(function ($) {
   function showFeedNotification(post) {
     showBrowserNotification(post);
 
+    const targetUrl = post.url || fs_feed_data.feed_page_url;
+    const body = post.excerpt || (post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body);
+
     const $notification = $(`
             <div class="fs-notification-toast">
-                <p>${fs_feed_data.notification_body}</p>
+                <p>${body}</p>
                 <div class="fs-notification-content">
                     ${post.thumbnail ? `<img src="${post.thumbnail}" alt="${post.title}" class="fs-notification-thumbnail">` : ""}
                     <div class="fs-notification-text">
                         <p>${post.excerpt || post.title}</p>
-                        <a href="${fs_feed_data.feed_page_url}" class="fs-notification-link">Ver agora &rarr;</a>
+                        <a href="${targetUrl}" class="fs-notification-link">Ver agora &rarr;</a>
                     </div>
                 </div>
             </div>

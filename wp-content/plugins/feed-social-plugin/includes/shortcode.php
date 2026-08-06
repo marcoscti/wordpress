@@ -89,7 +89,9 @@ function fs_enqueue_feed_scripts()
         'comment_name_prompt' => __('Seu nome:', 'feed-social'),
         'comment_email_prompt' => __('Seu e-mail:', 'feed-social'),
         'notification_title' => __('Novo post no Feed Social', 'feed-social'),
+        'notification_title_story' => __('Novo story no Feed Social', 'feed-social'),
         'notification_body' => __('Acabou de publicar um novo post.', 'feed-social'),
+        'notification_body_story' => __('Acabou de publicar um novo story.', 'feed-social'),
         'has_feed' => !empty($fs_feed_shortcode_used),
     ]);
 }

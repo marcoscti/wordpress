@@ -7,7 +7,7 @@ define('FS_SSE_TRANSIENT', 'fs_new_post_event');
 add_action('transition_post_status', 'fs_trigger_sse_on_publish', 10, 3);
 
 function fs_trigger_sse_on_publish($new_status, $old_status, $post) {
-    if ($new_status !== 'publish' || $old_status === 'publish' || $post->post_type !== 'feed-social') {
+    if ($new_status !== 'publish' || $old_status === 'publish' || !in_array($post->post_type, ['feed-social', 'social_story'], true)) {
         return;
     }
 
@@ -19,17 +19,21 @@ function fs_trigger_sse_notification($ID, $post) {
         $post = get_post($post);
     }
 
-    if (!$post || $post->post_type !== 'feed-social') {
+    if (!$post || !in_array($post->post_type, ['feed-social', 'social_story'], true)) {
         return;
     }
 
+    $content_source = !empty($post->post_excerpt) ? $post->post_excerpt : $post->post_content;
+    $excerpt = wp_trim_words(wp_strip_all_tags($content_source), 20, '...');
+
     $event = [
         'id' => (int) $ID,
+        'type' => $post->post_type,
         'title' => $post->post_title,
         'url' => get_permalink($ID),
         'thumbnail' => get_the_post_thumbnail_url($ID, 'thumbnail') ?: '',
         'date' => $post->post_date,
-        'excerpt' => wp_trim_words(wp_strip_all_tags($post->post_content), 20, '...'),
+        'excerpt' => $excerpt,
     ];
 
     set_transient(FS_SSE_TRANSIENT, $event, 300);
