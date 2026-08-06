@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Homenagem Pais
  * Description: Registra o Custom Post Type `homenagem` e provê endpoint AJAX para submissão de homenagens (para uso em landing pages).
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Marcos Cordeiro
  */
 
@@ -87,10 +87,15 @@ function hp_handle_submit_homenagem()
 
     $name = sanitize_text_field($_POST['h_name'] ?? '');
     $unit = sanitize_text_field($_POST['h_unit'] ?? '');
+    $email = sanitize_email($_POST['h_email'] ?? '');
     $message = sanitize_textarea_field($_POST['h_message'] ?? '');
 
     if (empty($name) || empty($message)) {
         wp_send_json_error(array('message' => 'Nome e mensagem são obrigatórios'), 400);
+    }
+
+    if (!empty($_POST['h_email']) && !is_email($email)) {
+        wp_send_json_error(array('message' => 'E-mail inválido'), 400);
     }
 
     $postarr = array(
@@ -109,6 +114,10 @@ function hp_handle_submit_homenagem()
     update_post_meta($post_id, 'homenagem_name', $name);
     update_post_meta($post_id, 'homenagem_unit', $unit);
     update_post_meta($post_id, 'homenagem_message', $message);
+
+    if (!empty($email)) {
+        update_post_meta($post_id, 'homenagem_email', $email);
+    }
 
     if (!empty($_FILES['h_media']) && !empty($_FILES['h_media']['name'])) {
         require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -338,8 +347,27 @@ function hp_add_meta_boxes()
 function hp_homenagem_meta_box_cb($post)
 {
     $featured = get_post_meta($post->ID, 'homenagem_featured', true) ? '1' : '';
+    $email = get_post_meta($post->ID, 'homenagem_email', true);
     wp_nonce_field('hp_homenagem_meta', 'hp_homenagem_meta_nonce');
     echo '<p><label><input type="checkbox" name="homenagem_featured" value="1" ' . checked($featured, '1', false) . '> Destacar nesta campanha</label></p>';
+    echo '<p><label for="homenagem_email">E-mail do autor:</label><br>';
+    echo '<input type="email" name="homenagem_email" id="homenagem_email" style="width:100%" class="regular-text" value="' . esc_attr($email) . '" /></p>';
+}
+
+add_filter('manage_homenagem_posts_columns', 'hp_homenagem_columns');
+add_action('manage_homenagem_posts_custom_column', 'hp_homenagem_custom_column', 10, 2);
+
+function hp_homenagem_columns($columns)
+{
+    $columns['homenagem_email'] = __('E-mail', 'homenagem-pais');
+    return $columns;
+}
+
+function hp_homenagem_custom_column($column, $post_id)
+{
+    if ($column === 'homenagem_email') {
+        echo esc_html(get_post_meta($post_id, 'homenagem_email', true));
+    }
 }
 
 add_action('save_post', 'hp_save_homenagem_meta');
@@ -356,6 +384,15 @@ function hp_save_homenagem_meta($post_id)
         update_post_meta($post_id, 'homenagem_featured', '1');
     } else {
         delete_post_meta($post_id, 'homenagem_featured');
+    }
+
+    if (isset($_POST['homenagem_email'])) {
+        $email = sanitize_email($_POST['homenagem_email']);
+        if (!empty($email) && is_email($email)) {
+            update_post_meta($post_id, 'homenagem_email', $email);
+        } else {
+            delete_post_meta($post_id, 'homenagem_email');
+        }
     }
 }
 

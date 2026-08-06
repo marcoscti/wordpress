@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const name = form.querySelector('[name="h_name"]').value.trim();
       const unit = form.querySelector('[name="h_unit"]').value.trim();
+      const email = form.querySelector('[name="h_email"]')
+        ? form.querySelector('[name="h_email"]').value.trim()
+        : "";
       const message = form.querySelector('[name="h_message"]').value.trim();
       const mediaInput = form.querySelector('[name="h_media"]');
       const file =
@@ -32,12 +35,22 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast("Preencha um e-mail válido", {
+          autohide: true,
+          delay: 3000,
+          className: "bg-danger text-white",
+        });
+        return;
+      }
+
       function doUpload() {
         const fd = new FormData();
         fd.append("action", "hp_submit_homenagem");
         fd.append("security", nonce);
         fd.append("h_name", name);
         fd.append("h_unit", unit);
+        fd.append("h_email", email);
         fd.append("h_message", message);
         if (file) fd.append("h_media", file);
 

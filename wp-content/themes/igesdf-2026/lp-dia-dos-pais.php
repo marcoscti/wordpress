@@ -55,12 +55,17 @@ get_header();
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">Seu E-mail Institucional</label>
+                                <input type="email" name="h_email" class="form-control" required placeholder="Ex: nome@igesdf.org.br">
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Foto ou vídeo (máx 40s)</label>
-                                <input type="file" name="h_media" accept="image/*,video/*" class="form-control">
+                                <input type="file" name="h_media" accept="image/*,video/*" class="form-control" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Qual o maior legado de ser pai?</label>
-                                <textarea name="h_message" class="form-control" rows="5" maxlength="1000" required></textarea>
+                                <textarea id="h_message" name="h_message" class="form-control" rows="5" maxlength="1000" required></textarea>
+                                <div class="form-text text-muted"><span id="h_message_counter">0</span>/1000 caracteres</div>
                             </div>
                             <button class="btn btn-primary btn-lg w-100" type="submit"><span class="dashicons dashicons-upload"></span> Enviar homenagem</button>
                         </form>
@@ -234,5 +239,24 @@ if (!empty($featured)) : ?>
         </div>
     </div>
 </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var messageField = document.getElementById('h_message');
+            var counter = document.getElementById('h_message_counter');
+            var maxLength = messageField ? parseInt(messageField.getAttribute('maxlength') || '1000', 10) : 1000;
+
+            if (!messageField || !counter) {
+                return;
+            }
+
+            function updateCounter() {
+                var value = messageField.value || '';
+                counter.textContent = value.length;
+            }
+
+            messageField.addEventListener('input', updateCounter);
+            updateCounter();
+        });
+    </script>
 <?php
 get_footer();
