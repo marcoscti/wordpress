@@ -205,28 +205,28 @@ if (!empty($featured)) : ?>
         <div class="row gx-3 gy-3 lp-stats mt-4">
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/coracao.svg" class="img-fluid"></div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/coracao.svg" width="60" height="60"></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($total); ?></h3>
                     <p>Homenagens recebidas</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/pais.svg" alt="" srcset=""></div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/pais.svg" width="60" height="60"></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($parents_count); ?></h3>
                     <p>Pais participantes</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/msg.svg" alt="" srcset=""></div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/msg.svg" width="60" height="60"></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($messages); ?></h3>
                     <p>Mensagens</p>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card rounded-4 p-4 text-center shadow-sm bg-white">
-                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/unidades.svg" alt="" srcset=""></div>
+                    <div class="stat-icon"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/unidades.svg" width="60" height="60"></div>
                     <h3 class="lp-dia-dos-pais-text h1"><?php echo intval($units_count); ?></h3>
                     <p>Unidades representadas</p>
                 </div>

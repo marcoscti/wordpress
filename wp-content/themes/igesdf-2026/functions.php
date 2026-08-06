@@ -40,6 +40,21 @@ function meu_tema_setup()
 
 add_action('after_setup_theme', 'meu_tema_setup');
 
+/**
+ * Adiciona o código do Microsoft Clarity no painel administrativo
+ */
+function adicionar_microsoft_clarity_admin() {
+    ?>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "vybjzzmk8e");
+    </script>
+    <?php
+}
+add_action('admin_head', 'adicionar_microsoft_clarity_admin');
 function meu_tema_assets()
 {
     wp_enqueue_style(
