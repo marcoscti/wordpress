@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Homenagem Pais
  * Description: Registra o Custom Post Type `homenagem` e provê endpoint AJAX para submissão de homenagens (para uso em landing pages).
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Marcos Cordeiro
  */
 
