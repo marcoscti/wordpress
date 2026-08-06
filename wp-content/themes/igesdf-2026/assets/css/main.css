@@ -105,6 +105,10 @@ footer {
   .logo {
     order: 2;
   }
+  .noticia-template-default .igesdf-container img {
+    height: unset;
+    width: 100%;
+  }
 }
 .icon-404 {
   font-size: 5rem;
@@ -257,9 +261,9 @@ footer {
   border-radius: 50%;
   background: #c8d400;
 }
-.lp-stats .stat-icon img{
+.lp-stats .stat-icon img {
   transform: scale(2);
-  margin-right: .3rem;
+  margin-right: 0.3rem;
 }
 .lp-cards h3,
 .lp-featured h2,
@@ -386,4 +390,3 @@ footer {
   font-weight: 400;
   font-style: normal;
 }
-
