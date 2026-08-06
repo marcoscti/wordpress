@@ -40,8 +40,7 @@
 }
 
 .hp-modal-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  display: flex;
   gap: 1.4rem;
   align-items: start;
 }
@@ -50,12 +49,14 @@
   position: sticky;
   top: 0;
   align-self: start;
+  flex:1;
 }
 
 .hp-modal-content-column {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex:1;
 }
 
 .hp-modal-content-header {
@@ -124,7 +125,7 @@
     max-height: calc(85vh - 170px);
   }
   .hp-modal-shell {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
   .hp-modal-media-column {
     position: static;
@@ -233,6 +234,6 @@
 }
 .modal-body.hp-homenagem-modal-body,
 .modal-content.hp-homenagem-modal-content{
-    max-height: max-content!important;
+    max-height: 95dvh!important;
     height: auto!important;
 }
