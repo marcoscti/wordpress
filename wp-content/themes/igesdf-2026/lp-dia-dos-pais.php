@@ -7,7 +7,7 @@ get_header();
 
 <section class="lp-hero">
     <picture>
-        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.png" style="width: 100%; height: auto;">
+        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-mobile.jpeg" style="width: 100%; height: auto;">
         <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero.png" style="width: 100%; height: auto;" alt="Dia dos Pais" class="img-fluid">
     </picture>
 </section>
