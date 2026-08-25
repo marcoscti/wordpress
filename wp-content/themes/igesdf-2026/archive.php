@@ -50,6 +50,10 @@
                             </p>
 
                         </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <small><?php the_time('d F Y')?></small>
+                            <small><?php the_time('h:i')?></small>
+                        </div>
                     </article>
 
                 </div>
