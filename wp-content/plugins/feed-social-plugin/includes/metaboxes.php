@@ -20,23 +20,74 @@ add_action('admin_enqueue_scripts', function ($hook) {
     }
 });
 
-function fs_media_metabox_callback($post) {
+function fs_media_metabox_callback($post)
+{
     $media_ids = get_post_meta($post->ID, '_fs_media_ids', true);
     $ids_array = array_filter(explode(',', $media_ids));
     wp_nonce_field('fs_save_media', 'fs_media_nonce');
-    ?>
+?>
     <style>
-        #fs-media-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
-        .fs-preview-item { position: relative; border: 1px solid #ddd; padding: 4px; background: #fff; line-height: 0; }
-        .fs-preview-item img, .fs-preview-item video { width: 100%; height: 100px; object-fit: cover; }
-        .fs-remove-media { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; border: none; cursor: pointer; font-size: 12px; line-height: 20px; text-align: center; padding: 0; }
-    </style>
+        #fs-media-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
 
+        .fs-preview-item {
+            position: relative;
+            border: 1px solid #ddd;
+            padding: 4px;
+            background: #fff;
+            line-height: 0;
+        }
+
+        .fs-preview-item img,
+        .fs-preview-item video {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .fs-remove-media {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+            padding: 0;
+        }
+        details summary {
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+        details:hover summary{
+            color: red;
+        }
+        details p{
+            margin:0 0 10px 0;
+            font-size: 16px;
+        }
+    </style>
+    <details>
+        <summary>💡Leia antes de publicar</summary>
+        <p>Essa caixa é utilizada exclusivamente para a inserção de mídias no seu Card/Carrossel, para inserir múltiplas imagens, após fazer upload, clique sobre a imagem desejada e pressionando <code>CTRL</code> continue clicando, quando clicar em usar essas mídias irão aparecer aqui embaixo.</p>
+    </details>
     <div id="fs-media-container">
         <input type="hidden" name="fs_media_ids" id="fs_media_ids" value="<?php echo esc_attr($media_ids); ?>">
         <button type="button" class="button button-primary" id="fs_upload_button">Adicionar Mídias (Imagens/Vídeos)</button>
         <div id="fs-media-preview">
-            <?php 
+            <?php
             if (!empty($ids_array)) {
                 foreach ($ids_array as $id) {
                     $url = wp_get_attachment_url($id);
@@ -71,8 +122,12 @@ function fs_media_metabox_callback($post) {
 
                 frame = wp.media({
                     title: 'Selecionar Mídias',
-                    button: { text: 'Usar estas mídias' },
-                    library: { type: ['image', 'video'] },
+                    button: {
+                        text: 'Usar estas mídias'
+                    },
+                    library: {
+                        type: ['image', 'video']
+                    },
                     multiple: true
                 });
 
@@ -84,17 +139,17 @@ function fs_media_metabox_callback($post) {
                         attachment = attachment.toJSON();
                         if (ids.indexOf(attachment.id.toString()) === -1) {
                             ids.push(attachment.id);
-                            
+
                             var html = '<div class="fs-preview-item" data-id="' + attachment.id + '">';
                             html += '<button type="button" class="fs-remove-media">×</button>';
-                            
+
                             if (attachment.type === 'video') {
                                 html += '<video src="' + attachment.url + '"></video>';
                             } else {
                                 html += '<img src="' + attachment.url + '">';
                             }
                             html += '</div>';
-                            
+
                             $previewContainer.append(html);
                         }
                     });
@@ -120,7 +175,7 @@ function fs_media_metabox_callback($post) {
                     $(this).remove();
                 });
             });
-            
+
             // Tornar a galeria ordenável (opcional, requer jquery-ui-sortable)
             if ($.fn.sortable) {
                 $previewContainer.sortable({
@@ -135,29 +190,35 @@ function fs_media_metabox_callback($post) {
             }
         });
     </script>
-    <?php
+<?php
 }
 
-function fs_story_options_metabox_callback($post) {
+function fs_story_options_metabox_callback($post)
+{
     wp_nonce_field('fs_save_story_options', 'fs_story_options_nonce');
     $expires = get_post_meta($post->ID, '_fs_story_expires', true);
-    ?>
+?>
     <p>
-        <input type="checkbox" id="fs_story_expires" name="fs_story_expires" value="yes" <?php checked($expires, 'yes'); ?> checked/>
+        <input type="checkbox" id="fs_story_expires" name="fs_story_expires" value="yes" <?php checked($expires, 'yes'); ?> checked />
         <label for="fs_story_expires">Expirar em 24 horas</label>
     </p>
-    <p class="description">
-        Se marcado, este story não será mais exibido 24 horas após a publicação.
+    <p class="description" style="color:red;">
+        💡 Se marcado, este story não será mais exibido 24 horas após a publicação.
     </p>
-    <?php
+<?php
 }
 
-function fs_story_video_metabox_callback($post) {
+function fs_story_video_metabox_callback($post)
+{
     wp_nonce_field('fs_save_story_video', 'fs_story_video_nonce');
     $video_id = get_post_meta($post->ID, '_fs_story_video_id', true);
     $video_url = $video_id ? wp_get_attachment_url($video_id) : '';
-    ?>
+?>
     <div id="fs-story-video-container">
+        <details>
+        <summary>💡Como Usar?</summary>
+        <div>Após realizar o uploar do vídeo, utilize a opção usar este vídeo para que ele seja carregado no story</div>
+    </details>
         <input type="hidden" name="fs_story_video_id" id="fs_story_video_id" value="<?php echo esc_attr($video_id); ?>">
         <div id="fs-story-video-preview" style="margin-bottom: 10px;">
             <?php if ($video_url): ?>
@@ -168,34 +229,41 @@ function fs_story_video_metabox_callback($post) {
         <button type="button" class="button" id="fs_remove_story_video_button" style="<?php echo $video_id ? '' : 'display:none;'; ?>">Remover Vídeo</button>
     </div>
     <script>
-    jQuery(document).ready(function($){
-        var frame;
-        $('#fs_upload_story_video_button').on('click', function(e){
-            e.preventDefault();
-            if (frame) { frame.open(); return; }
-            frame = wp.media({
-                title: 'Selecionar Vídeo para o Story',
-                button: { text: 'Usar este vídeo' },
-                library: { type: 'video' },
-                multiple: false
+        jQuery(document).ready(function($) {
+            var frame;
+            $('#fs_upload_story_video_button').on('click', function(e) {
+                e.preventDefault();
+                if (frame) {
+                    frame.open();
+                    return;
+                }
+                frame = wp.media({
+                    title: 'Selecionar Vídeo para o Story',
+                    button: {
+                        text: 'Usar este vídeo'
+                    },
+                    library: {
+                        type: 'video'
+                    },
+                    multiple: false
+                });
+                frame.on('select', function() {
+                    var attachment = frame.state().get('selection').first().toJSON();
+                    $('#fs_story_video_id').val(attachment.id);
+                    $('#fs_story_video_preview').html('<video src="' + attachment.url + '" style="max-width:100%; height:auto;" controls></video>');
+                    $('#fs_remove_story_video_button').show();
+                });
+                frame.open();
             });
-            frame.on('select', function(){
-                var attachment = frame.state().get('selection').first().toJSON();
-                $('#fs_story_video_id').val(attachment.id);
-                $('#fs_story_video_preview').html('<video src="' + attachment.url + '" style="max-width:100%; height:auto;" controls></video>');
-                $('#fs_remove_story_video_button').show();
+            $('#fs_remove_story_video_button').on('click', function(e) {
+                e.preventDefault();
+                $('#fs_story_video_id').val('');
+                $('#fs_story_video_preview').empty();
+                $(this).hide();
             });
-            frame.open();
         });
-        $('#fs_remove_story_video_button').on('click', function(e){
-            e.preventDefault();
-            $('#fs_story_video_id').val('');
-            $('#fs_story_video_preview').empty();
-            $(this).hide();
-        });
-    });
     </script>
-    <?php
+<?php
 }
 
 add_action('save_post', function ($post_id, $post) {

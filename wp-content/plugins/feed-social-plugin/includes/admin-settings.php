@@ -55,14 +55,15 @@ function fs_settings_page_callback()
 
     $base_url = add_query_arg('page', 'feed-social-metrics', admin_url('edit.php?post_type=feed-social'));
 
-    echo '<div class="wrap"><h1>Métricas e Usuários do Feed Social</h1>';
+    echo '<div class="wrap"><h1>Métricas e Usuários do Iges+</h1>';
     echo '<h2 class="nav-tab-wrapper">';
     echo '<a href="' . esc_url(add_query_arg(['tab' => 'posts'], $base_url)) . '" class="nav-tab' . ($active_tab === 'posts' ? ' nav-tab-active' : '') . '">Métricas dos posts</a>';
     echo '<a href="' . esc_url(add_query_arg(['tab' => 'users'], $base_url)) . '" class="nav-tab' . ($active_tab === 'users' ? ' nav-tab-active' : '') . '">Usuários</a>';
     echo '</h2>';
 
     if ($active_tab === 'users') {
-        echo '<h2>Usuários cadastrados</h2><table class="widefat fixed" cellspacing="0"><thead><tr><th>Nome</th><th>Email</th><th>Curtidas</th><th>Comentários</th><th>Ações</th></tr></thead><tbody>';
+        echo '<h2>Usuários cadastrados: '.count($users)?: "".'</h2>';
+        echo'<table class="widefat fixed" cellspacing="0" style="margin-top:10px;"><thead><tr><th>Nome</th><th>Email</th><th>Curtidas</th><th>Comentários</th><th>Ações</th></tr></thead><tbody>';
         if ($users) {
             foreach ($users as $user) {
                 echo '<tr><form method="post">';
