@@ -220,7 +220,7 @@ function create_post_types()
         'hierarchical'        => false,
         'menu_position'       => 4,
         'supports'            => $supports_noticia,
-        'taxonomies'          => array('category'),
+        'taxonomies'          => array('category','post_tag'),
         'menu_icon'           => 'dashicons-editor-table',
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
         'description'         => 'Fique por dentro das últimas notícias do instituto',
