@@ -594,7 +594,7 @@ function render_tags()
             <ul class="nav navbar-nav" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
            ';
     foreach ($tags as $tag) {
-        echo '<li><a href="' . get_term_link($tag) . '" style="color: #000;">' . esc_html($tag->name) . '</a></li>';
+        echo '<li><a href="' . get_term_link($tag) . '" class="link">' . esc_html($tag->name) . '</a></li>';
     }
     echo '
             </ul>

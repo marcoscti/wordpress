@@ -130,6 +130,8 @@ footer {
 .offcanvas-body ul li a {
   padding: 10px;
   text-decoration: none;
+}
+#offcanvasExample .offcanvas-body ul li a {
   color: var(--white);
 }
 .offcanvas-body ul li:hover {
