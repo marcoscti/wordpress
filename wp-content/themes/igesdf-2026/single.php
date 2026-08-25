@@ -30,17 +30,17 @@
 
             <div class="d-flex justify-content-between mt-4">
 
-                <div>
+                <div class="navigation-item px-2 py-2 border rounded">
                     <?php previous_post_link(
                         '%link',
-                        '&laquo; Post anterior'
+                        '<i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Anterior'
                     ); ?>
                 </div>
 
-                <div>
+                <div class="navigation-item px-2 py-2 border rounded">
                     <?php next_post_link(
                         '%link',
-                        'Próximo post &raquo;'
+                        'Próximo <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>'
                     ); ?>
                 </div>
 

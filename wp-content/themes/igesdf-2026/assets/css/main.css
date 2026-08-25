@@ -1,14 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Noto+Serif+Ottoman+Siyaq&display=swap");
+
 :root {
   --primary-color: #0094c6;
   --white: #fff;
 }
+
 body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Open Sans", sans-serif;
 }
+
 header {
   position: sticky;
   top: 0;
@@ -16,24 +19,30 @@ header {
   background-color: var(--primary-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 footer {
   background-color: var(--primary-color);
 }
+
 .btn-igesdf-main {
   color: var(--white) !important;
 }
+
 .igesdf-container {
   height: 100%;
   min-height: 100dvh;
 }
+
 .noticia-template-default .igesdf-container {
   max-width: 1024px !important;
   width: 100%;
 }
+
 .noticia-template-default .content .wp-caption-text {
   font-size: 0.9rem;
   font-style: italic;
 }
+
 .header-content {
   display: flex;
   align-items: center;
@@ -57,6 +66,7 @@ footer {
 .search-input input {
   width: 100%;
 }
+
 .navbar-nav .sub-menu {
   display: none;
   list-style: none;
@@ -70,25 +80,26 @@ footer {
   margin-top: 10px;
 }
 
-.navbar-nav .menu-item-has-children.active > .sub-menu {
+.navbar-nav .menu-item-has-children.active>.sub-menu {
   display: block;
 }
 
-.navbar-nav .menu-item-has-children > a {
+.navbar-nav .menu-item-has-children>a {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.navbar-nav .menu-item-has-children > a::after {
+.navbar-nav .menu-item-has-children>a::after {
   content: "\f107";
   font-family: FontAwesome;
   transition: 0.3s;
 }
 
-.navbar-nav .menu-item-has-children.active > a::after {
+.navbar-nav .menu-item-has-children.active>a::after {
   transform: rotate(180deg);
 }
+
 /* Mobile */
 @media (max-width: 991.98px) {
   .header-content {
@@ -105,41 +116,64 @@ footer {
   .logo {
     order: 2;
   }
+
   .noticia-template-default .igesdf-container img {
     height: unset;
     width: 100%;
   }
 }
+
 .icon-404 {
   font-size: 5rem;
   margin-bottom: 1rem;
 }
+
 .offcanvas.offcanvas-start.show {
   background-color: var(--primary-color);
 }
+
 .offcanvas-body {
   margin: 0px;
   font-size: 1.2rem;
-  padding: 0px !important ;
+  padding: 0px !important;
 }
+
 .offcanvas-body ul li {
   padding: 10px 0;
   width: 100%;
   text-align: left;
 }
+
 .offcanvas-body ul li a {
   padding: 10px;
   text-decoration: none;
 }
+
 #offcanvasExample .offcanvas-body ul li a {
   color: var(--white);
 }
+
+.navigation-item {
+  background-color: #0094c6;
+}
+
+.navigation-item:hover {
+  background-color: var(--primary-color);
+}
+
+.navigation-item a {
+  text-decoration: none;
+  color: var(--white);
+}
+
 .offcanvas-body ul li:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
 .igesdf-container .navigation {
   justify-content: center;
 }
+
 .igesdf-container .page-numbers {
   padding: 10px 15px;
   border: 1px solid var(--primary-color);
@@ -148,6 +182,7 @@ footer {
   text-decoration: none;
   cursor: pointer;
 }
+
 .igesdf-container .page-numbers.current {
   background-color: var(--primary-color);
   color: var(--white);
@@ -263,10 +298,12 @@ footer {
   border-radius: 50%;
   background: #c8d400;
 }
+
 .lp-stats .stat-icon img {
   transform: scale(2);
   margin-right: 0.3rem;
 }
+
 .lp-cards h3,
 .lp-featured h2,
 .lp-numbers h3 {
@@ -374,19 +411,23 @@ footer {
   .lp-featured .featured-info {
     margin-bottom: 1.5rem;
   }
+
   .page-template-lp-dia-dos-pais .custom {
     top: unset !important;
   }
 }
+
 .page-template-lp-dia-dos-pais .custom {
   position: relative;
   top: -80px;
 }
+
 .lp-dia-dos-pais-text {
   font-family: "Noto Serif Ottoman Siyaq", serif;
   font-weight: 400;
   font-style: normal;
 }
+
 .lp-dia-dos-pais-title {
   font-family: "Noto Serif Ottoman Siyaq", serif;
   font-weight: 400;
