@@ -18,7 +18,7 @@
                     <?php the_author(); ?>
 
                 </p>
-                <?php render_tags() ?>
+                
             </div>
 
             <div class="content">
