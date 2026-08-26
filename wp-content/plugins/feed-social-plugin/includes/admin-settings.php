@@ -146,7 +146,7 @@ function fs_settings_page_callback()
             'comments' => 'Comentários'
         ];
         $order_label = $order === 'DESC' ? 'decrescente (maior para menor)' : 'crescente (menor para maior)';
-        echo '<p><small>📊 Ordenado por: <strong>' . esc_html($orderby_label[$orderby] ?? $orderby) . '</strong> em ordem <strong>' . esc_html($order_label) . '</strong></small></p>';
+        echo '<p>📊 Ordenado por: <strong>' . esc_html($orderby_label[$orderby] ?? $orderby) . '</strong> em ordem <strong>' . esc_html($order_label) . '</strong></p>';
 
         echo '<table class="widefat fixed" cellspacing="0">
         <thead>
@@ -154,27 +154,27 @@ function fs_settings_page_callback()
            <th style="width: 30%;">Título</th>
            <th style="width: 17.5%;">
                Visualizações 
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'views', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por visualizações (maior para menor)">↓</a>
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'views', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por visualizações (menor para maior)">↑</a>
-               ' . ($current_orderby === 'views' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'views', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por visualizações (maior para menor)" style="font-size:18px;padding:5px">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'views', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por visualizações (menor para maior)" style="font-size:18px;padding:5px">↑</a>
+               ' . ($current_orderby === 'views' ? '<span style="color:#0073aa;font-size:18px;padding:5px">✓</span>' : '') . '
            </th>
            <th style="width: 17.5%;">
                Curtidas
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'likes', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por curtidas (maior para menor)">↓</a>
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'likes', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por curtidas (menor para maior)">↑</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'likes', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por curtidas (maior para menor)" style="font-size:18px;padding:5px">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'likes', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por curtidas (menor para maior)" style="font-size:18px;padding:5px">↑</a>
                ' . ($current_orderby === 'likes' ? '<span style="color:#0073aa;">✓</span>' : '') . '
            </th>
            <th style="width: 17.5%;">
                Comentários
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'comments', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por comentários (maior para menor)">↓</a>
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'comments', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por comentários (menor para maior)">↑</a>
-               ' . ($current_orderby === 'comments' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'comments', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por comentários (maior para menor)" style="font-size:18px;padding:5px">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'comments', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por comentários (menor para maior)" style="font-size:18px;padding:5px">↑</a>
+               ' . ($current_orderby === 'comments' ? '<span style="color:#0073aa;" style="font-size:18px;padding:5px">✓</span>' : '') . '
            </th>
            <th style="width: 17.5%;">
                Data
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'date', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por data (mais recentes)">↓</a>
-               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'date', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por data (mais antigos)">↑</a>
-               ' . ($current_orderby === 'date' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'date', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por data (mais recentes)" style="font-size:18px;padding:5px">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'date', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por data (mais antigos)" style="font-size:18px;padding:5px">↑</a>
+               ' . ($current_orderby === 'date' ? '<span style="color:#0073aa;font-size:18px;padding:5px;">✓</span>' : '') . '
            </th>
         </tr>
         </thead>
