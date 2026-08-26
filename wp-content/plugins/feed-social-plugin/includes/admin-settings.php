@@ -35,8 +35,7 @@ function fs_settings_page_callback()
     }
     if (isset($_POST['fs_user_delete']) && wp_verify_nonce($_POST['_wpnonce'] ?? '', 'fs_update_user')) {
         $user_id = absint($_POST['user_id'] ?? 0);
-        $email = sanitize_email($_POST['email'] ?? '');
-        if ($user_id && $email) {
+        if ($user_id) {
             $table = $wpdb->prefix . 'feed_social_users';
             $wpdb->delete($table, ['id' => $user_id], ['%d']);
         }
@@ -45,13 +44,50 @@ function fs_settings_page_callback()
     $users_table = $wpdb->prefix . 'feed_social_users';
     $users = $wpdb->get_results("SELECT id, name, email, created_at, updated_at FROM $users_table ORDER BY created_at DESC");
 
-    $posts_query = new WP_Query([
-        'post_type' => 'feed-social',
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'orderby' => 'date',
-        'order' => 'DESC',
-    ]);
+    // === CONSULTA COM SQL USANDO TABELAS PERSONALIZADAS ===
+    // Pega os parâmetros de ordenação da URL
+    $orderby = isset($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'date';
+    $order = isset($_GET['order']) ? sanitize_key($_GET['order']) : 'DESC';
+
+    // Valida os parâmetros permitidos
+    $allowed_orderby = ['date', 'views', 'likes', 'comments'];
+    if (!in_array($orderby, $allowed_orderby)) {
+        $orderby = 'date';
+    }
+    $order = strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
+
+    // Tabelas personalizadas
+    $posts_table = $wpdb->posts;
+    $views_table = $wpdb->prefix . 'feed_social_views';
+    $likes_table = $wpdb->prefix . 'feed_social_likes';
+    $comments_table = $wpdb->prefix . 'feed_social_comments';
+
+    // Query SQL usando as tabelas personalizadas
+    $sql = "SELECT p.ID, p.post_title, p.post_date,
+            COALESCE((SELECT COUNT(*) FROM $views_table WHERE post_id = p.ID), 0) as views,
+            COALESCE((SELECT COUNT(*) FROM $likes_table WHERE post_id = p.ID), 0) as likes,
+            COALESCE((SELECT COUNT(*) FROM $comments_table WHERE post_id = p.ID), 0) as comments
+            FROM $posts_table p
+            WHERE p.post_type = 'feed-social' 
+            AND p.post_status = 'publish'";
+
+    // Adiciona a ordenação
+    switch ($orderby) {
+        case 'views':
+            $sql .= " ORDER BY views $order, p.post_date DESC";
+            break;
+        case 'likes':
+            $sql .= " ORDER BY likes $order, p.post_date DESC";
+            break;
+        case 'comments':
+            $sql .= " ORDER BY comments $order, p.post_date DESC";
+            break;
+        default: // date
+            $sql .= " ORDER BY p.post_date $order";
+    }
+
+    $posts = $wpdb->get_results($sql);
+    // === FIM DA CONSULTA SQL ===
 
     $base_url = add_query_arg('page', 'feed-social-metrics', admin_url('edit.php?post_type=feed-social'));
 
@@ -62,20 +98,33 @@ function fs_settings_page_callback()
     echo '</h2>';
 
     if ($active_tab === 'users') {
-        echo '<h2>Usuários cadastrados: '.count($users)?: "".'</h2>';
-        echo'<table class="widefat fixed" cellspacing="0" style="margin-top:10px;"><thead><tr><th>Nome</th><th>Email</th><th>Curtidas</th><th>Comentários</th><th>Ações</th></tr></thead><tbody>';
+        echo '<h2>Usuários cadastrados: ' . count($users) . '</h2>';
+        echo '<table class="widefat fixed" cellspacing="0" style="margin-top:10px;">
+        <thead>
+          <tr>
+           <th>Nome</th>
+           <th>Email</th>
+           <th>Curtidas</th>
+           <th>Comentários</th>
+           <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>';
         if ($users) {
             foreach ($users as $user) {
+                $like_count = fs_get_user_like_count($user->email);
+                $comment_count = fs_get_user_comment_count($user->email);
+
                 echo '<tr><form method="post">';
                 echo '<input type="hidden" name="tab" value="users">';
                 echo '<input type="hidden" name="user_id" value="' . esc_attr($user->id) . '">';
                 wp_nonce_field('fs_update_user');
                 echo '<td><input type="text" name="name" value="' . esc_attr($user->name) . '" /></td>';
                 echo '<td><input type="email" name="email" value="' . esc_attr($user->email) . '" /></td>';
-                echo '<td>' . esc_html(fs_get_user_like_count($user->email)) . '</td>';
-                echo '<td>' . esc_html(fs_get_user_comment_count($user->email)) . '</td>';
+                echo '<td>' . esc_html($like_count) . '</td>';
+                echo '<td>' . esc_html($comment_count) . '</td>';
                 echo '<td><button type="submit" name="fs_user_update" class="button button-primary"><span class="dashicons dashicons-insert"></span> Salvar</button>&nbsp;
-                <button type="submit" name="fs_user_delete" class="button button-danger" style="border-color:red; color:red;"><span class="dashicons dashicons-trash"></span> Excluir</button></td>';
+                <button type="submit" name="fs_user_delete" class="button button-danger" style="border-color:red; color:red;" onclick="return confirm(\'Tem certeza que deseja excluir este usuário?\')"><span class="dashicons dashicons-trash"></span> Excluir</button></td>';
                 echo '</form></tr>';
             }
         } else {
@@ -83,16 +132,73 @@ function fs_settings_page_callback()
         }
         echo '</tbody></table>';
     } else {
-        echo '<h2>Métricas dos posts</h2><table class="widefat fixed" cellspacing="0"><thead><tr><th>Título</th><th>Visualizações</th><th>Curtidas</th><th>Comentários</th></tr></thead><tbody>';
-        if ($posts_query->have_posts()) {
-            while ($posts_query->have_posts()) {
-                $posts_query->the_post();
-                $post_id = get_the_ID();
-                echo '<tr><td>' . esc_html(get_the_title($post_id)) . '</td><td>' . esc_html(fs_get_views_count($post_id)) . '</td><td>' . esc_html(fs_get_likes_count($post_id)) . '</td><td>' . esc_html(fs_get_comments_count($post_id)) . '</td></tr>';
+        // === TABELA DE POSTS COM LINKS DE ORDENAÇÃO ===
+        $current_orderby = $orderby;
+        $current_order = $order;
+
+        echo '<h2>Métricas dos posts</h2>';
+
+        // Mostra o filtro atual
+        $orderby_label = [
+            'date' => 'Data',
+            'views' => 'Visualizações',
+            'likes' => 'Curtidas',
+            'comments' => 'Comentários'
+        ];
+        $order_label = $order === 'DESC' ? 'decrescente (maior para menor)' : 'crescente (menor para maior)';
+        echo '<p><small>📊 Ordenado por: <strong>' . esc_html($orderby_label[$orderby] ?? $orderby) . '</strong> em ordem <strong>' . esc_html($order_label) . '</strong></small></p>';
+
+        echo '<table class="widefat fixed" cellspacing="0">
+        <thead>
+        <tr>
+           <th style="width: 30%;">Título</th>
+           <th style="width: 17.5%;">
+               Visualizações 
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'views', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por visualizações (maior para menor)">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'views', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por visualizações (menor para maior)">↑</a>
+               ' . ($current_orderby === 'views' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+           </th>
+           <th style="width: 17.5%;">
+               Curtidas
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'likes', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por curtidas (maior para menor)">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'likes', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por curtidas (menor para maior)">↑</a>
+               ' . ($current_orderby === 'likes' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+           </th>
+           <th style="width: 17.5%;">
+               Comentários
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'comments', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por comentários (maior para menor)">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'comments', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por comentários (menor para maior)">↑</a>
+               ' . ($current_orderby === 'comments' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+           </th>
+           <th style="width: 17.5%;">
+               Data
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'date', 'order' => 'DESC'], $base_url)) . '" title="Ordenar por data (mais recentes)">↓</a>
+               <a href="' . esc_url(add_query_arg(['tab' => 'posts', 'orderby' => 'date', 'order' => 'ASC'], $base_url)) . '" title="Ordenar por data (mais antigos)">↑</a>
+               ' . ($current_orderby === 'date' ? '<span style="color:#0073aa;">✓</span>' : '') . '
+           </th>
+        </tr>
+        </thead>
+        <tbody>';
+
+        if ($posts) {
+            foreach ($posts as $post) {
+                $post_id = $post->ID;
+                $views = (int)$post->views;
+                $likes = (int)$post->likes;
+                $comments = (int)$post->comments;
+                $title = $post->post_title ?: '(Sem título)';
+                $date = date_i18n('d/m/Y H:i', strtotime($post->post_date));
+
+                echo '<tr>';
+                echo '<td><strong>' . esc_html($title) . '</strong></td>';
+                echo '<td>' . esc_html(number_format($views)) . '</td>';
+                echo '<td>' . esc_html(number_format($likes)) . '</td>';
+                echo '<td>' . esc_html(number_format($comments)) . '</td>';
+                echo '<td>' . esc_html($date) . '</td>';
+                echo '</tr>';
             }
-            wp_reset_postdata();
         } else {
-            echo '<tr><td colspan="4">Nenhum post encontrado.</td></tr>';
+            echo '<tr><td colspan="5">Nenhum post encontrado.</td></tr>';
         }
         echo '</tbody></table>';
     }
