@@ -4,9 +4,9 @@ if (!defined('ABSPATH')) exit;
 function fs_register_post_type()
 {
     $labels = array(
-        'name'                  => _x('IgesDF+', 'Post type general name', 'feed-social'),
+        'name'                  => _x('Iges+ ('.FS_DB_VERSION.')', 'Post type general name', 'feed-social'),
         'singular_name'         => _x('Post do Feed', 'Post type singular name', 'feed-social'), // phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder, WordPress.WP.I18n.MismatchedPlaceholders
-        'menu_name'             => _x('IgesDF+', 'Admin Menu text', 'feed-social'),
+        'menu_name'             => _x('Iges+', 'Admin Menu text', 'feed-social'),
         'name_admin_bar'        => _x('Post do Feed', 'Add New on Toolbar', 'feed-social'),
         'add_new'               => __('Adicionar Novo', 'feed-social'),
         'new_item'              => __('Novo Post', 'feed-social'),
