@@ -2,7 +2,7 @@
 
 Plugin WordPress para exibir um feed social com mídia, curtidas, comentários, visualizações, stories, destaques e notificações em tempo real, sem depender de serviços externos para interações ou streaming.
 
-**Versão:** 3.0.2  
+**Versão:** 3.3.0  
 **Autor:** Marcos Cordeiro  
 **Requisitos:** WordPress 5.0+, PHP 7.4+, links permanentes ativos
 
@@ -132,7 +132,9 @@ Namespace: `feed-social/v1`
 | `GET` | `/post/{id}` | Retorna um post específico |
 | `POST` | `/like` | Curtir ou descurtir (`post_id`, `email`) |
 | `POST` | `/comment` | Enviar comentário (`post_id`, `name`, `email`, `comment`) |
+| `PUT` | `/comment/{id}` | Editar comentário (`id`) |
 | `GET` | `/comments` | Lista comentários de um post (`post_id`) |
+| `GET` | `/user` | Busca usuário por email (`email`) |
 | `GET` | `/events` | Stream SSE de novos posts |
 
 Exemplo:
@@ -186,6 +188,12 @@ jQuery é fornecido pelo próprio WordPress.
 ---
 
 ## Changelog
+
+### 3.3.0
+- Edição de comentários via API REST (`PUT /comment/{id}`)
+- Busca de perfil de usuário via API REST (`GET /user`)
+- Melhorias na página administrativa com suporte a ordenação nas métricas de posts
+- Correções de compatibilidade e otimizações internas
 
 ### 3.0.2
 - Exibição da legenda do post no modal, com expansão em mobile
