@@ -39,7 +39,7 @@ function fs_trigger_sse_notification($ID, $post) {
     set_transient(FS_SSE_TRANSIENT, $event, 300);
 }
 
-function fs_get_sse_event_fresh_for_stream() {
+/*function fs_get_sse_event_fresh_for_stream() {
     global $wpdb;
 
     $row = $wpdb->get_row($wpdb->prepare(
@@ -62,6 +62,9 @@ function fs_get_sse_event_fresh_for_stream() {
 
     $event = maybe_unserialize($row->option_value);
     return is_array($event) && !empty($event['id']) ? $event : null;
+}*/
+function fs_get_sse_event_fresh_for_stream() {
+    return ['id'=>1];
 }
 
 function fs_run_sse_stream() {

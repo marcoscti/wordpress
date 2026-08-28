@@ -206,6 +206,8 @@ function fs_render_highlight_shortcode($atts)
                         'post_type'      => 'social_story',
                         'posts_per_page' => -1,
                         'post_status'    => 'publish',
+                        'orderby'        => 'date',
+                        'order'          => 'DESC',
                         'tax_query' => [
                             [
                                 'taxonomy' => 'destaque',
