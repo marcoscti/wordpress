@@ -202,7 +202,7 @@ function create_post_types()
         'menu_name'           => __('Notícia', 'igesdf-2026'),
     );
 
-    $supports_noticia = array('title', 'editor', 'thumbnail');
+    $supports_noticia = array('title', 'editor', 'thumbnail','page-attributes');
 
     $slug_noticia = get_theme_mod('noticia_permalink');
     $slug_noticia = (empty($slug_noticia)) ? 'noticia' : $slug_noticia;

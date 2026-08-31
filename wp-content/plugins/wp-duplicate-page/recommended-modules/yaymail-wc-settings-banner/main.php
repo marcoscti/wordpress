@@ -28,6 +28,9 @@ if ( ! class_exists( 'YayMailWCSettingsBanner' ) ) {
 				if ( ! function_exists( 'WC' ) || defined( 'YAYMAIL_VERSION' ) ) {
 					return;
 				}
+				if ( function_exists( 'njt_ads_toggle_is_enabled' ) && ! njt_ads_toggle_is_enabled( 'yaymail-wc-settings-banner' ) ) {
+					return;
+				}
 
 				$banner_notification = get_option( 'yaymail_wc_settings_banner_notification' );
 				if ( $banner_notification !== false && time() < $banner_notification  ) {

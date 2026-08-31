@@ -5,3 +5,21 @@ footer#footer-lp-dia-dos-pais {
 body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show{
     background-color: #Ec6608 !important;
 }
+
+/*
+Conteúdo para o aniversário do Hospital de Base
+*/
+body.noticia-template{
+    background-color: #c9d4001a;
+}
+body.noticia-template{
+    background-image: url('../images/logo.png');
+    background-repeat: no-repeat;
+    background-position-x: left;
+    background-position-y: 150px;
+    background-size: 250px;
+}
+body.noticia-template #footer-single-noticia,
+body.noticia-template #header-single-noticia{
+    background-color: #c8d400;
+}

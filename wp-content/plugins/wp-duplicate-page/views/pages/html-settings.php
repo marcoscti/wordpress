@@ -35,6 +35,21 @@ use NjtDuplicate\Helper\Utils;
 			<div class="njt-duplicate-layout-primary">
 				<div class="njt-duplicate-layout-main">
 					<div class="njt-duplicate-settings">
+						<?php if ( function_exists( 'njt_ads_toggle_consumer_is_enabled' ) ) : ?>
+						<div class="njt-duplicate-card njt-duplicate-ads-toggle-card">
+							<div class="njt-duplicate-card-header">
+								<div class="njt-duplicate-card-title-wrapper">
+									<h3 class="njt-duplicate-card-title njt-duplicate-card-header-item">
+										<?php echo esc_html( __( 'Recommended Modules', 'wp-duplicate-page' ) ); ?>
+									</h3>
+								</div>
+							</div>
+							<div class="njt-duplicate-card-body">
+								<?php // Rendered by NjtDuplicate\Page\Settings::enqueueAdsToggle() via the shared njt-ads-toggle widget (recommended-modules/ads-toggle). ?>
+								<div id="njt-duplicate-ads-toggle"></div>
+							</div>
+						</div>
+						<?php endif; ?>
 						<form method="post" id="njt_duplicate_setting_form">
 							<div class="njt-duplicate-card">
 								<div class="njt-duplicate-card-header">

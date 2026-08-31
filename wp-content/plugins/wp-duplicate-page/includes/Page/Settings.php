@@ -23,7 +23,12 @@ class Settings {
 
 	private function __construct() {
 		add_action( 'admin_menu', array( $this, 'settingsMenu' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminScripts' ) );
+		// Priority 20 (after the ads-toggle module's own default-priority admin_enqueue_scripts
+		// hook, see recommended-modules/ads-toggle/main.php): enqueueAdminScripts() -> enqueueAdsToggle()
+		// needs the 'njt-ads-toggle' handle already wp_register_script()'d before it can
+		// wp_add_inline_script() onto it — that registration happens in that other module's hook,
+		// which must run first.
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminScripts' ), 20 );
 		add_filter( 'plugin_action_links_' . NJT_DUPLICATE_PLUGIN_NAME, array( $this, 'addActionLinks' ) );
 		add_action( 'wp_ajax_njt_duplicate_page_settings', array( $this, 'saveSettings' ) );
 		add_action( 'wp_ajax_njt_duplicate_page_track_review', array( $this, 'trackReview' ) );
@@ -70,7 +75,42 @@ class Settings {
 					'footerText' => $footerText,
 				)
 			);
+
+			$this->enqueueAdsToggle();
 		}
+	}
+
+	/**
+	 * Render the recommended-modules ads on/off toggle into #njt-duplicate-ads-toggle (markup in
+	 * html-settings.php) via the shared njt-ads-toggle widget (recommended-modules/ads-toggle).
+	 * Fail-open: if that module isn't bundled/loaded, njt_ads_toggle_consumer_is_enabled() won't
+	 * exist and this silently no-ops — no toggle is shown (matches the guard in html-settings.php).
+	 */
+	private function enqueueAdsToggle() {
+		if ( ! function_exists( 'njt_ads_toggle_consumer_is_enabled' ) || ! wp_script_is( 'njt-ads-toggle', 'registered' ) ) {
+			return;
+		}
+
+		wp_enqueue_script( 'njt-ads-toggle' );
+		wp_enqueue_style( 'njt-ads-toggle' );
+
+		// Attached as an inline script on the 'njt-ads-toggle' handle (rather than echoed directly
+		// into html-settings.php) so it prints after that handle's own script/jQuery, both in the
+		// footer — echoing it inline in the page body would run before those footer scripts load.
+		wp_add_inline_script(
+			'njt-ads-toggle',
+			sprintf(
+				'jQuery(function ($) { if (window.njtAdsToggleRender) { njtAdsToggleRender("#njt-duplicate-ads-toggle", %s); } });',
+				wp_json_encode(
+					array(
+						'consumerSlug' => NJT_DUPLICATE_DOMAIN,
+						'title'        => __( 'Show Recommended Plugins', 'wp-duplicate-page' ),
+						'description'  => __( 'Enable this to see handy plugin recommendations and occasional offers. Disable anytime to turn all of them off.', 'wp-duplicate-page' ),
+						'checked'      => njt_ads_toggle_consumer_is_enabled( NJT_DUPLICATE_DOMAIN ),
+					)
+				)
+			)
+		);
 	}
 
 	public function getPageId() {

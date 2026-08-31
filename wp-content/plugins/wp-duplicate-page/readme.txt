@@ -4,8 +4,8 @@ Donate link: https://ninjateam.org/wp-duplicate-page/
 Tags: duplicate page, duplicate post, clone post, clone page, backup
 Requires at least: 4.0
 Requires PHP: 5.3
-Tested up to: 7.0
-Stable tag: 1.8.4
+Tested up to: 7.1
+Stable tag: 1.8.5
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -81,6 +81,9 @@ Yes, it's completely free of charge. WP Duplicate Page comes with all the featur
 2. Duplicate button
 
 == Changelog ==
+
+= Aug 29, 2026 - Version 1.8.5 =
+- Improved: Admin dashboard widget
 
 = Jun 2, 2026 - Version 1.8.4 =
 - Improved: Confirmation dialog in WooCommerce email settings screen
