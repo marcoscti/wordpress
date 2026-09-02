@@ -414,7 +414,7 @@ jQuery(document).ready(function ($) {
   function showFeedNotification(post) {
     showBrowserNotification(post);
 
-    const targetUrl = '/iges/'
+    const targetUrl = '/intranet/iges/'
     const body = post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body;
     const postTitle = escapeHtml(post.title || "Novo conteúdo");
     const postExcerpt = escapeHtml(post.excerpt || "Confira as novidades no Feed Social.");
