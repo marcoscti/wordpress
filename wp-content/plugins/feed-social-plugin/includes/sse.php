@@ -2,9 +2,11 @@
 if (!defined('ABSPATH')) exit;
 
 define('FS_SSE_REWRITE_VERSION', '1.1.0');
-define('FS_SSE_TRANSIENT', 'fs_new_post_event');
+define('FS_SSE_EVENT_TTL', 300);
 
 add_action('transition_post_status', 'fs_trigger_sse_on_publish', 10, 3);
+add_action('publish_feed-social', 'fs_trigger_sse_on_publish_action', 10, 2);
+add_action('publish_social_story', 'fs_trigger_sse_on_publish_action', 10, 2);
 
 function fs_trigger_sse_on_publish($new_status, $old_status, $post) {
     if ($new_status !== 'publish' || $old_status === 'publish' || !in_array($post->post_type, ['feed-social', 'social_story'], true)) {
@@ -12,6 +14,14 @@ function fs_trigger_sse_on_publish($new_status, $old_status, $post) {
     }
 
     fs_trigger_sse_notification($post->ID, $post);
+}
+
+function fs_trigger_sse_on_publish_action($post_id, $post) {
+    if (!$post || $post->post_status !== 'publish' || !in_array($post->post_type, ['feed-social', 'social_story'], true)) {
+        return;
+    }
+
+    fs_trigger_sse_notification($post_id, $post);
 }
 
 function fs_trigger_sse_notification($ID, $post) {
@@ -36,35 +46,47 @@ function fs_trigger_sse_notification($ID, $post) {
         'excerpt' => $excerpt,
     ];
 
-    set_transient(FS_SSE_TRANSIENT, $event, 300);
+    $event['expires'] = time() + FS_SSE_EVENT_TTL;
+    $event_file = fs_get_sse_event_file();
+
+    if (!is_dir(dirname($event_file))) {
+        wp_mkdir_p(dirname($event_file));
+    }
+
+    file_put_contents($event_file, wp_json_encode($event), LOCK_EX);
 }
 
-/*function fs_get_sse_event_fresh_for_stream() {
-    global $wpdb;
+function fs_get_sse_event_file() {
+    $uploads = wp_upload_dir();
 
-    $row = $wpdb->get_row($wpdb->prepare(
-        "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
-        '_transient_' . FS_SSE_TRANSIENT
-    ));
+    return trailingslashit($uploads['basedir']) . 'feed-social-sse-event.json';
+}
 
-    if (!$row) {
-        return null;
-    }
-
-    $timeout = $wpdb->get_var($wpdb->prepare(
-        "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
-        '_transient_timeout_' . FS_SSE_TRANSIENT
-    ));
-
-    if (!$timeout || (int) $timeout < time()) {
-        return null;
-    }
-
-    $event = maybe_unserialize($row->option_value);
-    return is_array($event) && !empty($event['id']) ? $event : null;
-}*/
 function fs_get_sse_event_fresh_for_stream() {
-    return ['id'=>1];
+    $event_file = fs_get_sse_event_file();
+
+    if (!is_readable($event_file)) {
+        return null;
+    }
+
+    $handle = fopen($event_file, 'r');
+
+    if (!$handle) {
+        return null;
+    }
+
+    flock($handle, LOCK_SH);
+    $contents = stream_get_contents($handle);
+    flock($handle, LOCK_UN);
+    fclose($handle);
+
+    $event = json_decode($contents, true);
+
+    if (!is_array($event) || empty($event['id']) || empty($event['expires']) || (int) $event['expires'] <= time()) {
+        return null;
+    }
+
+    return $event;
 }
 
 function fs_run_sse_stream() {

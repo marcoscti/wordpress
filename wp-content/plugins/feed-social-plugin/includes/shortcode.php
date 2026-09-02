@@ -67,6 +67,7 @@ function fs_enqueue_feed_scripts()
         'comments_url' => get_rest_url(null, 'feed-social/v1/comments'),
         'ajax_url' => admin_url('admin-ajax.php'),
         'sse_url' => fs_get_sse_url(),
+        'notification_event_url' => trailingslashit(wp_upload_dir()['baseurl']) . 'feed-social-sse-event.json',
         'feed_page_url' => fs_get_feed_page_url(),
         'rest_nonce' => wp_create_nonce('wp_rest'),
         'initial_posts' => 5,
@@ -78,8 +79,9 @@ function fs_enqueue_feed_scripts()
         'comment_email_prompt' => __('Seu e-mail:', 'feed-social'),
         'notification_title' => __('Novo post no Feed Social', 'feed-social'),
         'notification_title_story' => __('Novo story no Feed Social', 'feed-social'),
-        'notification_body' => __('Acabou de publicar um novo post.', 'feed-social'),
-        'notification_body_story' => __('Acabou de publicar um novo story.', 'feed-social'),
+        'notification_body' => __('Um novo conteúdo foi postado, confira.', 'feed-social'),
+        'notification_body_story' => __('Um novo conteúdo foi postado, confira.', 'feed-social'),
+        'notification_icon' => FS_PLUGIN_URL . 'assets/images/icone-igesdf.png',
         'has_feed' => !empty($fs_feed_shortcode_used),
     ]);
 }

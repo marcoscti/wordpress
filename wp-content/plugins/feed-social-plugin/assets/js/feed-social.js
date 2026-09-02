@@ -127,7 +127,7 @@ jQuery(document).ready(function ($) {
     const normalizedName = (name || "").trim();
     const normalizedEmail = (email || "").trim();
 
-    if (!normalizedEmail) {
+    if (!normalizedName || !isValidEmail(normalizedEmail)) {
       return null;
     }
 
@@ -188,7 +188,7 @@ jQuery(document).ready(function ($) {
               <div class="fs-user-profile-fields">
                 <div class="form-group">
                   <label for="name">Seu nome e setor</label>
-                  <input class="fs-user-profile-field" id="name" type="text" name="fs_profile_name" placeholder="Ex: Marcos ASCOM" autocomplete="name">
+                  <input class="fs-user-profile-field" id="name" type="text" name="fs_profile_name" placeholder="Ex: Marcos ASCOM" autocomplete="name" required>
                 </div>
                 <div>
                 <label for="email">E-mail Institucional</label>
@@ -226,6 +226,23 @@ jQuery(document).ready(function ($) {
     );
     $modal.removeAttr("hidden");
 
+    const validateProfileField = function ($input) {
+      const isEmail = $input.attr("name") === "fs_profile_email";
+      const value = ($input.val() || "").trim();
+      const isValid = isEmail ? isValidEmail(value) : Boolean(value);
+
+      $input.toggleClass("fs-input-invalid", !isValid);
+      $input.attr("aria-invalid", isValid ? "false" : "true");
+
+      return isValid;
+    };
+
+    $modal
+      .off("input", ".fs-user-profile-field")
+      .on("input", ".fs-user-profile-field", function () {
+        validateProfileField($(this));
+      });
+
     $modal
       .off("submit", ".fs-user-profile-form")
       .on("submit", ".fs-user-profile-form", function (event) {
@@ -237,13 +254,18 @@ jQuery(document).ready(function ($) {
           .val()
           .trim();
 
-        if (!name) {
+        const isNameValid = validateProfileField($nameInput);
+        const isEmailValid = validateProfileField($emailInput);
+
+        if (!isNameValid) {
           window.alert("Informe seu nome.");
+          $nameInput.trigger("focus");
           return;
         }
 
-        if (!email || !isValidEmail(email)) {
+        if (!isEmailValid) {
           window.alert("Informe um e-mail válido.");
+          $emailInput.trigger("focus");
           return;
         }
 
@@ -331,7 +353,7 @@ jQuery(document).ready(function ($) {
 
   function hasValidStoredProfile() {
     const profile = getStoredUserProfile();
-    return Boolean(profile.name && profile.name.trim()) || Boolean(profile.email && isValidEmail(profile.email));
+    return Boolean(profile.name && profile.name.trim()) && Boolean(profile.email && isValidEmail(profile.email));
   }
 
   function getUserName() {
@@ -369,12 +391,14 @@ jQuery(document).ready(function ($) {
     }
 
     const title = post.type === 'social_story' ? fs_feed_data.notification_title_story : fs_feed_data.notification_title;
-    const body = post.excerpt || (post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body);
+    const postTitle = post.title || "Novo conteúdo";
+    const postExcerpt = post.excerpt ? "\n" + post.excerpt : "";
+    const body = postTitle + postExcerpt;
     const targetUrl = post.url || fs_feed_data.feed_page_url;
 
     const notification = new Notification(title, {
       body,
-      icon: post.thumbnail || undefined,
+      icon: fs_feed_data.notification_icon,
       tag: "fs-post-" + post.id,
     });
 
@@ -390,17 +414,20 @@ jQuery(document).ready(function ($) {
   function showFeedNotification(post) {
     showBrowserNotification(post);
 
-    const targetUrl = post.url || fs_feed_data.feed_page_url;
-    const body = post.excerpt || (post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body);
+    const targetUrl = '/iges/'
+    const body = post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body;
+    const postTitle = escapeHtml(post.title || "Novo conteúdo");
+    const postExcerpt = escapeHtml(post.excerpt || "Confira as novidades no Feed Social.");
 
     const $notification = $(`
             <div class="fs-notification-toast">
                 <p>${body}</p>
                 <div class="fs-notification-content">
-                    ${post.thumbnail ? `<img src="${post.thumbnail}" alt="${post.title}" class="fs-notification-thumbnail">` : ""}
+                  <img src="${fs_feed_data.notification_icon}" alt="Feed Social" class="fs-notification-thumbnail">
                     <div class="fs-notification-text">
-                        <p>${post.excerpt || post.title}</p>
-                        <a href="${targetUrl}" class="fs-notification-link">Ver agora &rarr;</a>
+                    <h4>${postTitle}</h4>
+                    <p>${postExcerpt}</p>
+                    <a href="${targetUrl}" class="fs-notification-link">Confira agora!</a>
                     </div>
                 </div>
             </div>
@@ -409,44 +436,59 @@ jQuery(document).ready(function ($) {
     $("body").append($notification);
     $notification
       .fadeIn()
-      .delay(8000)
+      .delay(12000)
       .fadeOut(function () {
         $(this).remove();
       });
   }
 
-  function initSse() {
-    if (typeof EventSource === "undefined" || !fs_feed_data.sse_url) {
+  function initNotificationPolling() {
+    if (!fs_feed_data.notification_event_url) {
       return;
     }
 
-    const feedEvents = new EventSource(fs_feed_data.sse_url);
+    let lastEventId = null;
 
-    feedEvents.addEventListener("new-content-feed", function (event) {
-      try {
-        const post = JSON.parse(event.data);
-        showFeedNotification(post);
+    const checkForNewContent = function () {
+      const eventUrl = fs_feed_data.notification_event_url + "?t=" + Date.now();
 
-        if (fs_feed_data.has_feed && $feedContainer.length) {
-          currentOffset = 0;
-          hasMore = true;
-          pendingBatch = [];
-          $feedContainer.empty();
-          updateSentinelVisibility();
-          fetchPosts();
-        }
-      } catch (error) {
-        console.error("Erro ao processar evento SSE:", error);
-      }
-    });
+      fetch(eventUrl, { cache: "no-store" })
+        .then(function (response) {
+          if (!response.ok) {
+            return null;
+          }
 
-    feedEvents.onopen = function () {
-      console.log("Feed Social SSE conectado.");
+          return response.json();
+        })
+        .then(function (post) {
+          if (!post || !post.id) {
+            return;
+          }
+
+          if (lastEventId === null) {
+            lastEventId = post.id;
+            return;
+          }
+
+          if (String(post.id) !== String(lastEventId)) {
+            lastEventId = post.id;
+            showFeedNotification(post);
+
+            if (fs_feed_data.has_feed && $feedContainer.length) {
+              currentOffset = 0;
+              hasMore = true;
+              pendingBatch = [];
+              $feedContainer.empty();
+              updateSentinelVisibility();
+              fetchPosts();
+            }
+          }
+        })
+        .catch(function () {});
     };
 
-    feedEvents.onerror = function () {
-      console.warn("Feed Social SSE reconectando...");
-    };
+    checkForNewContent();
+    window.setInterval(checkForNewContent, 15000);
   }
 
   requestNotificationPermission();
@@ -1289,7 +1331,7 @@ jQuery(document).ready(function ($) {
   }
 
 
-  initSse();
+  initNotificationPolling();
   $(document).on(
     "click",
     "#fs-post-modal .fs-post-modal-copy-link",

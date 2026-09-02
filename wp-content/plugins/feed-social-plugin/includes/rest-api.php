@@ -326,7 +326,7 @@ function fs_upsert_user_profile($name, $email) {
     $name = sanitize_text_field($name ?? '');
     $email = sanitize_email($email ?? '');
 
-    if (!$email) {
+    if (!$name || !is_email($email)) {
         return 0;
     }
 
@@ -433,6 +433,11 @@ add_action('wp_ajax_nopriv_fs_save_user_profile', 'fs_ajax_save_user_profile');
 function fs_ajax_save_user_profile() {
     $name = sanitize_text_field($_POST['name'] ?? '');
     $email = sanitize_email($_POST['email'] ?? '');
+
+    if (!$name || !is_email($email)) {
+        wp_send_json_error(['message' => 'Nome e e-mail válidos são obrigatórios.'], 400);
+    }
+
     $id = fs_upsert_user_profile($name, $email);
 
     wp_send_json_success(['id' => $id, 'name' => $name, 'email' => $email]);

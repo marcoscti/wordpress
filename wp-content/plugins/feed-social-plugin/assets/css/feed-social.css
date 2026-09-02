@@ -737,8 +737,8 @@ body.fs-video-modal-open {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #333;
-  color: #fff;
+  background-color: #c8d40047;
+  color: #333;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -757,13 +757,13 @@ body.fs-video-modal-open {
 
 .fs-notification-content {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
 }
 
 .fs-notification-thumbnail {
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
   border-radius: 4px;
 }
@@ -771,11 +771,12 @@ body.fs-video-modal-open {
 .fs-notification-text h4 {
   margin: 0 0 5px 0;
   font-size: 1em;
+  color: #333;
 }
 
 .fs-notification-text p {
   font-size: 0.85em;
-  color: #ccc;
+  color: #555;
   margin-bottom: 5px;
   font-weight: normal;
 }
@@ -791,6 +792,11 @@ body.fs-video-modal-open {
 
 .fs-notification-link:hover {
   text-decoration: underline;
+}
+
+.fs-user-profile-field.fs-input-invalid {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 1px #dc2626;
 }
 
 /* Responsive adjustments */
