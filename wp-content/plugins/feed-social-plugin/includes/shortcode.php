@@ -66,7 +66,6 @@ function fs_enqueue_feed_scripts()
         'comment_url' => get_rest_url(null, 'feed-social/v1/comment'),
         'comments_url' => get_rest_url(null, 'feed-social/v1/comments'),
         'ajax_url' => admin_url('admin-ajax.php'),
-        'sse_url' => fs_get_sse_url(),
         'notification_event_url' => trailingslashit(wp_upload_dir()['baseurl']) . 'feed-social-sse-event.json',
         'feed_page_url' => fs_get_feed_page_url(),
         'rest_nonce' => wp_create_nonce('wp_rest'),

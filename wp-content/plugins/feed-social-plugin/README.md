@@ -2,7 +2,7 @@
 
 Plugin WordPress para exibir um feed social com mídia, curtidas, comentários, visualizações, stories, destaques e notificações em tempo real, sem depender de serviços externos para interações ou streaming.
 
-**Versão:** 3.3.0  
+**Versão:** 3.3.2
 **Autor:** Marcos Cordeiro  
 **Requisitos:** WordPress 5.0+, PHP 7.4+, links permanentes ativos
 
@@ -31,16 +31,31 @@ Plugin WordPress para exibir um feed social com mídia, curtidas, comentários, 
 - Shortcode `[feed_social_destaques]` para exibir blocos de destaques com categorias
 - Suporte a vídeo do story, expiração opcional em 24 horas e conteúdo editorial
 
-### Notificações em tempo real (SSE)
-- Quando um post do tipo Feed Social é publicado, visitantes com o site aberto podem receber:
+### Notificações de novos conteúdos
+- Quando um post do tipo Feed Social ou um story é publicado, visitantes com o site aberto podem receber:
   - toast visual na página
   - notificação nativa do navegador (quando o usuário concede permissão)
-- O feed é recarregado automaticamente ao receber um novo conteúdo
-- Implementado com Server-Sent Events (SSE) e endpoint REST:
+- O toast exibe a logo do Feed Social, o título, um resumo e o link para conferir o conteúdo
+- O feed é recarregado automaticamente ao detectar um novo conteúdo
+- O navegador consulta um arquivo JSON estático a cada 15 segundos:
 
 ```text
-/wp-json/feed-social/v1/events
+/wp-content/uploads/feed-social-sse-event.json
 ```
+
+O arquivo é criado ou substituído no momento da publicação e expira após 5 minutos. A consulta feita pelo navegador é atendida diretamente pelo Apache ou Nginx, sem iniciar uma requisição PHP e sem consultar o banco de dados. Assim, 10 visitantes geram apenas requisições estáticas periódicas; não ficam 10 workers PHP mantidos em execução.
+
+#### Como o fluxo funciona
+1. O WordPress detecta a transição do post para `publish`.
+2. O plugin aceita os post types `feed-social` e `social_story`.
+3. O plugin monta um evento com ID, tipo, título, resumo, URL, imagem e data.
+4. O evento é salvo em `wp-content/uploads/feed-social-sse-event.json` com validade de 300 segundos.
+5. Cada página com o feed busca esse arquivo com `cache: no-store` e um parâmetro de data para evitar cache intermediário.
+6. A primeira leitura apenas registra o ID atual. Leituras posteriores só exibem a notificação quando o ID mudar.
+7. Ao clicar na notificação, o visitante é levado ao endereço configurado para o conteúdo.
+
+#### Sobre o SSE
+O plugin não mantém mais um endpoint SSE ativo. O código de publicação permanece em `includes/sse.php` por compatibilidade de organização, mas serve apenas para gerar o arquivo JSON estático. O polling foi escolhido no lugar do SSE porque uma conexão SSE mantém uma requisição PHP aberta por visitante.
 
 ### Administração
 - Custom Post Type `feed-social` para publicar posts do feed
@@ -91,6 +106,9 @@ Posts em rascunho ou pendente não aparecem no feed e não disparam notificaçõ
 ### 3. Usar stories e destaques
 - Crie posts do tipo **Story** para formar o carrossel de stories
 - Crie categorias na taxonomia **Destaques** e associe stories a elas
+- A opção **Usar como capa do destaque** define um story como imagem da bolha; ele não aparece na sequência de stories nem dentro do conteúdo do destaque
+- Para cada destaque, associe uma capa e um ou mais stories de conteúdo usando a mesma categoria
+- Os stories são exibidos do mais recente para o mais antigo; em empate, o cadastro com maior ID aparece primeiro
 - Use os shortcodes:
 
 ```text
@@ -135,7 +153,6 @@ Namespace: `feed-social/v1`
 | `PUT` | `/comment/{id}` | Editar comentário (`id`) |
 | `GET` | `/comments` | Lista comentários de um post (`post_id`) |
 | `GET` | `/user` | Busca usuário por email (`email`) |
-| `GET` | `/events` | Stream SSE de novos posts |
 
 Exemplo:
 
@@ -182,12 +199,22 @@ jQuery é fornecido pelo próprio WordPress.
 | Feed vazio | Verifique se há posts publicados do tipo Feed Social |
 | Scroll não carrega mais | Recarregue com Ctrl+F5 e confira o console |
 | Curtida/comentário falha | Verifique a API REST em `/wp-json/feed-social/v1/posts` |
-| Notificação não aparece | Confirme permissão do navegador e teste o endpoint `/wp-json/feed-social/v1/events` |
+| Notificação não aparece | Confirme a permissão do navegador, verifique se o arquivo `wp-content/uploads/feed-social-sse-event.json` está acessível e publique um novo conteúdo após a página carregar |
+| Bolha do destaque não aparece | Confirme o shortcode `[feed_social_destaques]`, a associação do story à taxonomia **Destaques** e se existe conteúdo publicado além da capa |
 | 404 na API | Salve os links permanentes novamente |
 
 ---
 
 ## Changelog
+
+### 3.3.2
+- Validação obrigatória de nome e e-mail no navegador e no servidor
+- Suporte a capas de destaques sem exibi-las como stories
+- Ordenação de stories por data e ID decrescentes
+- Notificações por arquivo JSON estático para evitar conexões PHP persistentes
+
+### 3.3.1
+- Melhorias no fluxo de notificações e redução do uso de workers PHP
 
 ### 3.3.0
 - Edição de comentários via API REST (`PUT /comment/{id}`)
