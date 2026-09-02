@@ -111,7 +111,7 @@ add_action('admin_menu', function () {
         'Destaques',
         'Destaques',
         'manage_categories',
-        'edit-tags.php?taxonomy=destaque&post_type=feed-social'
+        'edit-tags.php?taxonomy=destaque&post_type=social_story'
     );
 
 });

@@ -421,6 +421,10 @@ jQuery(document).ready(function ($) {
       currentStories = JSON.parse(currentStories);
     }
 
+    if (!currentStories || !currentStories.length) {
+      return;
+    }
+
     loadStory(currentStories[0]);
   });
   $(document)
@@ -441,6 +445,10 @@ jQuery(document).ready(function ($) {
 
       if (typeof currentStories === "string") {
         currentStories = JSON.parse(currentStories);
+      }
+
+      if (!currentStories || !currentStories.length) {
+        return;
       }
 
       loadStory(currentStories[0]);

@@ -191,7 +191,7 @@ function fs_render_highlight_shortcode($atts)
 
     $termos = get_terms([
         'taxonomy'   => 'destaque',
-        'hide_empty' => true
+        'hide_empty' => false
     ]);
 
     if (empty($termos) || is_wp_error($termos)) {
@@ -238,7 +238,7 @@ function fs_render_highlight_shortcode($atts)
                         $story_ids_term[] = $story_id;
                         $story_ids[] = $story_id;
                     }
-                    if (empty($story_ids_term)) {
+                    if (empty($story_ids_term) && !$cover_id) {
                         wp_reset_postdata();
                         continue;
                     }
