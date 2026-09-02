@@ -2,24 +2,48 @@ header#header-lp-dia-dos-pais,
 footer#footer-lp-dia-dos-pais {
     background: linear-gradient(135deg, #Ec6608 0%, #b85a18 100%) !important;
 }
-body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show{
+
+body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show {
     background-color: #Ec6608 !important;
 }
 
 /*
 Conteúdo para o aniversário do Hospital de Base
 */
-body.noticia-template{
+body.noticia-template {
     background-color: #c9d4001a;
 }
-body.noticia-template{
+
+body.noticia-template {
     background-image: url('../images/logo.png');
     background-repeat: no-repeat;
     background-position-x: left;
     background-position-y: 150px;
     background-size: 250px;
 }
+
+body.noticia-template .offcanvas.offcanvas-start.show,
 body.noticia-template #footer-single-noticia,
-body.noticia-template #header-single-noticia{
-    background-color: #c8d400;
+body.noticia-template #header-single-noticia {
+    background: radial-gradient(#00b3c4, #354f58);
+
+}
+
+body.noticia-template #header-single-noticia::before {
+    content: url('../images/logo-branco.png');
+    position: absolute;
+    background-blend-mode: soft-light;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+body.noticia-template #header-single-noticia::after {
+    content: url('../images/logo-branco.png');
+    position: absolute;
+    background-blend-mode: soft-light;
+    width: 100%;
+    top: 0;
+    left: 85%;
+    z-index: -1;
 }
