@@ -143,7 +143,8 @@ function fs_rest_get_posts($request) {
             'media_gallery' => $media_gallery,
             'likes' => fs_get_likes_count($post->ID),
             'comments' => fs_get_comments_count($post->ID),
-            'views' => fs_get_views_count($post->ID)
+            'views' => fs_get_views_count($post->ID),
+            'published_at' => get_post_time('c', true, $post),
         ];
     }
     
@@ -489,6 +490,7 @@ function fs_rest_get_post($request) {
         'likes' => fs_get_likes_count($post->ID),
         'comments' => fs_get_comments_count($post->ID),
         'views' => fs_get_views_count($post->ID),
+        'published_at' => get_post_time('c', true, $post),
     ];
 
     return rest_ensure_response($response);

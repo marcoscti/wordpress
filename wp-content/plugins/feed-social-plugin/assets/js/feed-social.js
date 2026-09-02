@@ -553,6 +553,45 @@ jQuery(document).ready(function ($) {
     `);
   }
 
+  function formatPublicationDate(post) {
+    if (!post.published_at) {
+      return "";
+    }
+
+    const publishedAt = new Date(post.published_at);
+    if (Number.isNaN(publishedAt.getTime())) {
+      return "";
+    }
+
+    const elapsedDays = Math.max(
+      0,
+      Math.floor((Date.now() - publishedAt.getTime()) / 86400000),
+    );
+
+    if (elapsedDays === 0) {
+      return "Publicado: hoje";
+    }
+
+    if (elapsedDays === 1) {
+      return "Publicado: há 1 dia";
+    }
+
+    if (elapsedDays <= 7) {
+      return `Publicado: há ${elapsedDays} dias`;
+    }
+
+    if (elapsedDays <= 28) {
+      const weeks = Math.floor(elapsedDays / 7);
+      return `Publicado: há ${weeks} ${weeks === 1 ? "semana" : "semanas"}`;
+    }
+
+    if (elapsedDays <= 30) {
+      return "Publicado: há 1 mês";
+    }
+
+    return `Publicado: ${publishedAt.toLocaleDateString("pt-BR")}`;
+  }
+
   function renderMediaItem(
     media,
     postTitle,
@@ -710,6 +749,7 @@ jQuery(document).ready(function ($) {
     $modal.find(".fs-post-modal-media").empty();
     $modal.find(".fs-post-modal-comments").empty();
     $modal.find(".fs-post-modal-legend").empty();
+    $modal.find(".fs-post-publication-date").remove();
     $modal.find(".fs-post-modal-actions").empty();
     $("body").removeClass("fs-post-modal-open");
     currentPostId = null;
@@ -793,6 +833,13 @@ jQuery(document).ready(function ($) {
 
     $modal.find(".fs-post-modal-media,.fs-story-modal").html(mediaHtml);
     renderLegend(post);
+    $modal.find(".fs-post-publication-date").remove();
+    const publicationDate = formatPublicationDate(post);
+    if (publicationDate) {
+      $(
+        `<small class="fs-post-publication-date">${escapeHtml(publicationDate)}</small>`,
+      ).insertBefore($modal.find(".fs-comment-form"));
+    }
     $modal
       .find(".fs-post-modal-comments")
       .html(
