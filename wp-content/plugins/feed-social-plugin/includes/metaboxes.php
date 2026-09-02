@@ -197,13 +197,18 @@ function fs_story_options_metabox_callback($post)
 {
     wp_nonce_field('fs_save_story_options', 'fs_story_options_nonce');
     $expires = get_post_meta($post->ID, '_fs_story_expires', true);
+    $is_cover = get_post_meta($post->ID, '_fs_story_is_cover', true);
 ?>
     <p>
         <input type="checkbox" id="fs_story_expires" name="fs_story_expires" value="yes" <?php checked($expires, 'yes'); ?> checked />
         <label for="fs_story_expires">Expirar em 24 horas</label>
     </p>
+    <p>
+        <input type="checkbox" id="fs_story_is_cover" name="fs_story_is_cover" value="yes" <?php checked($is_cover, 'yes'); ?> />
+        <label for="fs_story_is_cover">Usar como capa do destaque</label>
+    </p>
     <p class="description" style="color:red;">
-        💡 Se marcado, este story não será mais exibido 24 horas após a publicação.
+        💡 A capa aparece no destaque, mas não é exibida como story. Associe-a a um destaque para utilizá-la.
     </p>
 <?php
 }
@@ -278,6 +283,8 @@ add_action('save_post', function ($post_id, $post) {
         if (!isset($_POST['fs_story_options_nonce']) || !wp_verify_nonce($_POST['fs_story_options_nonce'], 'fs_save_story_options')) return;
         $expires = isset($_POST['fs_story_expires']) && $_POST['fs_story_expires'] === 'yes' ? 'yes' : 'no';
         update_post_meta($post_id, '_fs_story_expires', $expires);
+        $is_cover = isset($_POST['fs_story_is_cover']) && $_POST['fs_story_is_cover'] === 'yes' ? 'yes' : 'no';
+        update_post_meta($post_id, '_fs_story_is_cover', $is_cover);
 
         if (!isset($_POST['fs_story_video_nonce']) || !wp_verify_nonce($_POST['fs_story_video_nonce'], 'fs_save_story_video')) return;
         $video_id = isset($_POST['fs_story_video_id']) ? intval($_POST['fs_story_video_id']) : 0;

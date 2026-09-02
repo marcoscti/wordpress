@@ -27,14 +27,16 @@ function fs_exist_story()
         'post_type'      => 'social_story',
         'posts_per_page' => -1,
         'post_status'    => 'publish',
-        'orderby'        => 'date',
-        'order'          => 'DESC',
+        'orderby'        => ['date' => 'DESC', 'ID' => 'DESC'],
     );
 
     $stories_query = new WP_Query($args);
     if ($stories_query->have_posts()) {
         while ($stories_query->have_posts()) {
             $stories_query->the_post();
+            if (get_post_meta(get_the_ID(), '_fs_story_is_cover', true) === 'yes') {
+                continue;
+            }
             // Mantém expiração dos stories normais
             $expires = get_post_meta(get_the_ID(), '_fs_story_expires', true);
             if ($expires === 'yes') {
@@ -57,8 +59,7 @@ function fs_render_story_shortcode($atts)
         'post_type'      => 'social_story',
         'posts_per_page' => -1,
         'post_status'    => 'publish',
-        'orderby'        => 'date',
-        'order'          => 'DESC',
+        'orderby'        => ['date' => 'DESC', 'ID' => 'DESC'],
     );
     $stories_query = new WP_Query($args);
     ob_start();
@@ -66,6 +67,9 @@ function fs_render_story_shortcode($atts)
     if ($stories_query->have_posts()) {
         while ($stories_query->have_posts()) {
             $stories_query->the_post();
+            if (get_post_meta(get_the_ID(), '_fs_story_is_cover', true) === 'yes') {
+                continue;
+            }
             // Mantém expiração dos stories normais
             $expires = get_post_meta(get_the_ID(), '_fs_story_expires', true);
             if ($expires === 'yes') {
@@ -206,8 +210,7 @@ function fs_render_highlight_shortcode($atts)
                         'post_type'      => 'social_story',
                         'posts_per_page' => -1,
                         'post_status'    => 'publish',
-                        'orderby'        => 'date',
-                        'order'          => 'DESC',
+                        'orderby'        => ['date' => 'DESC', 'ID' => 'DESC'],
                         'tax_query' => [
                             [
                                 'taxonomy' => 'destaque',
@@ -220,23 +223,32 @@ function fs_render_highlight_shortcode($atts)
                         continue;
                     }
                     $story_ids_term = [];
+                    $cover_id = 0;
                     while ($stories->have_posts()) {
                         $stories->the_post();
+                        $story_id = get_the_ID();
+                        if (get_post_meta($story_id, '_fs_story_is_cover', true) === 'yes') {
+                            if (!$cover_id) {
+                                $cover_id = $story_id;
+                            }
+                            continue;
+                        }
+
                         // Destaques não possuem expiração
-                        $story_ids_term[] = get_the_ID();
-                        $story_ids[] = get_the_ID();
+                        $story_ids_term[] = $story_id;
+                        $story_ids[] = $story_id;
                     }
                     if (empty($story_ids_term)) {
                         wp_reset_postdata();
                         continue;
                     }
                     wp_reset_postdata();
-                    $capa = get_the_post_thumbnail_url($story_ids_term[0], 'thumbnail');
+                    $capa = get_the_post_thumbnail_url($cover_id ?: $story_ids_term[0], 'thumbnail');
                 ?>
                     <div class="swiper-slide">
                         <a href="#"
                             class="fs-highlight-item"
-                            data-story-group='<?php echo json_encode($story_ids_term); ?>'>
+                            data-story-group='<?php echo esc_attr(wp_json_encode($story_ids_term)); ?>'>
                             <img
                                 src="<?php echo esc_url($capa); ?>"
                                 class="fs-story-thumb">
