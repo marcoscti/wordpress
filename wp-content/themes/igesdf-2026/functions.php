@@ -578,6 +578,9 @@ function incluir_cpt_nas_tags($query)
 }
 
 add_action('pre_get_posts', 'incluir_cpt_nas_tags');
+/**
+ * Renderiza os links das tags em um offcanvas com o objetivo de filtrar os posts por tags. Se não houver tags, o botão de filtro não será exibido.
+ */
 function render_tags()
 {
     $tags = get_terms([
