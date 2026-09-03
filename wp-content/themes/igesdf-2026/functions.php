@@ -223,7 +223,7 @@ function create_post_types()
         'taxonomies'          => array('category','post_tag'),
         'menu_icon'           => 'dashicons-editor-table',
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
-        'description'         => 'Fique por dentro das últimas notícias do instituto',
+        'description'         => '',
     );
     register_post_type('noticia', $args_noticia);
 
