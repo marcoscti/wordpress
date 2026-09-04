@@ -3,13 +3,13 @@
     <?php while (have_posts()) : the_post(); ?>
         <article>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <?php echo breadcrumb() ?>
-                <p class="text-muted text-sm m-0">
+                <small><?php echo breadcrumb() ?></small>
+                <small class="text-muted text-sm m-0">
                     Atualizado em
                     <?php echo get_the_date('d/m/Y') . ' às ' . get_the_date('H:i'); ?>
                     por
                     <?php the_author(); ?>
-                </p>
+                </small>
             </div>
             <div class="content">
                 <h1 class="mb-4 fs-1"><?php the_title(); ?></h1>

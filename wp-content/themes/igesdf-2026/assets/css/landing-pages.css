@@ -11,39 +11,83 @@ body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show {
 Conteúdo para o aniversário do Hospital de Base
 */
 body.noticia-template {
-    background-color: #c9d4001a;
+    background: linear-gradient(135deg, rgba(254, 247, 236, 1) 0%, rgba(254, 242, 228, 1) 100%);
+    position: relative;
 }
-
-body.noticia-template {
-    background-image: url('../images/logo.png');
-    background-repeat: no-repeat;
-    background-position-x: left;
+body.noticia-template h1{
+    font-weight: 600;
+    color: #00b3c4;
+    font-size: 3rem!important;
+}
+body.noticia-template::before {
+    content: "";
+    position: absolute;
+    background: url('../images/hbdf-66/img-66.png') right / contain no-repeat;
     background-position-y: 150px;
     background-size: 250px;
+    width: 14%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: -1;
 }
-
+body.noticia-template footer::before {
+    content: "";
+    position: absolute;
+    background: url('../images/hbdf-66/img-hb-66.png') left / contain no-repeat;
+    background-position-y: 150px;
+    width: 14%;
+    height: 15.5%;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: -1;
+}
 body.noticia-template .offcanvas.offcanvas-start.show,
 body.noticia-template #footer-single-noticia,
 body.noticia-template #header-single-noticia {
-    background: radial-gradient(#00b3c4, #354f58);
-
+    background: #00b3c4
 }
 
 body.noticia-template #header-single-noticia::before {
-    content: url('../images/logo-branco.png');
+    content: "";
     position: absolute;
-    background-blend-mode: soft-light;
-    width: 100%;
+    background: url('../images/hbdf-66/g138.png') right / contain no-repeat;
+    width: 50%;
+    height: 100%;
     top: 0;
     left: 0;
+    pointer-events: none;
+    transform: rotateY(180deg);
+    opacity: 0.4;
     z-index: -1;
 }
 body.noticia-template #header-single-noticia::after {
-    content: url('../images/logo-branco.png');
+    content: "";
     position: absolute;
-    background-blend-mode: soft-light;
-    width: 100%;
+    width: 50%;
+    height: 100%;
     top: 0;
-    left: 85%;
+    right: 0;
+    background: url('../images/hbdf-66/g137.png') right / contain no-repeat;
     z-index: -1;
+    pointer-events: none;
 }
+@media(max-width:1366px){
+    body.noticia-template::before {
+        background-size:100%;
+        width: 8%;
+    }
+}
+@media (max-width: 430px) {
+    body.noticia-template footer::before {
+        background-position-y: 0;
+        height: 15.2%;
+    }
+    body.noticia-template::before {
+        height: 9%;
+
+    }
+}
+
