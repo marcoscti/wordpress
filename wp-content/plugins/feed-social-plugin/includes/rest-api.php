@@ -3,7 +3,6 @@ if (!defined('ABSPATH')) exit;
 
 add_action('rest_api_init', function () {
     $namespace = 'feed-social/v1';
-
     // Listar posts (Scroll Infinito)
     register_rest_route($namespace, '/posts', [
         'methods' => 'GET',
@@ -144,7 +143,8 @@ function fs_rest_get_posts($request) {
             'media_gallery' => $media_gallery,
             'likes' => fs_get_likes_count($post->ID),
             'comments' => fs_get_comments_count($post->ID),
-            'views' => fs_get_views_count($post->ID)
+            'views' => fs_get_views_count($post->ID),
+            'published_at' => get_post_time('c', true, $post),
         ];
     }
     
@@ -327,7 +327,7 @@ function fs_upsert_user_profile($name, $email) {
     $name = sanitize_text_field($name ?? '');
     $email = sanitize_email($email ?? '');
 
-    if (!$email) {
+    if (!$name || !is_email($email)) {
         return 0;
     }
 
@@ -434,6 +434,11 @@ add_action('wp_ajax_nopriv_fs_save_user_profile', 'fs_ajax_save_user_profile');
 function fs_ajax_save_user_profile() {
     $name = sanitize_text_field($_POST['name'] ?? '');
     $email = sanitize_email($_POST['email'] ?? '');
+
+    if (!$name || !is_email($email)) {
+        wp_send_json_error(['message' => 'Nome e e-mail válidos são obrigatórios.'], 400);
+    }
+
     $id = fs_upsert_user_profile($name, $email);
 
     wp_send_json_success(['id' => $id, 'name' => $name, 'email' => $email]);
@@ -485,6 +490,7 @@ function fs_rest_get_post($request) {
         'likes' => fs_get_likes_count($post->ID),
         'comments' => fs_get_comments_count($post->ID),
         'views' => fs_get_views_count($post->ID),
+        'published_at' => get_post_time('c', true, $post),
     ];
 
     return rest_ensure_response($response);

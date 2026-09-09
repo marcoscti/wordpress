@@ -3,7 +3,7 @@
  * Plugin Name: WP Duplicate Page
  * Plugin URI: https://ninjateam.org
  * Description: Duplicate Posts, Pages and Custom Post Types.
- * Version: 1.8.4
+ * Version: 1.8.5
  * Author: NinjaTeam
  * Author URI: https://ninjateam.org
  * Text Domain: wp-duplicate-page
@@ -16,7 +16,7 @@ namespace NjtDuplicate;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NJT_DUPLICATE_VERSION', '1.8.4' );
+define( 'NJT_DUPLICATE_VERSION', '1.8.5' );
 define( 'NJT_DUPLICATE_DOMAIN', 'wp-duplicate-page' );
 
 define( 'NJT_DUPLICATE_PLUGIN_DIR', __DIR__ );
@@ -49,6 +49,24 @@ spl_autoload_register(
 
 if ( file_exists( __DIR__ . '/recommended-modules/loader.php' ) ) {
 	require_once __DIR__ . '/recommended-modules/loader.php';
+}
+
+// Register this plugin as the ads-toggle "consumer" for every ad module it bundles above, so the
+// single toggle rendered on the settings page (Page\Settings) controls all of them together. Must
+// run after the loader.php require above (Registry class must already exist), and before
+// plugins_loaded:0 (Registry::load_winners()) so the registration isn't dropped as "late".
+if ( class_exists( '\YayRecommendedModules\Registry' ) ) {
+	foreach (
+		array(
+			'filebird-plugins-page-notification',
+			'filebird-sidebar-popup',
+			'yaymail-wc-settings-banner',
+			'yaymail-wc-settings-email-column',
+		) as $njtDuplicateAdSlug
+	) {
+		\YayRecommendedModules\Registry::register_ads_consumer( NJT_DUPLICATE_DOMAIN, $njtDuplicateAdSlug );
+	}
+	unset( $njtDuplicateAdSlug );
 }
 
 function init() {

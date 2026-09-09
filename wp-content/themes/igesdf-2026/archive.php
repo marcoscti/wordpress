@@ -1,7 +1,10 @@
 <?php get_header(); ?>
 
 <div class="container py-5 igesdf-container">
-    <?php echo breadcrumb() ?>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <?php echo breadcrumb() ?>
+        <?php render_tags() ?>
+    </div>
     <section class="mb-5">
         <?php if (get_the_archive_description()) : ?>
             <div class="archive-description">
@@ -46,6 +49,10 @@
                                 ); ?>
                             </p>
 
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <small><?php the_time('d F Y')?></small>
+                            <small><?php the_time('H:i')?></small>
                         </div>
                     </article>
 

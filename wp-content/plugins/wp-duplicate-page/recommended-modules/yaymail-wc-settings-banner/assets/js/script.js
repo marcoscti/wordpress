@@ -87,7 +87,7 @@ jQuery(document).ready(function () {
       var originalText = $btn.text().trim();
       $btn
         .prop("disabled", true)
-        .text("Processing…")
+        .text("Installing…")
         .addClass("updating-message");
 
       jQuery.ajax({

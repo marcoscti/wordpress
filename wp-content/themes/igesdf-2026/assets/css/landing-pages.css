@@ -2,6 +2,74 @@ header#header-lp-dia-dos-pais,
 footer#footer-lp-dia-dos-pais {
     background: linear-gradient(135deg, #Ec6608 0%, #b85a18 100%) !important;
 }
-body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show{
+
+body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show {
     background-color: #Ec6608 !important;
+}
+
+/*
+Conteúdo para o aniversário do Hospital de Base
+*/
+body.noticia-template {
+    background: linear-gradient(135deg, rgba(254, 247, 236, 1) 0%, rgba(254, 242, 228, 1) 100%);
+    position: relative;
+}
+
+body.noticia-template h1 {
+    font-weight: 600;
+    color: #00b3c4;
+    font-size: 3rem !important;
+    text-align: center;
+}
+
+body.noticia-template::before {
+    content: "";
+    position: absolute;
+    background: url('../images/hbdf-66/hb-icon.png') right / contain no-repeat;
+    background-position: left bottom;
+    background-size: 90%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.3;
+}
+body.noticia-template h1::before {
+    content: url("http://10.84.26.136:8080/wp-content/uploads/2026/07/img-66-300x226.png");
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+body.noticia-template .offcanvas.offcanvas-start.show,
+body.noticia-template #footer-single-noticia,
+body.noticia-template #header-single-noticia {
+    background: #00b3c4
+}
+
+body.noticia-template #header-single-noticia::before {
+    content: "";
+    position: absolute;
+    background: url('../images/hbdf-66/bitmap.png') right / contain no-repeat;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@media(max-width:1366px) {
+    body.noticia-template #header-single-noticia::before {
+        background-size: cover;
+        background-position-x: left;
+    }
+}
+
+@media (max-width: 430px) {
+    body.noticia-template #header-single-noticia::before {
+        background-size: cover;
+        background-position-x: left;
+    }
 }

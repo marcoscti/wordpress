@@ -43,16 +43,22 @@ add_action('after_setup_theme', 'meu_tema_setup');
 /**
  * Adiciona o código do Microsoft Clarity no painel administrativo
  */
-function adicionar_microsoft_clarity_admin() {
-    ?>
+function adicionar_microsoft_clarity_admin()
+{
+?>
     <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        (function(c, l, a, r, i, t, y) {
+            c[a] = c[a] || function() {
+                (c[a].q = c[a].q || []).push(arguments)
+            };
+            t = l.createElement(r);
+            t.async = 1;
+            t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0];
+            y.parentNode.insertBefore(t, y);
         })(window, document, "clarity", "script", "vybjzzmk8e");
     </script>
-    <?php
+<?php
 }
 add_action('admin_head', 'adicionar_microsoft_clarity_admin');
 function meu_tema_assets()
@@ -196,7 +202,7 @@ function create_post_types()
         'menu_name'           => __('Notícia', 'igesdf-2026'),
     );
 
-    $supports_noticia = array('title', 'editor', 'thumbnail');
+    $supports_noticia = array('title', 'editor', 'thumbnail','page-attributes');
 
     $slug_noticia = get_theme_mod('noticia_permalink');
     $slug_noticia = (empty($slug_noticia)) ? 'noticia' : $slug_noticia;
@@ -214,10 +220,10 @@ function create_post_types()
         'hierarchical'        => false,
         'menu_position'       => 4,
         'supports'            => $supports_noticia,
-        'taxonomies'          => array('category'),
+        'taxonomies'          => array('category','post_tag'),
         'menu_icon'           => 'dashicons-editor-table',
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
-        'description'         => 'Fique por dentro das últimas notícias do instituto',
+        'description'         => '',
     );
     register_post_type('noticia', $args_noticia);
 
@@ -521,29 +527,29 @@ add_action('admin_head', function () {
 function breadcrumb()
 {
 
-    if (is_singular()) {
 
-        $post_type = get_post_type();
-        echo '<nav class="text-muted align-items-center" aria-label="breadcrumb">';
-        echo '<ol class="breadcrumb list m-0">';
-        echo '<li class="breadcrumb-item">';
-        echo '<a href="' . home_url() . '"><i class="fa fa-home"></i>Início</a>';
-        echo '</li>';
 
-        if ($post_type !== 'post' && $post_type !== 'page') {
+    $post_type = get_post_type();
+    echo '<nav class="text-muted align-items-center" aria-label="breadcrumb">';
+    echo '<ol class="breadcrumb list m-0">';
+    echo '<li class="breadcrumb-item">';
+    echo '<a href="' . home_url() . '"><i class="fa fa-home"></i>Início</a>';
+    echo '</li>';
 
-            $obj = get_post_type_object($post_type);
+    if ($post_type !== 'post' && $post_type !== 'page') {
 
-            if ($obj && $obj->has_archive) {
-                echo '<li class="breadcrumb-item">';
-                echo '<a href="' . get_post_type_archive_link($post_type) . '">';
-                echo esc_html($obj->labels->name);
-                echo '</a>';
-                echo '</li>';
-            }
+        $obj = get_post_type_object($post_type);
+
+        if ($obj && $obj->has_archive) {
+            echo '<li class="breadcrumb-item">';
+            echo '<a href="' . get_post_type_archive_link($post_type) . '">';
+            echo esc_html($obj->labels->name);
+            echo '</a>';
+            echo '</li>';
         }
+    }
 
-        // Título reduzido
+    if ($post_type === 'noticia' && is_single()) {
         $title = get_the_title();
 
         if (mb_strlen($title) > 40) {
@@ -553,9 +559,9 @@ function breadcrumb()
         echo '<li class="breadcrumb-item active" aria-current="page">';
         echo esc_html($title);
         echo '</li>';
-        echo '</ol>';
-        echo '</nav>';
     }
+    echo '</ol>';
+    echo '</nav>';
 }
 function incluir_cpt_nas_tags($query)
 {
@@ -572,14 +578,17 @@ function incluir_cpt_nas_tags($query)
 }
 
 add_action('pre_get_posts', 'incluir_cpt_nas_tags');
+/**
+ * Renderiza os links das tags em um offcanvas com o objetivo de filtrar os posts por tags. Se não houver tags, o botão de filtro não será exibido.
+ */
 function render_tags()
 {
     $tags = get_terms([
         'taxonomy'   => 'post_tag',
-        'hide_empty' => true
+        'hide_empty' => false
     ]);
 
-    echo '<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel" style="background-color: #fff;">
+    echo '<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel" style="background-color: #fff;">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-white" id="offcanvasFilterLabel">Filtrar</h5>
             <button type="button" class="btn-close text-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -588,7 +597,7 @@ function render_tags()
             <ul class="nav navbar-nav" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
            ';
     foreach ($tags as $tag) {
-        echo '<li><a href="' . get_term_link($tag) . '" style="color: #000;">' . esc_html($tag->name) . '</a></li>';
+        echo '<li><a href="' . get_term_link($tag) . '" class="link">' . esc_html($tag->name) . '</a></li>';
     }
     echo '
             </ul>

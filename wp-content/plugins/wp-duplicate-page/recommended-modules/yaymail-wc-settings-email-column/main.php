@@ -33,6 +33,9 @@ if ( ! class_exists( 'YaymailWCSettingsEmailColumn' ) ) {
 				if ( get_option( 'yaymail_wc_settings_email_column_hidden' ) ) {
 					return;
 				}
+				if ( function_exists( 'njt_ads_toggle_is_enabled' ) && ! njt_ads_toggle_is_enabled( 'yaymail-wc-settings-email-column' ) ) {
+					return;
+				}
                 add_action( 'admin_footer', array( $this, 'add_script' ) );
 				add_filter( 'woocommerce_email_setting_columns', array( $this, 'woocommerce_email_setting_columns' ) );
 				add_action( 'woocommerce_email_setting_column_yaymail_cs', array( $this, 'woocommerce_email_setting_column_yaymail_cs' ) );
@@ -56,13 +59,13 @@ if ( ! class_exists( 'YaymailWCSettingsEmailColumn' ) ) {
 			// State-aware modal copy: an already-installed (but inactive) plugin only needs activating.
 			$is_installed = (bool) $this->get_yaymail_plugin_file();
 			if ( $is_installed ) {
-				$confirm_heading = __( 'Try YayMail?', 'filebird' );
-				$confirm_body    = __( 'Activate the YayMail plugin.', 'filebird' );
+				$confirm_heading = __( 'Customize WooCommerce Emails', 'filebird' );
+				$confirm_body    = __( 'This will activate the YayMail plugin.', 'filebird' );
 				$confirm_button  = __( 'Activate Now', 'filebird' );
 				$help_text       = __( 'Drag and drop to design your emails. This will activate the YayMail plugin.', 'filebird' );
 			} else {
-				$confirm_heading = __( 'Try YayMail?', 'filebird' );
-				$confirm_body    = __( 'Install & activate the free YayMail plugin from WordPress.org to start customizing.', 'filebird' );
+				$confirm_heading = __( 'Customize WooCommerce Emails', 'filebird' );
+				$confirm_body    = __( 'This will install & activate the free YayMail plugin from WordPress.org.', 'filebird' );
 				$confirm_button  = __( 'Install Now', 'filebird' );
 				$help_text       = __( 'Drag and drop to design your emails. This will install the YayMail plugin from WordPress.org', 'filebird' );
 			}

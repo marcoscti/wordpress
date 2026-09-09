@@ -1,26 +1,20 @@
 <?php
 if (!defined('ABSPATH')) exit;
-
 add_shortcode('feed_social', 'fs_render_feed_shortcode');
-
 add_filter('the_posts', 'fs_detect_feed_shortcode_in_posts');
 add_action('wp_enqueue_scripts', 'fs_enqueue_feed_scripts');
-
 function fs_detect_feed_shortcode_in_posts($posts)
 {
     global $fs_feed_shortcode_used;
-
     if (!empty($fs_feed_shortcode_used) || empty($posts)) {
         return $posts;
     }
-
     foreach ($posts as $post) {
         if (!empty($post->post_content) && has_shortcode($post->post_content, 'feed_social')) {
             $fs_feed_shortcode_used = true;
             break;
         }
     }
-
     return $posts;
 }
 
@@ -30,7 +24,6 @@ function fs_get_feed_page_url()
     if ($cached) {
         return $cached;
     }
-
     $url = home_url('/');
     $pages = get_posts([
         'post_type' => 'page',
@@ -38,7 +31,6 @@ function fs_get_feed_page_url()
         'posts_per_page' => -1,
         'fields' => 'ids',
     ]);
-
     foreach ($pages as $page_id) {
         $content = get_post_field('post_content', $page_id);
         if ($content && has_shortcode($content, 'feed_social')) {
@@ -46,7 +38,6 @@ function fs_get_feed_page_url()
             break;
         }
     }
-
     set_transient('fs_feed_page_url', $url, DAY_IN_SECONDS);
     return $url;
 }
@@ -54,12 +45,9 @@ function fs_get_feed_page_url()
 function fs_enqueue_feed_scripts()
 {
     global $fs_feed_shortcode_used;
-
     wp_enqueue_script('jquery');
-
     wp_register_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], '11.0.0', true);
     wp_register_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', [], '11.0.0');
-
     if (!empty($fs_feed_shortcode_used)) {
         wp_enqueue_script('swiper-js');
         wp_enqueue_style('swiper-css');
@@ -78,7 +66,7 @@ function fs_enqueue_feed_scripts()
         'comment_url' => get_rest_url(null, 'feed-social/v1/comment'),
         'comments_url' => get_rest_url(null, 'feed-social/v1/comments'),
         'ajax_url' => admin_url('admin-ajax.php'),
-        'sse_url' => fs_get_sse_url(),
+        'notification_event_url' => trailingslashit(wp_upload_dir()['baseurl']) . 'feed-social-sse-event.json',
         'feed_page_url' => fs_get_feed_page_url(),
         'rest_nonce' => wp_create_nonce('wp_rest'),
         'initial_posts' => 5,
@@ -90,8 +78,9 @@ function fs_enqueue_feed_scripts()
         'comment_email_prompt' => __('Seu e-mail:', 'feed-social'),
         'notification_title' => __('Novo post no Feed Social', 'feed-social'),
         'notification_title_story' => __('Novo story no Feed Social', 'feed-social'),
-        'notification_body' => __('Acabou de publicar um novo post.', 'feed-social'),
-        'notification_body_story' => __('Acabou de publicar um novo story.', 'feed-social'),
+        'notification_body' => __('Um novo conteúdo foi postado, confira.', 'feed-social'),
+        'notification_body_story' => __('Um novo conteúdo foi postado, confira.', 'feed-social'),
+        'notification_icon' => FS_PLUGIN_URL . 'assets/images/icone-igesdf.png',
         'has_feed' => !empty($fs_feed_shortcode_used),
     ]);
 }
