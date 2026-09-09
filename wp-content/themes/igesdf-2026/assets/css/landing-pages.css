@@ -35,7 +35,7 @@ body.noticia-template::before {
     opacity: 0.3;
 }
 body.noticia-template h1::before {
-    content: url("http://10.84.26.136:8080/wp-content/uploads/2026/07/img-66-300x226.png");
+    content: url('../images/hbdf-66/img-66.png');
     display: block;
     width: 100%;
     height: 100%;
