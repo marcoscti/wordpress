@@ -80,23 +80,23 @@ footer {
   margin-top: 10px;
 }
 
-.navbar-nav .menu-item-has-children.active>.sub-menu {
+.navbar-nav .menu-item-has-children.active > .sub-menu {
   display: block;
 }
 
-.navbar-nav .menu-item-has-children>a {
+.navbar-nav .menu-item-has-children > a {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.navbar-nav .menu-item-has-children>a::after {
+.navbar-nav .menu-item-has-children > a::after {
   content: "\f107";
   font-family: FontAwesome;
   transition: 0.3s;
 }
 
-.navbar-nav .menu-item-has-children.active>a::after {
+.navbar-nav .menu-item-has-children.active > a::after {
   transform: rotate(180deg);
 }
 
@@ -432,4 +432,9 @@ footer {
   font-family: "Noto Serif Ottoman Siyaq", serif;
   font-weight: 400;
   font-style: normal;
+}
+.card-img-top {
+  max-height: 250px;
+  object-fit: cover;
+  object-position: top;
 }
