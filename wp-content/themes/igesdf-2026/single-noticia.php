@@ -33,7 +33,7 @@ get_header();
                         ); ?>
                     </div>
                 <?php endif; ?>
-                </div>
+                
                 <?php if (get_next_post()) : ?>
                     <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;">
                         <?php next_post_link(
