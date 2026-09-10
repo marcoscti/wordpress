@@ -46,7 +46,9 @@ class ButtonDuplicate {
 	public function duplicateBulkLink( $bulkActions ) {
 		if ( Utils::isCurrentUserAllowedToCopy() ) {
 			$duplicateTextLink                            = get_option( 'njt_duplicate_text_link' ) == false || get_option( 'njt_duplicate_text_link' ) == '' ? 'Duplicate' : get_option( 'njt_duplicate_text_link' );
-			$bulkActions['wp_duplicate_page_bulk_action'] = esc_html( sprintf( __( '%s', 'wp-duplicate-page' ), $duplicateTextLink ) );
+			// $duplicateTextLink is a stored option value, not translatable source text — wrapping
+			// a bare '%s' placeholder in __() had nothing to actually translate.
+			$bulkActions['wp_duplicate_page_bulk_action'] = esc_html( $duplicateTextLink );
 		}
 		return $bulkActions;
 	}
@@ -69,7 +71,7 @@ class ButtonDuplicate {
 						++$counter;
 
 					} else {
-						wp_die( esc_html__( 'Copy creation failed, could not find original:', 'wp-duplicate-page' ) . ' ' . htmlspecialchars( $postId ) );
+						wp_die( esc_html__( 'Copy creation failed, could not find original:', 'wp-duplicate-page' ) . ' ' . esc_html( $postId ) );
 					}
 				}
 			}
@@ -93,7 +95,7 @@ class ButtonDuplicate {
 						$newOrderId      = $createDuplicate->createDuplicateOrderHPOS( $order );
 						++$counter;
 					} else {
-						wp_die( esc_html__( 'Copy creation failed, could not find original:', 'wp-duplicate-page' ) . ' ' . htmlspecialchars( $orderId ) );
+						wp_die( esc_html__( 'Copy creation failed, could not find original:', 'wp-duplicate-page' ) . ' ' . esc_html( $orderId ) );
 					}
 				}
 			}
@@ -110,8 +112,9 @@ class ButtonDuplicate {
 				'<a href="%s" rel="bookmark" aria-label="%s">%s</a>',
 				Utils::getDuplicateLink( $post->ID ),
 				esc_attr( __( 'Duplicate', 'wp-duplicate-page' ) ),
-				/* translators: %s: Button Duplicate text. */
-				esc_html( sprintf( __( ' %s ', 'wp-duplicate-page' ), $duplicateTextLink ) )
+				// $duplicateTextLink is a stored option value, not translatable source text — wrapping
+				// a bare ' %s ' placeholder in __() had nothing to actually translate.
+				esc_html( sprintf( ' %s ', $duplicateTextLink ) )
 			);
 			return $actions;
 		}
@@ -174,7 +177,7 @@ class ButtonDuplicate {
 			exit;
 
 		} else {
-			wp_die( esc_html__( 'Copy creation failed, could not find original:', 'wp-duplicate-page' ) . ' ' . htmlspecialchars( $postId ) );
+			wp_die( esc_html__( 'Copy creation failed, could not find original:', 'wp-duplicate-page' ) . ' ' . esc_html( $postId ) );
 		}
 	}
 }

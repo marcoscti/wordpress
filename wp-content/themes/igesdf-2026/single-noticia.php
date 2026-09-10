@@ -25,17 +25,23 @@ get_header();
             </div>
             <hr>
             <div class="d-flex justify-content-between mt-4">
-                <div class="navigation-item px-2 py-2 border rounded">
-                    <?php previous_post_link(
-                        '%link',
-                        '<i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Anterior'
-                    ); ?>
+                <?php if (get_previous_post()) : ?>
+                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;">
+                        <?php previous_post_link(
+                            '%link',
+                            '<i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Anterior'
+                        ); ?>
+                    </div>
+                <?php endif; ?>
                 </div>
-                <div class="navigation-item px-2 py-2 border rounded">
-                    <?php next_post_link(
-                        '%link',
-                        'Próximo <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>'
-                    ); ?>
+                <?php if (get_next_post()) : ?>
+                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;">
+                        <?php next_post_link(
+                            '%link',
+                            'Próximo <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>'
+                        ); ?>
+                    </div>
+                <?php endif; ?>
                 </div>
             </div>
         </article>

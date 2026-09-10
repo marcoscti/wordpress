@@ -7,8 +7,10 @@
   }
 
   /**
-   * Render an ads on/off toggle switch into `container`. Layout: switch on the left,
-   * text stack on the right (bold title, muted description below).
+   * Render an ads on/off toggle into `container`. Default layout ("switch", the default style):
+   * pill switch on the left, text stack on the right (bold title, muted description below).
+   * With options.style = "checkbox": stacked layout — bold title, then a square checkbox,
+   * then description below (same markup, a modifier class switches the CSS presentation).
    *
    * @param {string|Element|jQuery} container Where to render the toggle.
    * @param {Object} options
@@ -21,13 +23,17 @@
    * @param {string} [options.description] Smaller, muted text shown below the title.
    * @param {boolean} [options.checked] Initial state (caller should pass the
    *   current njt_ads_toggle_consumer_is_enabled( consumerSlug ) value so the UI starts in sync).
+   * @param {string} [options.style] "switch" (default) or "checkbox".
    */
   window.njtAdsToggleRender = function (container, options) {
     var settings = options || {};
     var $container = $(container);
+    var rowClass =
+      "yay-ads-toggle-row" +
+      (settings.style === "checkbox" ? " yay-ads-toggle-row--checkbox" : "");
 
     var $wrap = $(
-      '<div class="yay-ads-toggle-row">' +
+      '<div class="' + rowClass + '">' +
         '<label class="yay-ads-toggle-switch">' +
           '<input type="checkbox" class="yay-ads-toggle-input" />' +
           '<span class="yay-ads-toggle-slider"></span>' +

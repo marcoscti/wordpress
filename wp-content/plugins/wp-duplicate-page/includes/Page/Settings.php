@@ -62,7 +62,7 @@ class Settings {
 				/* translators: 1: Plugin Title, 2: Link to review */
 				__( 'Enjoyed %1$s? Please leave us a %2$s rating. We really appreciate your support!', 'wp-duplicate-page' ),
 				'<strong>' . esc_html__( 'WP Duplicate Page', 'wp-duplicate-page' ) . '</strong>',
-				'<a href="https://wordpress.org/support/plugin/wp-duplicate-page/reviews/?filter=5/#new-post/" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
+				'<a href="https://wordpress.org/support/plugin/wp-duplicate-page/reviews/" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
 			);
 			wp_enqueue_style( $scriptId, NJT_DUPLICATE_PLUGIN_URL . '/assets/css/admin-setting.css', array(), NJT_DUPLICATE_VERSION );
 			wp_enqueue_script( $scriptId, NJT_DUPLICATE_PLUGIN_URL . '/assets/js/admin-setting.js', array( 'jquery' ), NJT_DUPLICATE_VERSION, true );
@@ -104,9 +104,17 @@ class Settings {
 				wp_json_encode(
 					array(
 						'consumerSlug' => NJT_DUPLICATE_DOMAIN,
-						'title'        => __( 'Show Recommended Plugins', 'wp-duplicate-page' ),
+						// No 'title' — html-settings.php now renders "Show Suggestions" as a real
+						// .njt-duplicate-base-control-label (left column, same style as every other
+						// row) instead of relying on the widget's own internal title text.
 						'description'  => __( 'Enable this to see handy plugin recommendations and occasional offers. Disable anytime to turn all of them off.', 'wp-duplicate-page' ),
 						'checked'      => njt_ads_toggle_consumer_is_enabled( NJT_DUPLICATE_DOMAIN ),
+						// 'checkbox' is a LOCAL edit to recommended-modules/ads-toggle (gitignored, synced
+						// from the shared cross-sell-manager repo) — not upstream yet. It will silently
+						// revert to the default "switch" style next time bin/pull-modules.php re-syncs.
+						// The #njt-duplicate-ads-toggle CSS override in admin-setting.css renders the same
+						// checkbox look independent of this option, so the UI stays correct either way.
+						'style'        => 'checkbox',
 					)
 				)
 			)
@@ -139,7 +147,7 @@ class Settings {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		if ( ! isset( $_POST['njtDuplicateNonce'] ) || ! wp_verify_nonce( $_POST['njtDuplicateNonce'], 'wp_rest' ) ) {
+		if ( ! isset( $_POST['njtDuplicateNonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['njtDuplicateNonce'] ) ), 'wp_rest' ) ) {
 			return;
 		}
 		update_option( 'njt_duplicate_reviewed', '1' );
@@ -150,7 +158,7 @@ class Settings {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		if ( ! isset( $_POST['njtDuplicateNonce'] ) || ! wp_verify_nonce( $_POST['njtDuplicateNonce'], 'wp_rest' ) ) {
+		if ( ! isset( $_POST['njtDuplicateNonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['njtDuplicateNonce'] ) ), 'wp_rest' ) ) {
 			return;
 		}
 

@@ -9,33 +9,6 @@ defined( 'ABSPATH' ) || exit;
  * Self-contained: reads Registry registrations + stored options DIRECTLY, so it works the
  * instant this file loads (plugins_loaded:0) — with no dependency on the module's boot/hooks.
  * That is why an ad module can gate its own rendering during `plugins_loaded`.
- *
- * ONE TOGGLE PER CONSUMER (not per ad): a consumer plugin that registers 3 ad-module slugs gets
- * a single on/off switch that controls all 3 together. Each consumer plugin registers which
- * ad-module slugs it bundles via \YayRecommendedModules\Registry::register_ads_consumer(), e.g.:
- *
- *   \YayRecommendedModules\Registry::register_ads_consumer( 'whatsapp-wp', 'filebird-dashboard-widget' );
- *   \YayRecommendedModules\Registry::register_ads_consumer( 'whatsapp-wp', 'filebird-sidebar-popup' );
- *
- * (called AFTER requiring recommended-modules/loader.php, since the Registry class must exist.)
- *
- * PER-AD-MODULE, AND-aggregated across consumers: njt_ads_toggle_is_enabled( $ad_slug ) ORs
- * every consumer registered against that ad — the ad only fully disappears once ALL of its
- * registered consumers have switched their own single toggle off. Matching "if Notibar turns
- * its ads off but WP Duplicate hasn't, the ad they share still shows (via WP Duplicate)".
- *
- * Two different questions, two different functions — don't mix them up:
- *   - njt_ads_toggle_is_enabled( $ad_slug ): AGGREGATE across every registered consumer (OR).
- *     Use this to gate whether an ad module renders at all.
- *   - njt_ads_toggle_consumer_is_enabled( $consumer_slug ): ONE consumer's own single switch.
- *     Use this to populate that consumer's toggle's initial `checked` value on its own
- *     settings page — it must reflect what THAT switch controls, not the site-wide aggregate.
- *
- * FAIL-OPEN: when this module is not bundled the functions don't exist, so callers MUST guard:
- *   if ( ! function_exists( 'njt_ads_toggle_is_enabled' ) || njt_ads_toggle_is_enabled( 'filebird-sidebar-popup' ) ) {
- *       // ads enabled OR module absent → render
- *   }
- * Also fail-open when NO consumer registered $ad_slug at all (nothing to turn off).
  */
 
 if ( ! function_exists( 'njt_ads_toggle_option_name' ) ) {
@@ -52,7 +25,7 @@ if ( ! function_exists( 'njt_ads_toggle_consumer_is_enabled' ) ) {
 	 * Is THIS SPECIFIC consumer's single ads switch on? Controls every ad module that consumer
 	 * registered together — use this to populate that consumer's own toggle switch.
 	 *
-	 * @param string $consumer_slug This consumer's own registered slug (e.g. 'whatsapp-wp').
+	 * @param string $consumer_slug This consumer's own registered slug.
 	 * @return bool
 	 */
 	function njt_ads_toggle_consumer_is_enabled( $consumer_slug ) {
@@ -71,10 +44,17 @@ if ( ! function_exists( 'njt_ads_toggle_is_enabled' ) ) {
 	 * checked state (that's a single consumer's own state; see
 	 * njt_ads_toggle_consumer_is_enabled()).
 	 *
-	 * @param string $ad_slug Ad module's own Registry name (e.g. 'filebird-sidebar-popup').
+	 * @param string $ad_slug Ad module's own Registry name.
 	 * @return bool
 	 */
 	function njt_ads_toggle_is_enabled( $ad_slug ) {
+		// Fail-open when an older Registry copy (from another consumer plugin) won the
+		// class-definition race and doesn't have this method yet — see registry.php's
+		// "FROZEN ABI" note. Without this guard, sites running an older sibling plugin
+		if ( ! method_exists( '\YayRecommendedModules\Registry', 'get_ads_consumers' ) ) {
+			return true;
+		}
+
 		$ad_slug   = sanitize_key( $ad_slug );
 		$consumers = \YayRecommendedModules\Registry::get_ads_consumers( $ad_slug );
 

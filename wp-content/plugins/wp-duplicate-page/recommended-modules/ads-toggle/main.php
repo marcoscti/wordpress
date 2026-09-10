@@ -21,7 +21,7 @@ if ( ! class_exists( 'NjtAdsToggle' ) ) {
 	class NjtAdsToggle {
 
 		const NONCE     = 'njt_ads_toggle_nonce';
-		const ASSET_VER = '1.5.1'; // asset cache-buster; bump with register.php
+		const ASSET_VER = '1.5.6'; // asset cache-buster; bump with register.php — local checkbox-style edit, see ads-toggle.js/css
 
 		private static $instance = null;
 
@@ -53,13 +53,20 @@ if ( ! class_exists( 'NjtAdsToggle' ) ) {
 		public function handle_update() {
 			check_ajax_referer( self::NONCE, 'nonce' );
 			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_send_json_error( [ 'message' => __( 'You are not allowed to do this.', 'filebird' ) ], 403 );
+				wp_send_json_error( [ 'message' => __( 'You are not allowed to do this.', 'wp-duplicate-page' ) ], 403 );
 			}
 
 			$consumer_slug = isset( $_POST['consumer_slug'] ) ? sanitize_key( wp_unslash( $_POST['consumer_slug'] ) ) : '';
 
-			if ( '' === $consumer_slug || ! \YayRecommendedModules\Registry::is_ads_consumer( $consumer_slug ) ) {
-				wp_send_json_error( [ 'message' => __( 'Unknown consumer.', 'filebird' ) ] );
+			// Fail-closed (reject) when an older Registry copy from a sibling plugin won the
+			// class-definition race and doesn't have this method yet — see functions.php's
+			// note on this. Unlike the render-gating helpers this guards an option write, so
+			// "method missing" is treated the same as "unknown consumer", not fail-open.
+			if ( '' === $consumer_slug
+				|| ! method_exists( '\YayRecommendedModules\Registry', 'is_ads_consumer' )
+				|| ! \YayRecommendedModules\Registry::is_ads_consumer( $consumer_slug )
+			) {
+				wp_send_json_error( [ 'message' => __( 'Unknown consumer.', 'wp-duplicate-page' ) ] );
 			}
 
 			$enabled = filter_var( wp_unslash( $_POST['enabled'] ?? '' ), FILTER_VALIDATE_BOOLEAN );

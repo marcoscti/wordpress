@@ -6,7 +6,7 @@ use NjtDuplicate\Helper\Utils;
 	<div class="njt-duplicate-top-header">
 		<div class="njt-duplicate-header-left">
 		<div class="njt-duplicate-header-logo">
-			<img src="<?php echo NJT_DUPLICATE_PLUGIN_URL; ?>/assets/images/wp-duplicate-page.png" alt="WP Duplicate Page">
+			<img src="<?php echo esc_url( NJT_DUPLICATE_PLUGIN_URL ); ?>/assets/images/wp-duplicate-page.png" alt="WP Duplicate Page">
 		</div>
 		<h1 class="njt-duplicate-header-title">WP Duplicate Page</h1>
 		<a class="njt-duplicate-btn njt-duplicate-btn-xs" href="https://ninjateam.org" target="_blank" rel="noopener noreferrer">by NinjaTeam</a>
@@ -35,21 +35,6 @@ use NjtDuplicate\Helper\Utils;
 			<div class="njt-duplicate-layout-primary">
 				<div class="njt-duplicate-layout-main">
 					<div class="njt-duplicate-settings">
-						<?php if ( function_exists( 'njt_ads_toggle_consumer_is_enabled' ) ) : ?>
-						<div class="njt-duplicate-card njt-duplicate-ads-toggle-card">
-							<div class="njt-duplicate-card-header">
-								<div class="njt-duplicate-card-title-wrapper">
-									<h3 class="njt-duplicate-card-title njt-duplicate-card-header-item">
-										<?php echo esc_html( __( 'Recommended Modules', 'wp-duplicate-page' ) ); ?>
-									</h3>
-								</div>
-							</div>
-							<div class="njt-duplicate-card-body">
-								<?php // Rendered by NjtDuplicate\Page\Settings::enqueueAdsToggle() via the shared njt-ads-toggle widget (recommended-modules/ads-toggle). ?>
-								<div id="njt-duplicate-ads-toggle"></div>
-							</div>
-						</div>
-						<?php endif; ?>
 						<form method="post" id="njt_duplicate_setting_form">
 							<div class="njt-duplicate-card">
 								<div class="njt-duplicate-card-header">
@@ -173,7 +158,19 @@ use NjtDuplicate\Helper\Utils;
 											</div>
 										</div>
 									</div>
-									
+
+									<?php if ( function_exists( 'njt_ads_toggle_consumer_is_enabled' ) ) : ?>
+									<div class="njt-duplicate-control">
+										<label class="njt-duplicate-base-control-label"><?php echo esc_html( __( 'Show Suggestions', 'wp-duplicate-page' ) ); ?></label>
+										<div class="njt-duplicate-base-control">
+											<div class="njt-duplicate-base-control-field">
+												<?php // Rendered by NjtDuplicate\Page\Settings::enqueueAdsToggle() via the shared njt-ads-toggle widget (recommended-modules/ads-toggle). The widget's own title is left blank (this label covers it); visual style is forced to match this plugin's own controls via #njt-duplicate-ads-toggle overrides in admin-setting.css, regardless of which ads-toggle module version the shared Registry picks. ?>
+												<div id="njt-duplicate-ads-toggle"></div>
+											</div>
+										</div>
+									</div>
+									<?php endif; ?>
+
 									<p class="submit">
 										<input 
 											type="submit" 
@@ -205,10 +202,10 @@ use NjtDuplicate\Helper\Utils;
 			$reviewed     = get_option( 'njt_duplicate_reviewed', '0' ) === '1';
 			$reviewedText = 'Thank you for using WP Duplicate Page from <a href="https://ninjateam.org/" target="_blank">NinjaTeam</a>';
 			if ( ! $reviewed ) {
-				echo '<span class="njt-duplicate-footer-not-reviewed-text">We need your support to keep updating and improving the plugin. Please, <a class="njt-duplicate-footer-review-text-link" target="_blank" href="https://wordpress.org/support/plugin/wp-duplicate-page/reviews/?filter=5/#new-post/">help us by leaving a good review</a> :) Thanks!</span>';
-				printf( '<span class="njt-duplicate-footer-reviewed-text" style="display: none;">%s</span>', $reviewedText );
+				echo wp_kses_post( '<span class="njt-duplicate-footer-not-reviewed-text">We need your support to keep updating and improving the plugin. Please, <a class="njt-duplicate-footer-review-text-link" target="_blank" href="https://wordpress.org/support/plugin/wp-duplicate-page/reviews/">help us by leaving a good review</a> :) Thanks!</span>' );
+				printf( '<span class="njt-duplicate-footer-reviewed-text" style="display: none;">%s</span>', wp_kses_post( $reviewedText ) );
 			} else {
-				printf( '<span class="njt-duplicate-footer-reviewed-text">%s</span>', $reviewedText );
+				printf( '<span class="njt-duplicate-footer-reviewed-text">%s</span>', wp_kses_post( $reviewedText ) );
 			}
 			?>
 		</div>
