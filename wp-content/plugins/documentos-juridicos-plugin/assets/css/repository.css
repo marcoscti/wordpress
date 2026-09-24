@@ -1,4 +1,7 @@
  .dj-repository { max-width: 1280px; margin: 0 auto; padding: 32px 20px; box-sizing: border-box; color: #1f2937; }
+.dj-icon { display: inline-flex; width: 1.15em; height: 1.15em; margin-right: 6px; vertical-align: -.18em; color: currentColor; }
+.dj-icon-svg { display: block; width: 100%; height: 100%; }
+.dj-icon--title { width: 1.05em; height: 1.05em; vertical-align: -.12em; }
 .dj-header { margin-bottom: 30px; }
 .dj-header h1 { margin: 0 0 20px; font-size: clamp(28px, 4vw, 42px); }
 .dj-search input { width: 100%; padding: 16px 18px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
