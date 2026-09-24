@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Plugin Name: Dia das Crianças — Quiz de Nostalgia
  * Description: Motor de quiz para a campanha "Quanto de criança ainda existe em você?".
