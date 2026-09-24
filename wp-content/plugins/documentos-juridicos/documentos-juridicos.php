@@ -5,7 +5,7 @@
  * Version: 1.0.0
  * Author: Marcos Cordeiro Soares
  * Author URI: https://github.com/marcoscti
- * Requires at least: 6.0
+ * Requires at least: 5.0
  * Text Domain: documentos-juridicos
  */
 
