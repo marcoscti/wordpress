@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Repositório de Documentos Jurídicos
+ * Plugin Name: Documentos Jurídicos
  * Description: Repositório de PDFs jurídicos com CPT, filtros, busca AJAX, paginação, mais acessados e estrutura preparada para processamento por IA.
  * Version: 0.1.0
  * Author: IGESDF / Desenvolvimento
