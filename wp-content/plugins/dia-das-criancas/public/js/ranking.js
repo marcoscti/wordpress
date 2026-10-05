@@ -45,6 +45,9 @@
       const photo = photoUrl
         ? `<img class="dcdc-ranking-shortcode__photo" src="${photoUrl}" alt="Foto de ${escapeHtml(participant.name)}" loading="lazy">`
         : `<span class="dcdc-ranking-shortcode__photo dcdc-ranking-shortcode__photo--empty" aria-hidden="true">${initials}</span>`;
+      const backPhoto = photoUrl
+        ? `<img class="dcdc-ranking-shortcode__photo dcdc-ranking-shortcode__photo--back" src="${photoUrl}" alt="" loading="lazy">`
+        : `<span class="dcdc-ranking-shortcode__photo dcdc-ranking-shortcode__photo--back dcdc-ranking-shortcode__photo--empty" aria-hidden="true">${initials}</span>`;
       const category = participant.category || {};
       const categoryName = category.name || "Participante";
       const categoryEmoji = category.emoji || "";
@@ -52,14 +55,21 @@
       const medal = position <= 3 ? ["🥇", "🥈", "🥉"][position - 1] : position;
 
       return `<article class="dcdc-ranking-shortcode__item dcdc-ranking-shortcode__item--rank-${position}">
-        <span class="dcdc-ranking-shortcode__position">${medal}</span>
-        ${photo}
-        <div class="dcdc-ranking-shortcode__person">
-          <strong>${escapeHtml(participant.name)}</strong>
-          <small>${escapeHtml(categoryEmoji)} ${escapeHtml(categoryName)}</small>
-          ${categoryDescription ? `<p>${escapeHtml(categoryDescription)}</p>` : ""}
+        <div class="dcdc-ranking-shortcode__flip">
+          <div class="dcdc-ranking-shortcode__face dcdc-ranking-shortcode__face--front">
+            <span class="dcdc-ranking-shortcode__position">${medal}</span>
+            ${photo}
+            <div class="dcdc-ranking-shortcode__person">
+              <strong>${escapeHtml(participant.name)}</strong>
+              <small>${escapeHtml(categoryEmoji)} ${escapeHtml(categoryName)}</small>
+              ${categoryDescription ? `<p>${escapeHtml(categoryDescription)}</p>` : ""}
+            </div>
+            <strong class="dcdc-ranking-shortcode__score">${Number(participant.score) || 0} pts</strong>
+          </div>
+          <div class="dcdc-ranking-shortcode__face dcdc-ranking-shortcode__face--back" aria-hidden="true">
+            ${backPhoto}
+          </div>
         </div>
-        <strong class="dcdc-ranking-shortcode__score">${Number(participant.score) || 0} pts</strong>
       </article>`;
     }).join("");
   };

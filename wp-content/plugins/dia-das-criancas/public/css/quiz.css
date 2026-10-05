@@ -648,12 +648,96 @@
 }
 
 .dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__item {
+    display: block;
+    position: relative;
+    height: 300px;
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
+    box-shadow: none;
+    box-sizing: border-box;
+    perspective: 1000px;
+}
+
+.dcdc-ranking-shortcode__flip {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.65s ease;
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__flip {
+    position: absolute;
+    inset: 0;
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__item:hover .dcdc-ranking-shortcode__flip {
+    transform: rotateY(180deg);
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__face {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid rgba(29, 35, 51, 0.08);
+    border-radius: 16px;
+    backface-visibility: hidden;
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__face--front {
+    display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto minmax(76px, 1fr) auto;
     justify-items: center;
+    gap: 12px;
+    padding: 16px;
     text-align: center;
-    height: 300px;
-    box-sizing: border-box;
+    background: #fff;
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__face--back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotateY(180deg);
+    background: #fff;
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__item--rank-1 .dcdc-ranking-shortcode__face {
+    border: 2px solid #e0ad24;
+    background: linear-gradient(180deg, #fff9dc, #fff);
+    box-shadow: 0 14px 30px rgba(224, 173, 36, 0.2);
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__item--rank-2 .dcdc-ranking-shortcode__face {
+    border: 2px solid #a7b1bf;
+    background: linear-gradient(180deg, #f4f7fa, #fff);
+    box-shadow: 0 10px 24px rgba(91, 100, 119, 0.14);
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__item--rank-3 .dcdc-ranking-shortcode__face {
+    border: 2px solid #c98655;
+    background: linear-gradient(180deg, #fff0e7, #fff);
+    box-shadow: 0 10px 24px rgba(201, 134, 85, 0.14);
+}
+
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__photo--back {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+.dcdc-ranking-shortcode--list .dcdc-ranking-shortcode__flip,
+.dcdc-ranking-shortcode--list .dcdc-ranking-shortcode__face--front {
+    display: contents;
+}
+
+.dcdc-ranking-shortcode--list .dcdc-ranking-shortcode__face--back {
+    display: none;
 }
 
 .dcdc-ranking-shortcode__item--rank-1 {
@@ -704,6 +788,11 @@
     height: 76px;
 }
 
+.dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__photo--back {
+    width: 100%;
+    height: 100%;
+}
+
 .dcdc-ranking-shortcode__person {
     display: grid;
     gap: 4px;
@@ -743,6 +832,12 @@
 .dcdc-ranking-shortcode--cards .dcdc-ranking-shortcode__score {
     color: var(--dcdc-blue);
     font-size: 1.15rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dcdc-ranking-shortcode__flip {
+        transition: none;
+    }
 }
 
 .dcdc-ranking-shortcode__empty {

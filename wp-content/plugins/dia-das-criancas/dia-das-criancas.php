@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dia das Crianças — Quiz de Nostalgia
  * Description: Motor de quiz para a campanha "Quanto de criança ainda existe em você?".
- * Version: 0.3.1
+ * Version: 0.3.2
  * Author: Marcos Cordeiro Soares
  * Requires at least: 5.8
  * Requires PHP: 7.4
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('DCDC_VERSION', '0.3.1');
+define('DCDC_VERSION', '0.3.2');
 define('DCDC_FILE', __FILE__);
 define('DCDC_DIR', plugin_dir_path(__FILE__));
 define('DCDC_URL', plugin_dir_url(__FILE__));
