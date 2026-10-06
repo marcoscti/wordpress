@@ -9,15 +9,15 @@
 
         <div class="dcdc-hero-content">
             <span class="dcdc-badge">DIA DAS CRIANÇAS</span>
-            <h1 id="dcdc-quiz-title">Quanto de criança ainda existe em você?</h1>
-            <p>Responda, relembre sua infância e descubra qual tipo de criança você foi.</p>
+            <h1 id="dcdc-quiz-title">E se a sua criança interior pudesse responder?</h1>
+            <p>Tem brincadeiras que ficaram para trás.</br>Mas será que a criança que você foi também ficou?</p>
         </div>
 
         <div class="dcdc-start-actions">
             <button type="button" class="dcdc-btn dcdc-start-btn" aria-label="Começar o desafio do quiz">
                 Começar o desafio
             </button>
-            <span class="dcdc-mini-copy">15 perguntas • resultado em segundos</span>
+            <span class="dcdc-mini-copy">perguntas com resultado em segundos</span>
         </div>
     </section>
 
