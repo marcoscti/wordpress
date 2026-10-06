@@ -31,7 +31,7 @@
   const participantSubmitBtn = root.querySelector(".dcdc-participant-btn");
   const participantFeedback = root.querySelector(".dcdc-participant-feedback");
   const rankingList = root.querySelector(".dcdc-ranking-list");
-
+  
   const praiseMessages = [
     "✨ Boa lembrança!",
     "🎮 Essa valeu pontos!",
@@ -43,7 +43,6 @@
   let questions = [];
   let current = 0;
   let answers = {};
-
   const escapeHtml = (value) =>
     String(value || "").replace(
       /[&<>"']/g,
@@ -135,7 +134,7 @@
   const renderQuestion = () => {
     const total = questions.length;
     const q = questions[current];
-
+    
     if (!q) return;
 
     const progress = ((current + 1) / total) * 100;

@@ -17,15 +17,14 @@
             <button type="button" class="dcdc-btn dcdc-start-btn" aria-label="Começar o desafio do quiz">
                 Começar o desafio
             </button>
-            <span class="dcdc-mini-copy">perguntas com resultado em segundos</span>
         </div>
     </section>
 
     <section class="dcdc-screen dcdc-question-screen" hidden aria-live="polite">
         <div class="dcdc-progress-wrap" aria-label="Progresso do quiz">
             <div class="dcdc-progress-meta">
-                <span class="dcdc-progress-label">Pergunta 1 de 15</span>
-                <span class="dcdc-progress-counter">1/15</span>
+                <span class="dcdc-progress-label"></span>
+                <span class="dcdc-progress-counter"></span>
             </div>
             <div class="dcdc-progress" aria-hidden="true">
                 <i class="dcdc-progress-bar"></i>
@@ -33,7 +32,7 @@
         </div>
 
         <div class="dcdc-question-card">
-            <span class="dcdc-decade">MEMÓRIAS</span>
+            <span class="dcdc-decade"></span>
             <h2 class="dcdc-question" id="dcdc-question-text"></h2>
             <div class="dcdc-options" role="list" aria-label="Respostas possíveis"></div>
             <div class="dcdc-feedback" aria-live="polite" hidden></div>
