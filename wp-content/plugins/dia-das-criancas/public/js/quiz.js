@@ -21,16 +21,15 @@
   const descriptionEl = root.querySelector(".dcdc-description");
   const emojiEl = root.querySelector(".dcdc-result-emoji");
   const resultCard = root.querySelector(".dcdc-result-card");
-  const revealValue = root.querySelector(".dcdc-score-reveal-value");
   const feedbackEl = root.querySelector(".dcdc-feedback");
   const errorEl = root.querySelector(".dcdc-error");
   const questionCard = root.querySelector(".dcdc-question-card");
   const participantForm = root.querySelector(".dcdc-participant-form");
   const participantNameInput = root.querySelector("#dcdc-participant-name");
+  const participantUnitInput = root.querySelector("#dcdc-participant-unit");
   const participantPhotoInput = root.querySelector("#dcdc-participant-photo");
   const participantSubmitBtn = root.querySelector(".dcdc-participant-btn");
   const participantFeedback = root.querySelector(".dcdc-participant-feedback");
-  const rankingList = root.querySelector(".dcdc-ranking-list");
   
   const praiseMessages = [
     "✨ Boa lembrança!",
@@ -180,57 +179,6 @@
     animateQuestion();
   };
 
-  const loadRanking = async () => {
-    try {
-      const data = await api(
-        `quiz/${encodeURIComponent(DCDC_DATA.campaign)}/ranking?limit=8`,
-      );
-      const participants = data.participants || [];
-
-      rankingList.innerHTML = "";
-      if (!participants.length) {
-        const item = document.createElement("li");
-        item.className = "dcdc-ranking-empty";
-        item.textContent = "Seja o primeiro a aparecer no ranking.";
-        rankingList.appendChild(item);
-        return;
-      }
-
-      participants.forEach((participant, index) => {
-        const item = document.createElement("li");
-        item.className = "dcdc-ranking-item";
-        const medal =
-          index === 0
-            ? "🥇"
-            : index === 1
-              ? "🥈"
-              : index === 2
-                ? "🥉"
-                : `${index + 1}`;
-          const photoUrl = participant.photo_url ? escapeHtml(participant.photo_url) : "";
-          const initials = escapeHtml(String(participant.name || "?").trim().charAt(0).toUpperCase());
-          const photo = photoUrl
-            ? `<img class="dcdc-ranking-photo" src="${photoUrl}" alt="Foto de ${escapeHtml(participant.name)}" loading="lazy">`
-            : `<span class="dcdc-ranking-photo dcdc-ranking-photo--empty" aria-hidden="true">${initials}</span>`;
-
-        item.innerHTML = `
-                    <span class="dcdc-ranking-position">${medal}</span>
-                      ${photo}
-                    <div class="dcdc-ranking-main">
-                        <strong>${escapeHtml(participant.name)}</strong>
-                        <small>${escapeHtml(participant.category ? participant.category.name : "Participante")}</small>
-                    </div>
-                    <span class="dcdc-ranking-score">${Number(participant.score) || 0} pts</span>
-                `;
-
-        rankingList.appendChild(item);
-      });
-    } catch (e) {
-      rankingList.innerHTML =
-        '<li class="dcdc-ranking-empty">Ranking indisponível no momento.</li>';
-    }
-  };
-
   const loadQuiz = async () => {
     errorEl.hidden = true;
     errorEl.classList.remove("is-visible");
@@ -260,35 +208,6 @@
     }
   };
 
-  const revealScore = (targetScore) => {
-    revealValue.textContent = "0";
-    resultCard.classList.remove("is-visible");
-
-    const duration = 850;
-    const startTime = window.performance.now();
-    const animate = (now) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const value = Math.round(targetScore * eased);
-      revealValue.textContent = String(value);
-
-      if (progress < 1) {
-        window.requestAnimationFrame(animate);
-        return;
-      }
-
-      revealValue.textContent = String(targetScore);
-      scoreEl.textContent = `${targetScore} pontos`;
-      categoryEl.textContent = `${emojiEl.textContent} ${categoryEl.dataset.name || "Resultado"}`;
-      descriptionEl.textContent =
-        descriptionEl.dataset.description ||
-        "Uma infância cheia de boas lembranças.";
-      resultCard.classList.add("is-visible");
-    };
-
-    window.requestAnimationFrame(animate);
-  };
-
   const finish = async () => {
     nextBtn.disabled = true;
 
@@ -312,14 +231,11 @@
           : "Uma infância cheia de boas lembranças.";
 
       emojiEl.textContent = emoji;
-      categoryEl.dataset.name = categoryName;
-      descriptionEl.dataset.description = description;
-      categoryEl.textContent = categoryName;
-      descriptionEl.textContent = description;
-
       show(resultScreen);
-      revealScore(score);
-      await loadRanking();
+      scoreEl.textContent = `${score} pontos`;
+      categoryEl.textContent = `${emoji} ${categoryName}`;
+      descriptionEl.textContent = description;
+      resultCard.classList.add("is-visible");
     } catch (e) {
       error(e.message || "Não foi possível calcular o resultado.");
       nextBtn.disabled = false;
@@ -339,18 +255,29 @@
       return;
     }
 
-    const file = participantPhotoInput.files && participantPhotoInput.files[0];
-    if (file) {
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-      if (!allowedTypes.includes(file.type)) {
-        setParticipantFeedback("Use uma imagem JPG, PNG ou WEBP.", true);
-        return;
-      }
+    const unit = participantUnitInput.value.trim();
+    if (!unit) {
+      setParticipantFeedback("Informe a unidade em que você atua.", true);
+      participantUnitInput.focus();
+      return;
+    }
 
-      if (file.size > 2 * 1024 * 1024) {
-        setParticipantFeedback("A foto deve ter até 2MB.", true);
-        return;
-      }
+    const file = participantPhotoInput.files && participantPhotoInput.files[0];
+    if (!file) {
+      setParticipantFeedback("Selecione uma foto para entrar no ranking.", true);
+      participantPhotoInput.focus();
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      setParticipantFeedback("Use uma imagem JPG, PNG ou WEBP.", true);
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setParticipantFeedback("A foto deve ter até 2MB.", true);
+      return;
     }
 
     participantSubmitBtn.disabled = true;
@@ -358,10 +285,9 @@
     try {
       const formData = new FormData();
       formData.append("name", name);
+      formData.append("unit", unit);
       formData.append("answers", JSON.stringify(answers));
-      if (file) {
-        formData.append("photo", file);
-      }
+      formData.append("photo", file);
 
       const response = await fetch(
         DCDC_DATA.restUrl +
@@ -383,8 +309,7 @@
       }
 
       participantForm.reset();
-      setParticipantFeedback("Seu nome foi salvo no ranking!");
-      await loadRanking();
+      window.location.reload();
     } catch (e) {
       setParticipantFeedback(
         e.message || "Não foi possível completar o cadastro.",
@@ -420,8 +345,6 @@
     participantForm.reset();
     participantFeedback.hidden = true;
     participantFeedback.classList.remove("is-visible", "is-error");
-    revealValue.textContent = "0";
-    rankingList.innerHTML = "";
   });
 
   participantForm.addEventListener("submit", handleParticipantSubmit);

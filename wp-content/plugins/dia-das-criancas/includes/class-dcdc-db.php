@@ -63,6 +63,7 @@ class DCDC_DB {
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             campaign varchar(100) NOT NULL,
             name varchar(150) NOT NULL,
+            unit varchar(150) NOT NULL DEFAULT '',
             score int(11) NOT NULL DEFAULT 0,
             category_id bigint(20) unsigned DEFAULT NULL,
             photo_id bigint(20) unsigned DEFAULT NULL,

@@ -46,13 +46,6 @@
 
     <section class="dcdc-screen dcdc-result-screen" hidden>
         <div class="dcdc-result">
-            <div class="dcdc-reveal-block">
-                <span class="dcdc-reveal-label">Você fez...</span>
-                <div class="dcdc-score-reveal">
-                    <span class="dcdc-score-reveal-value">0</span>
-                </div>
-            </div>
-
             <div class="dcdc-result-card">
                 <span class="dcdc-result-emoji" aria-hidden="true">🏆</span>
                 <p class="dcdc-result-title">Seu resultado</p>
@@ -71,8 +64,18 @@
                     </div>
 
                     <div class="dcdc-form-row">
-                        <label for="dcdc-participant-photo">Foto de infância</label>
-                        <input id="dcdc-participant-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
+                        <label for="dcdc-participant-unit">Unidade em que atua</label>
+                        <select id="dcdc-participant-unit" name="unit" required>
+                            <option value="">Selecione uma unidade</option>
+                            <?php foreach (DCDC_Quiz::units() as $unit) : ?>
+                                <option value="<?php echo esc_attr($unit); ?>"><?php echo esc_html($unit); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="dcdc-form-row">
+                        <label for="dcdc-participant-photo">Foto do participante</label>
+                        <input id="dcdc-participant-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
                     </div>
 
                     <button type="submit" class="dcdc-btn dcdc-participant-btn">Salvar no ranking</button>
@@ -80,12 +83,6 @@
                 <div class="dcdc-participant-feedback" role="status" hidden></div>
             </div>
 
-            <div class="dcdc-ranking">
-                <div class="dcdc-ranking-header">
-                    <h3>Ranking</h3>
-                </div>
-                <ol class="dcdc-ranking-list"></ol>
-            </div>
         </div>
     </section>
 

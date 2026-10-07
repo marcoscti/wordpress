@@ -1,6 +1,6 @@
 # Dia das Crianças — Quiz de Nostalgia
 
-Plugin WordPress — Fase 1: motor do quiz.
+Plugin WordPress — quiz de nostalgia e ranking de participantes.
 
 ## Requisitos
 - WordPress 5.8+
@@ -23,12 +23,14 @@ Plugin WordPress — Fase 1: motor do quiz.
 - Categorias por faixa de pontuação.
 - REST API interna.
 - Shortcode para renderização do quiz.
+- Cadastro de participante com nome, foto e unidade de atuação selecionada entre as unidades disponíveis.
+- Ranking público em cards ou lista, com modal de detalhes responsivo.
+- Download do cartão do participante em PNG.
 - Tela administrativa inicial.
-- Estrutura preparada para participantes, fotos, ranking e card.
 - Seed inicial com perguntas e categorias para testes.
 
 ## Importante
-A Fase 1 ainda não inclui cadastro de participante, upload de foto, ranking público ou geração de card. Esses recursos serão adicionados nas fases seguintes.
+Ao atualizar uma instalação existente, a tabela de participantes recebe a coluna da unidade automaticamente. Cadastros antigos permanecem válidos e aparecem com a unidade não informada até serem atualizados.
 
 ## Tabelas
 - `wp_dcdc_questions`

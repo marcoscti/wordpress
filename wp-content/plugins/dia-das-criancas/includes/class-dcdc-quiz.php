@@ -2,6 +2,29 @@
 if (!defined('ABSPATH')) exit;
 
 class DCDC_Quiz {
+    public static function units() {
+        return array(
+            'Hospital Cidade do Sol',
+            'Hospital de Base',
+            'Hospital Regional de Santa Maria',
+            'PO 700',
+            'SIA',
+            'UPA Brazlândia',
+            'UPA Ceilândia I',
+            'UPA Ceilândia II',
+            'UPA Gama',
+            'UPA Núcleo Bandeirante',
+            'UPA Paranoá',
+            'UPA Planaltina',
+            'UPA Riacho Fundo II',
+            'UPA Recanto das Emas',
+            'UPA Samambaia',
+            'UPA São Sebastião',
+            'UPA Sobradinho',
+            'UPA Vicente Pires',
+        );
+    }
+
     public static function init() {
         add_action('rest_api_init', array(__CLASS__, 'routes'));
     }
@@ -74,11 +97,21 @@ class DCDC_Quiz {
             return new WP_Error('dcdc_invalid_nonce', 'Nonce inválido.', array('status' => 401));
         }
 
-        $name = sanitize_text_field(wp_unslash($request->get_param('name')));
+        $name = sanitize_text_field(wp_unslash((string) $request->get_param('name')));
+        $unit = sanitize_text_field(wp_unslash((string) $request->get_param('unit')));
         $answers = $request->get_param('answers');
 
         if (mb_strlen($name, 'UTF-8') < 2 || mb_strlen($name, 'UTF-8') > 80) {
             return new WP_Error('dcdc_invalid_name', 'Informe um nome válido com 2 a 80 caracteres.', array('status' => 400));
+        }
+
+        if (!in_array($unit, self::units(), true)) {
+            return new WP_Error('dcdc_invalid_unit', 'Selecione uma unidade válida.', array('status' => 400));
+        }
+
+        $file_params = $request->get_file_params();
+        if (empty($file_params['photo']['name'])) {
+            return new WP_Error('dcdc_invalid_photo', 'Selecione uma foto para participar do ranking.', array('status' => 400));
         }
 
         $result = self::calculate_result($campaign, $answers);
@@ -87,14 +120,9 @@ class DCDC_Quiz {
         }
 
         $category = DCDC_Categories::find_by_score($campaign, $result['score']);
-        $photo_id = null;
-
-        $file_params = $request->get_file_params();
-        if (!empty($file_params['photo'])) {
-            $photo_id = self::upload_photo($file_params['photo']);
-            if (is_wp_error($photo_id)) {
-                return $photo_id;
-            }
+        $photo_id = self::upload_photo($file_params['photo']);
+        if (is_wp_error($photo_id)) {
+            return $photo_id;
         }
 
         global $wpdb;
@@ -103,6 +131,7 @@ class DCDC_Quiz {
         $inserted = $wpdb->insert($t['participants'], array(
             'campaign' => $campaign,
             'name' => $name,
+            'unit' => $unit,
             'score' => (int) $result['score'],
             'category_id' => $category ? (int) $category->id : null,
             'photo_id' => $photo_id,
@@ -124,28 +153,30 @@ class DCDC_Quiz {
 
     public static function ranking($request) {
         $campaign = sanitize_key($request['campaign']);
-        $limit = absint($request->get_param('limit')) ?: 10;
-        $limit = max(1, min(25, $limit));
+        $limit = absint($request->get_param('limit'));
 
         global $wpdb;
         $t = DCDC_DB::tables();
 
-        $rows = $wpdb->get_results($wpdb->prepare(
+        $query = $wpdb->prepare(
             "SELECT p.*, c.name AS category_name, c.emoji AS category_emoji, c.description AS category_description
              FROM {$t['participants']} p
              LEFT JOIN {$t['categories']} c ON c.id = p.category_id
              WHERE p.campaign = %s AND p.status = 'approved'
-             ORDER BY p.score DESC, p.created_at ASC
-             LIMIT %d",
-            $campaign,
-            $limit
-        ));
+             ORDER BY p.score DESC, p.created_at ASC",
+            $campaign
+        );
+        if ($limit > 0) {
+            $query .= $wpdb->prepare(' LIMIT %d', $limit);
+        }
+        $rows = $wpdb->get_results($query);
 
         $participants = array();
         foreach ($rows as $index => $row) {
             $participants[] = array(
                 'id' => (int) $row->id,
                 'name' => $row->name,
+                'unit' => $row->unit,
                 'score' => (int) $row->score,
                 'category' => $row->category_name ? array(
                     'name' => $row->category_name,
@@ -282,6 +313,7 @@ class DCDC_Quiz {
         return array(
             'id' => (int) $row->id,
             'name' => $row->name,
+            'unit' => $row->unit,
             'score' => (int) $row->score,
             'category' => $row->category_name ? array(
                 'name' => $row->category_name,

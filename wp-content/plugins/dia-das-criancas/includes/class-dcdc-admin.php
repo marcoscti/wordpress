@@ -109,7 +109,9 @@ class DCDC_Admin {
         wp_nonce_field('dcdc_save_participant');
         echo '<input type="hidden" name="dcdc_participant_action" value="save"><input type="hidden" name="id" value="'.$id.'">';
         echo '<table class="form-table"><tr><th><label for="dcdc-participant-name">Nome</label></th><td><input class="regular-text" id="dcdc-participant-name" name="name" maxlength="80" required value="'.esc_attr($participant->name).'">';
-        echo '</td></tr><tr><th><label for="dcdc-participant-status">Status</label></th><td><select id="dcdc-participant-status" name="status">';
+        echo '</td></tr><tr><th><label for="dcdc-participant-unit">Unidade</label></th><td><select class="regular-text" id="dcdc-participant-unit" name="unit" required><option value="">Selecione uma unidade</option>';
+        foreach (DCDC_Quiz::units() as $unit) echo '<option value="'.esc_attr($unit).'" '.selected($participant->unit, $unit, false).'>'.esc_html($unit).'</option>';
+        echo '</select></td></tr><tr><th><label for="dcdc-participant-status">Status</label></th><td><select id="dcdc-participant-status" name="status">';
         foreach (array('approved' => 'Aprovado', 'pending' => 'Pendente', 'rejected' => 'Rejeitado') as $value => $label) echo '<option value="'.esc_attr($value).'" '.selected($participant->status, $value, false).'>'.esc_html($label).'</option>';
         echo '</select></td></tr><tr><th><label for="dcdc-participant-photo">Foto</label></th><td><input type="file" id="dcdc-participant-photo" name="photo" accept="image/jpeg,image/png,image/webp"><p class="description">JPG, PNG ou WEBP até 2MB.</p>';
         if ($photo_url) echo '<p><img src="'.esc_url($photo_url).'" alt="" style="width:80px;height:80px;object-fit:cover;border-radius:50%"><br><label><input type="checkbox" name="remove_photo" value="1"> Remover foto atual</label></p>';
@@ -126,9 +128,10 @@ class DCDC_Admin {
             $id = absint($_POST['id'] ?? 0);
             $participant = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['participants']} WHERE id=%d", $id));
             $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
+            $unit = sanitize_text_field(wp_unslash($_POST['unit'] ?? ''));
             $status = sanitize_key($_POST['status'] ?? 'pending');
-            if (!$participant || mb_strlen($name, 'UTF-8') < 2 || mb_strlen($name, 'UTF-8') > 80 || !in_array($status, array('approved', 'pending', 'rejected'), true)) {
-                self::notice('Informe um nome válido e um status permitido.', 'error');
+            if (!$participant || mb_strlen($name, 'UTF-8') < 2 || mb_strlen($name, 'UTF-8') > 80 || !in_array($unit, DCDC_Quiz::units(), true) || !in_array($status, array('approved', 'pending', 'rejected'), true)) {
+                self::notice('Informe um nome, uma unidade válidos e um status permitido.', 'error');
             } else {
                 $photo_id = (int) $participant->photo_id;
                 $new_photo_id = 0;
@@ -142,7 +145,7 @@ class DCDC_Admin {
                         if ($participant->photo_id) wp_delete_attachment((int) $participant->photo_id, true);
                         if (!empty($_POST['remove_photo']) && $new_photo_id === 0) $photo_id = 0;
                     }
-                    $wpdb->update($t['participants'], array('name' => $name, 'status' => $status, 'photo_id' => $photo_id), array('id' => $id));
+                    $wpdb->update($t['participants'], array('name' => $name, 'unit' => $unit, 'status' => $status, 'photo_id' => $photo_id), array('id' => $id));
                     self::notice('Participante atualizado.');
                 }
             }
@@ -163,12 +166,12 @@ class DCDC_Admin {
         echo '<div class="wrap"><h1>Participantes</h1>';
         if ($edit) self::participant_form($edit);
         $rows = $wpdb->get_results("SELECT p.*, c.name category_name FROM {$t['participants']} p LEFT JOIN {$t['categories']} c ON c.id=p.category_id ORDER BY p.score DESC,p.id ASC");
-        echo '<h2>Cadastros</h2><table class="widefat striped"><thead><tr><th>Nome</th><th>Pontos</th><th>Categoria</th><th>Foto</th><th>Status</th><th></th></tr></thead><tbody>';
-        if (!$rows) echo '<tr><td colspan="6">Nenhum participante cadastrado.</td></tr>';
+        echo '<h2>Cadastros</h2><table class="widefat striped"><thead><tr><th>Nome</th><th>Unidade</th><th>Pontos</th><th>Categoria</th><th>Foto</th><th>Status</th><th></th></tr></thead><tbody>';
+        if (!$rows) echo '<tr><td colspan="7">Nenhum participante cadastrado.</td></tr>';
         foreach ($rows as $row) {
             $edit_url = admin_url('admin.php?page=dcdc-participants&edit='.(int) $row->id);
             $delete_url = wp_nonce_url(admin_url('admin.php?page=dcdc-participants&delete='.(int) $row->id), 'dcdc_delete_participant_'.(int) $row->id);
-            echo '<tr><td>'.esc_html($row->name).'</td><td>'.(int) $row->score.'</td><td>'.esc_html($row->category_name ?: '-').'</td><td>'.($row->photo_id ? '<a target="_blank" href="'.esc_url(wp_get_attachment_url((int) $row->photo_id)).'">Ver foto</a>' : '-').'</td><td>'.esc_html($row->status).'</td><td><a href="'.esc_url($edit_url).'">Editar</a> | <a href="'.esc_url($delete_url).'" onclick="return confirm(\'Excluir este participante e sua foto?\')">Excluir</a></td></tr>';
+            echo '<tr><td>'.esc_html($row->name).'</td><td>'.esc_html($row->unit ?: '-').'</td><td>'.(int) $row->score.'</td><td>'.esc_html($row->category_name ?: '-').'</td><td>'.($row->photo_id ? '<a target="_blank" href="'.esc_url(wp_get_attachment_url((int) $row->photo_id)).'">Ver foto</a>' : '-').'</td><td>'.esc_html($row->status).'</td><td><a href="'.esc_url($edit_url).'">Editar</a> | <a href="'.esc_url($delete_url).'" onclick="return confirm(\'Excluir este participante e sua foto?\')">Excluir</a></td></tr>';
         }
         echo '</tbody></table></div>';
     }

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dia das Crianças — Quiz de Nostalgia
  * Description: Motor de quiz para a campanha "Quanto de criança ainda existe em você?".
- * Version: 0.3.2
+ * Version: 0.3.9
  * Author: Marcos Cordeiro Soares
  * Requires at least: 5.8
  * Requires PHP: 7.4
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('DCDC_VERSION', '0.3.2');
+define('DCDC_VERSION', '0.3.9');
 define('DCDC_FILE', __FILE__);
 define('DCDC_DIR', plugin_dir_path(__FILE__));
 define('DCDC_URL', plugin_dir_url(__FILE__));
@@ -58,12 +58,12 @@ add_shortcode('dcdc_quiz', function ($atts) {
 add_shortcode('dcdc_ranking', function ($atts) {
     $atts = shortcode_atts(array(
         'campaign' => 'dia-das-criancas-2026',
-        'limit' => 10,
+        'limit' => 0,
         'title' => 'Ranking',
     ), $atts, 'dcdc_ranking');
 
     $campaign = sanitize_key($atts['campaign']);
-    $limit = max(1, min(25, absint($atts['limit'])));
+    $limit = absint($atts['limit']);
 
     wp_enqueue_style('dcdc-public');
     wp_enqueue_script('dcdc-ranking');
