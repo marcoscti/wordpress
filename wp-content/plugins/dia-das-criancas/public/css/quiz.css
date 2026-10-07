@@ -72,7 +72,7 @@
 .dcdc-shape--yellow {
     width: 160px;
     height: 160px;
-    background: rgba(255, 237, 0, 0.3);
+    background: #fbec35;
     right: 7%;
     top: 8%;
     transform: rotate(18deg);
@@ -81,7 +81,7 @@
 .dcdc-shape--pink {
     width: 120px;
     height: 120px;
-    background: rgba(0, 179, 196, 0.2);
+    background: #43a79b;
     left: 8%;
     top: 20%;
     border-radius: 50%;
@@ -90,7 +90,7 @@
 .dcdc-shape--blue {
     width: 140px;
     height: 100px;
-    background: rgba(0, 148, 198, 0.12);
+    background: #00b3c4;
     left: 12%;
     bottom: 16%;
     transform: rotate(-22deg);
@@ -99,7 +99,7 @@
 .dcdc-shape--purple {
     width: 120px;
     height: 120px;
-    background: rgba(200, 212, 0, 0.16);
+    background: #81bd50;
     right: 12%;
     bottom: 10%;
     border-radius: 18px;
