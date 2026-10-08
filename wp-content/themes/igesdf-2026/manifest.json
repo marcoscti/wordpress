@@ -1,7 +1,7 @@
 {
   "name": "Intranet - IgesDF",
   "short_name": "Intranet",
-  "start_url": "/",
+  "start_url": "/igesdf/intranet/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",

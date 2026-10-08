@@ -613,3 +613,145 @@ function render_tags()
                 </button>';
     }
 }
+
+add_action('admin_menu', function () {
+    add_submenu_page(
+        'edit.php?post_type=noticia',
+        __('Relatórios', 'igesdf-2026'),
+        __('Relatórios', 'igesdf-2026'),
+        'edit_posts',
+        'igesdf-noticia-reports-theme',
+        'igesdf_noticia_report_page_html_theme'
+    );
+});
+
+function igesdf_noticia_report_page_html_theme() {
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e('Exportar Relatório de Notícias', 'igesdf-2026'); ?></h1>
+        <p><?php esc_html_e('Selecione o período e o filtro desejado para gerar o CSV.', 'igesdf-2026'); ?></p>
+
+        <form method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+            <input type="hidden" name="action" value="igesdf_export_noticia_csv_theme">
+            <table class="form-table">
+                <tr>
+                    <th scope="row"><label for="start_date"><?php esc_html_e('Data Inicial', 'igesdf-2026'); ?></label></th>
+                    <td><input type="date" id="start_date" name="start_date" required></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="end_date"><?php esc_html_e('Data Final', 'igesdf-2026'); ?></label></th>
+                    <td><input type="date" id="end_date" name="end_date" required></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="filter_type"><?php esc_html_e('Tipo de Período', 'igesdf-2026'); ?></label></th>
+                    <td>
+                        <select id="filter_type" name="filter_type">
+                            <option value="all"><?php esc_html_e('Todo o intervalo selecionado', 'igesdf-2026'); ?></option>
+                            <option value="weekend"><?php esc_html_e('Apenas Fins de Semana (Sáb/Dom)', 'igesdf-2026'); ?></option>
+                            <option value="weekday"><?php esc_html_e('Apenas Dias de Semana (Seg-Sex)', 'igesdf-2026'); ?></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="post_status"><?php esc_html_e('Status das Notícias', 'igesdf-2026'); ?></label></th>
+                    <td>
+                        <select id="post_status" name="post_status">
+                            <option value="any"><?php esc_html_e('Todos os status', 'igesdf-2026'); ?></option>
+                            <option value="publish" selected><?php esc_html_e('Publicado', 'igesdf-2026'); ?></option>
+                            <option value="future"><?php esc_html_e('Agendado', 'igesdf-2026'); ?></option>
+                            <option value="draft"><?php esc_html_e('Rascunho', 'igesdf-2026'); ?></option>
+                            <option value="pending"><?php esc_html_e('Pendente', 'igesdf-2026'); ?></option>
+                            <option value="private"><?php esc_html_e('Privado', 'igesdf-2026'); ?></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button(__('Gerar e Baixar CSV', 'igesdf-2026')); ?>
+        </form>
+    </div>
+    <?php
+}
+
+function igesdf_handle_noticia_csv_export_theme() {
+    if (!current_user_can('edit_posts')) {
+        wp_die(__('Você não tem permissão para acessar esta página.', 'igesdf-2026'));
+    }
+
+    if (!post_type_exists('noticia')) {
+        wp_die(__('O tipo de conteúdo "noticia" não está registrado.', 'igesdf-2026'));
+    }
+
+    $start = isset($_GET['start_date']) ? sanitize_text_field(wp_unslash($_GET['start_date'])) : '';
+    $end   = isset($_GET['end_date']) ? sanitize_text_field(wp_unslash($_GET['end_date'])) : '';
+    $type  = isset($_GET['filter_type']) ? sanitize_text_field(wp_unslash($_GET['filter_type'])) : 'all';
+    $status_filter = isset($_GET['post_status']) ? sanitize_text_field(wp_unslash($_GET['post_status'])) : 'publish';
+    $allowed_statuses = ['any', 'publish', 'future', 'draft', 'pending', 'private'];
+    $status_filter = in_array($status_filter, $allowed_statuses, true) ? $status_filter : 'publish';
+
+    $args = [
+        'post_type'      => 'noticia',
+        'posts_per_page' => -1,
+        'post_status'    => $status_filter,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ];
+
+    if (!empty($start) || !empty($end)) {
+        $args['date_query'] = [[
+            'after'     => $start,
+            'before'    => $end,
+            'inclusive' => true,
+        ]];
+    }
+
+    $query = new WP_Query($args);
+
+    if (!headers_sent()) {
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=relatorio-noticias-' . ($start ?: 'inicio') . '-a-' . ($end ?: 'fim') . '.csv');
+    }
+
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+    $csv_data = [];
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $post_id = get_the_ID();
+            $day_n = get_the_date('N', $post_id);
+
+            if ($type === 'weekend' && !in_array((int) $day_n, [6, 7], true)) {
+                continue;
+            }
+            if ($type === 'weekday' && in_array((int) $day_n, [6, 7], true)) {
+                continue;
+            }
+
+            $csv_data[] = [
+                $post_id,
+                get_the_title(),
+                get_post_status(),
+                get_the_date('d/m/Y H:i'),
+                get_permalink(),
+            ];
+        }
+        wp_reset_postdata();
+    }
+
+    fputcsv($output, [__('Quantidade Total de Notícias no Período:', 'igesdf-2026'), count($csv_data)], ';');
+    fputcsv($output, [], ';');
+    fputcsv($output, ['ID', 'Título', 'Status', 'Data da Publicação', 'Link'], ';');
+
+    foreach ($csv_data as $row) {
+        fputcsv($output, $row, ';');
+    }
+
+    fclose($output);
+    exit;
+}
+
+add_action('admin_post_igesdf_export_noticia_csv_theme', 'igesdf_handle_noticia_csv_export_theme');
+add_action('admin_post_nopriv_igesdf_export_noticia_csv_theme', 'igesdf_handle_noticia_csv_export_theme');
+add_action('wp_ajax_igesdf_export_noticia_csv_theme', 'igesdf_handle_noticia_csv_export_theme');
+add_action('wp_ajax_nopriv_igesdf_export_noticia_csv_theme', 'igesdf_handle_noticia_csv_export_theme');
