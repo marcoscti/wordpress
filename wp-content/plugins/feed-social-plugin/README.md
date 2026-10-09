@@ -32,26 +32,27 @@ Plugin WordPress para exibir um feed social com mídia, curtidas, comentários, 
 - Suporte a vídeo do story, expiração opcional em 24 horas e conteúdo editorial
 
 ### Notificações de novos conteúdos
-- Quando um post do tipo Feed Social ou um story é publicado, visitantes com o site aberto podem receber:
+- Quando um post do tipo Feed Social ou um story é publicado, visitantes com o site aberto podem receber uma notificação independente para cada conteúdo:
   - toast visual na página
   - notificação nativa do navegador (quando o usuário concede permissão)
 - O toast exibe a logo do Feed Social, o título, um resumo e o link para conferir o conteúdo
+- Publicações e stories próximos no tempo são mantidos na fila e aparecem em cards separados, sem que um substitua o outro
 - O feed é recarregado automaticamente ao detectar um novo conteúdo
-- O navegador consulta um arquivo JSON estático a cada 15 segundos:
+- O navegador consulta um arquivo JSON estático com uma fila de eventos a cada 15 segundos:
 
 ```text
 /wp-content/uploads/feed-social-sse-event.json
 ```
 
-O arquivo é criado ou substituído no momento da publicação e expira após 5 minutos. A consulta feita pelo navegador é atendida diretamente pelo Apache ou Nginx, sem iniciar uma requisição PHP e sem consultar o banco de dados. Assim, 10 visitantes geram apenas requisições estáticas periódicas; não ficam 10 workers PHP mantidos em execução.
+Os eventos são acrescentados ao arquivo no momento da publicação e permanecem na fila por até 5 minutos. A consulta feita pelo navegador é atendida diretamente pelo Apache ou Nginx, sem iniciar uma requisição PHP e sem consultar o banco de dados. Assim, 10 visitantes geram apenas requisições estáticas periódicas; não ficam 10 workers PHP mantidos em execução.
 
 #### Como o fluxo funciona
 1. O WordPress detecta a transição do post para `publish`.
 2. O plugin aceita os post types `feed-social` e `social_story`.
 3. O plugin monta um evento com ID, tipo, título, resumo, URL, imagem e data.
-4. O evento é salvo em `wp-content/uploads/feed-social-sse-event.json` com validade de 300 segundos.
+4. O evento é acrescentado em `wp-content/uploads/feed-social-sse-event.json` junto aos demais eventos ainda válidos por até 300 segundos.
 5. Cada página com o feed busca esse arquivo com `cache: no-store` e um parâmetro de data para evitar cache intermediário.
-6. A primeira leitura apenas registra o ID atual. Leituras posteriores só exibem a notificação quando o ID mudar.
+6. A página ignora eventos anteriores à sua abertura e exibe um card por cada novo evento, identificando-o pelo tipo e ID do conteúdo.
 7. Ao clicar na notificação, o visitante é levado ao endereço configurado para o conteúdo.
 
 #### Sobre o SSE

@@ -43,16 +43,66 @@ function fs_trigger_sse_on_publish_action($post_id, $post) {
             'thumbnail' => get_the_post_thumbnail_url($ID, 'thumbnail') ?: '',
             'date' => $post->post_date,
             'excerpt' => $excerpt,
+            'timestamp' => time(),
         ];
 
-    $event['expires'] = time() + FS_SSE_EVENT_TTL;
-    $event_file = fs_get_sse_event_file();
+        $event['expires'] = $event['timestamp'] + FS_SSE_EVENT_TTL;
+        $event_file = fs_get_sse_event_file();
+        $event_dir = dirname($event_file);
 
-    if (!is_dir(dirname($event_file))) {
-        wp_mkdir_p(dirname($event_file));
-    }
+        if (!is_dir($event_dir) && !wp_mkdir_p($event_dir)) {
+            error_log('Feed Social: não foi possível criar o diretório de eventos SSE.');
+            return;
+        }
 
-    file_put_contents($event_file, wp_json_encode($event), LOCK_EX);
+        $lock = fopen($event_file . '.lock', 'c');
+        if (!$lock || !flock($lock, LOCK_EX)) {
+            if (is_resource($lock)) {
+                fclose($lock);
+            }
+            error_log('Feed Social: não foi possível bloquear a fila de notificações.');
+            return;
+        }
+
+        $events = [];
+        if (is_readable($event_file)) {
+            $stored_data = json_decode(file_get_contents($event_file), true);
+            if (isset($stored_data['events']) && is_array($stored_data['events'])) {
+                $events = $stored_data['events'];
+            } elseif (isset($stored_data['id'])) {
+                $events = [$stored_data];
+            }
+        }
+
+        $now = time();
+        $events = array_values(array_filter($events, function ($stored_event) use ($now) {
+            return is_array($stored_event)
+                && !empty($stored_event['id'])
+                && !empty($stored_event['type'])
+                && !empty($stored_event['expires'])
+                && (int) $stored_event['expires'] > $now;
+        }));
+        $events = array_values(array_filter($events, function ($stored_event) use ($event) {
+            return (int) $stored_event['id'] !== $event['id']
+                || $stored_event['type'] !== $event['type'];
+        }));
+        $events[] = $event;
+
+        $file = fopen($event_file, 'c+');
+        if (!$file) {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+            error_log('Feed Social: não foi possível abrir o arquivo de notificações.');
+            return;
+        }
+
+        $payload = wp_json_encode(['events' => $events]);
+        if ($payload === false || !ftruncate($file, 0) || !rewind($file) || fwrite($file, $payload) === false || !fflush($file)) {
+            error_log('Feed Social: não foi possível gravar a fila de notificações.');
+        }
+        fclose($file);
+        flock($lock, LOCK_UN);
+        fclose($lock);
 }
 
 function fs_get_sse_event_file() {

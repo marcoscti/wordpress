@@ -414,10 +414,11 @@ jQuery(document).ready(function ($) {
   function showFeedNotification(post) {
     showBrowserNotification(post);
 
-    const targetUrl = '/intranet/iges/'
+    const targetUrl = post.url || fs_feed_data.feed_page_url;
     const body = post.type === 'social_story' ? fs_feed_data.notification_body_story : fs_feed_data.notification_body;
     const postTitle = escapeHtml(post.title || "Novo conteúdo");
     const postExcerpt = escapeHtml(post.excerpt || "Confira as novidades no Feed Social.");
+    const safeTargetUrl = escapeHtml(targetUrl);
 
     const $notification = $(`
             <div class="fs-notification-toast">
@@ -427,13 +428,18 @@ jQuery(document).ready(function ($) {
                     <div class="fs-notification-text">
                     <h4>${postTitle}</h4>
                     <p>${postExcerpt}</p>
-                    <a href="${targetUrl}" class="fs-notification-link">Confira agora!</a>
+                    <a href="${safeTargetUrl}" class="fs-notification-link">Confira agora!</a>
                     </div>
                 </div>
             </div>
         `);
 
-    $("body").append($notification);
+    let $stack = $("#fs-notification-stack");
+    if (!$stack.length) {
+      $stack = $('<div id="fs-notification-stack" aria-live="polite" aria-label="Novas publicações"></div>');
+      $("body").append($stack);
+    }
+    $stack.append($notification);
     $notification
       .fadeIn()
       .delay(12000)
@@ -447,7 +453,8 @@ jQuery(document).ready(function ($) {
       return;
     }
 
-    let lastEventId = null;
+    const seenEventIds = new Set();
+    const pageStartedAt = Number(fs_feed_data.notification_started_at) || Math.floor(Date.now() / 1000);
 
     const checkForNewContent = function () {
       const eventUrl = fs_feed_data.notification_event_url + "?t=" + Date.now();
@@ -460,28 +467,45 @@ jQuery(document).ready(function ($) {
 
           return response.json();
         })
-        .then(function (post) {
-          if (!post || !post.id) {
+        .then(function (payload) {
+          if (!payload) {
             return;
           }
 
-          if (lastEventId === null) {
-            lastEventId = post.id;
-            return;
-          }
+          const events = Array.isArray(payload.events)
+            ? payload.events
+            : (payload.id ? [payload] : []);
+          events.sort(function (first, second) {
+            return Number(first.timestamp || 0) - Number(second.timestamp || 0);
+          });
 
-          if (String(post.id) !== String(lastEventId)) {
-            lastEventId = post.id;
-            showFeedNotification(post);
-
-            if (fs_feed_data.has_feed && $feedContainer.length) {
-              currentOffset = 0;
-              hasMore = true;
-              pendingBatch = [];
-              $feedContainer.empty();
-              updateSentinelVisibility();
-              fetchPosts();
+          let hasNewContent = false;
+          events.forEach(function (post) {
+            if (!post || !post.id || !post.type) {
+              return;
             }
+
+            const eventKey = String(post.type) + ":" + String(post.id);
+            if (seenEventIds.has(eventKey)) {
+              return;
+            }
+            seenEventIds.add(eventKey);
+
+            if (Number(post.timestamp || 0) < pageStartedAt) {
+              return;
+            }
+
+            showFeedNotification(post);
+            hasNewContent = true;
+          });
+
+          if (hasNewContent && fs_feed_data.has_feed && $feedContainer.length) {
+            currentOffset = 0;
+            hasMore = true;
+            pendingBatch = [];
+            $feedContainer.empty();
+            updateSentinelVisibility();
+            fetchPosts();
           }
         })
         .catch(function () {});

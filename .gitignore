@@ -2,3 +2,4 @@
 /wp-content/debug.log
 *node_modules/
 *oo-plugin
+/wp-content/themes/brizio-template/

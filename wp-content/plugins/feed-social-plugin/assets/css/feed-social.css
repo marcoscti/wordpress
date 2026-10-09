@@ -740,18 +740,28 @@ body.fs-video-modal-open {
 }
 
 /* Notification Toast */
-.fs-notification-toast {
+#fs-notification-stack {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(300px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.fs-notification-toast {
   background-color: #c8d40047;
   color: #333;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 10000;
   display: none; /* Hidden by default, shown with JS */
-  max-width: 300px;
+  width: 100%;
+  box-sizing: border-box;
   font-family: sans-serif;
   line-height: 1.4;
 }
@@ -808,11 +818,12 @@ body.fs-video-modal-open {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  .fs-notification-toast {
+  #fs-notification-stack {
     bottom: 10px;
     right: 10px;
     left: 10px;
-    max-width: calc(100% - 20px);
+    width: auto;
+    max-height: calc(100vh - 20px);
   }
   #fs-posts-container {
     display: grid;
