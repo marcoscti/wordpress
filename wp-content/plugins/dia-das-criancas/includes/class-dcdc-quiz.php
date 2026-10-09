@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) exit;
 class DCDC_Quiz {
     public static function units() {
         return array(
+            'DIEP',
             'Hospital Cidade do Sol',
             'Hospital de Base',
             'Hospital Regional de Santa Maria',
@@ -16,8 +17,8 @@ class DCDC_Quiz {
             'UPA Núcleo Bandeirante',
             'UPA Paranoá',
             'UPA Planaltina',
-            'UPA Riacho Fundo II',
             'UPA Recanto das Emas',
+            'UPA Riacho Fundo II',
             'UPA Samambaia',
             'UPA São Sebastião',
             'UPA Sobradinho',
