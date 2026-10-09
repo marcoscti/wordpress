@@ -28,8 +28,19 @@
   const participantNameInput = root.querySelector("#dcdc-participant-name");
   const participantUnitInput = root.querySelector("#dcdc-participant-unit");
   const participantPhotoInput = root.querySelector("#dcdc-participant-photo");
+  const photoCropStatus = root.querySelector("[data-photo-crop-status]");
+  const photoCropDialog = root.querySelector("[data-photo-crop-dialog]");
+  const photoCropImage = root.querySelector("[data-photo-crop-image]");
+  const photoCropConfirmBtn = root.querySelector(".dcdc-crop-confirm");
+  const photoCropCancelBtn = root.querySelector(".dcdc-crop-cancel");
   const participantSubmitBtn = root.querySelector(".dcdc-participant-btn");
+  const participantCardBtn = root.querySelector(".dcdc-card-btn");
   const participantFeedback = root.querySelector(".dcdc-participant-feedback");
+  let savedParticipant = null;
+  let photoCropper = null;
+  let photoCropUrl = null;
+  let photoIsCropped = false;
+  let photoCropAccepted = false;
   
   const praiseMessages = [
     "✨ Boa lembrança!",
@@ -199,6 +210,11 @@
       participantNameInput.value = "";
       participantPhotoInput.value = "";
       participantForm.reset();
+      participantForm.hidden = false;
+      photoIsCropped = false;
+      photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+      savedParticipant = null;
+      participantCardBtn.disabled = true;
       show(questionScreen);
       renderQuestion();
     } catch (e) {
@@ -244,6 +260,7 @@
 
   const handleParticipantSubmit = async (event) => {
     event.preventDefault();
+    if (savedParticipant) return;
 
     const name = participantNameInput.value.trim();
     if (name.length < 2) {
@@ -265,6 +282,12 @@
     const file = participantPhotoInput.files && participantPhotoInput.files[0];
     if (!file) {
       setParticipantFeedback("Selecione uma foto para entrar no ranking.", true);
+      participantPhotoInput.focus();
+      return;
+    }
+
+    if (!photoIsCropped) {
+      setParticipantFeedback("Recorte sua foto no formato quadrado antes de salvar.", true);
       participantPhotoInput.focus();
       return;
     }
@@ -308,8 +331,17 @@
         );
       }
 
+      if (!data.participant || !data.participant.id) {
+        throw new Error("O cadastro foi salvo, mas não foi possível preparar o cartão.");
+      }
+
+      savedParticipant = data.participant;
       participantForm.reset();
-      window.location.reload();
+      participantForm.hidden = true;
+      photoIsCropped = false;
+      photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+      participantCardBtn.disabled = false;
+      setParticipantFeedback("Cadastro salvo no ranking! Agora você pode gerar seu cartão.");
     } catch (e) {
       setParticipantFeedback(
         e.message || "Não foi possível completar o cadastro.",
@@ -319,6 +351,138 @@
       participantSubmitBtn.disabled = false;
     }
   };
+
+  const handleCardDownload = async () => {
+    if (!savedParticipant) return;
+
+    participantCardBtn.disabled = true;
+    try {
+      const data = await api(
+        `quiz/${encodeURIComponent(DCDC_DATA.campaign)}/ranking`,
+      );
+      const rankedParticipant = (data.participants || []).find(
+        (participant) => Number(participant.id) === Number(savedParticipant.id),
+      );
+      if (!rankedParticipant) {
+        throw new Error("Seu cadastro ainda não apareceu no ranking. Tente novamente.");
+      }
+
+      await window.DCDC_Card.downloadCard(
+        savedParticipant,
+        Number(rankedParticipant.position) || 0,
+      );
+    } catch (e) {
+      setParticipantFeedback(e.message || "Não foi possível gerar o cartão.", true);
+    } finally {
+      participantCardBtn.disabled = false;
+    }
+  };
+
+  const clearPhotoCropResources = () => {
+    if (photoCropper) {
+      photoCropper.destroy();
+      photoCropper = null;
+    }
+    if (photoCropUrl) {
+      URL.revokeObjectURL(photoCropUrl);
+      photoCropUrl = null;
+    }
+  };
+
+  participantPhotoInput.addEventListener("change", () => {
+    const file = participantPhotoInput.files && participantPhotoInput.files[0];
+    photoIsCropped = false;
+    if (!file) {
+      photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      participantPhotoInput.value = "";
+      photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+      setParticipantFeedback("Use uma imagem JPG, PNG ou WEBP.", true);
+      return;
+    }
+
+    photoCropStatus.textContent = "Preparando a foto para recorte...";
+    photoCropUrl = URL.createObjectURL(file);
+    photoCropImage.onload = () => {
+      photoCropDialog.showModal();
+      try {
+        photoCropper = new window.Cropper(photoCropImage, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1,
+          ready: () => {
+            photoCropConfirmBtn.disabled = false;
+          },
+        });
+      } catch (e) {
+        clearPhotoCropResources();
+        photoCropDialog.close();
+        participantPhotoInput.value = "";
+        setParticipantFeedback("Não foi possível iniciar o recorte da foto.", true);
+      }
+    };
+    photoCropImage.onerror = () => {
+      clearPhotoCropResources();
+      participantPhotoInput.value = "";
+      photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+      setParticipantFeedback("Não foi possível abrir essa imagem.", true);
+    };
+    photoCropImage.src = photoCropUrl;
+  });
+
+  photoCropConfirmBtn.addEventListener("click", () => {
+    if (!photoCropper) return;
+    photoCropConfirmBtn.disabled = true;
+
+    try {
+      const canvas = photoCropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+        imageSmoothingQuality: "high",
+      });
+      if (!canvas) throw new Error("Não foi possível preparar o recorte da foto.");
+
+      const originalFile = participantPhotoInput.files[0];
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          photoCropConfirmBtn.disabled = false;
+          setParticipantFeedback("Não foi possível gerar o recorte da foto.", true);
+          return;
+        }
+
+        const croppedFile = new File([blob], originalFile.name, { type: blob.type });
+        const transfer = new DataTransfer();
+        transfer.items.add(croppedFile);
+        participantPhotoInput.files = transfer.files;
+        photoIsCropped = true;
+        photoCropAccepted = true;
+        photoCropStatus.textContent = `${originalFile.name} — recortada em formato quadrado.`;
+        photoCropDialog.close();
+      }, originalFile.type);
+    } catch (e) {
+      photoCropConfirmBtn.disabled = false;
+      setParticipantFeedback(e.message || "Não foi possível recortar a foto.", true);
+    }
+  });
+
+  photoCropCancelBtn.addEventListener("click", () => photoCropDialog.close());
+  photoCropDialog.addEventListener("cancel", () => {
+    photoCropAccepted = false;
+  });
+  photoCropDialog.addEventListener("close", () => {
+    clearPhotoCropResources();
+    photoCropConfirmBtn.disabled = true;
+    if (!photoCropAccepted) {
+      participantPhotoInput.value = "";
+      photoIsCropped = false;
+      photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+    }
+    photoCropAccepted = false;
+  });
 
   startBtn.addEventListener("click", loadQuiz);
 
@@ -343,9 +507,15 @@
     feedbackEl.hidden = true;
     feedbackEl.classList.remove("is-visible");
     participantForm.reset();
+    participantForm.hidden = false;
+    photoIsCropped = false;
+    photoCropStatus.textContent = "A foto será recortada no formato quadrado (1:1).";
+    savedParticipant = null;
+    participantCardBtn.disabled = true;
     participantFeedback.hidden = true;
     participantFeedback.classList.remove("is-visible", "is-error");
   });
 
   participantForm.addEventListener("submit", handleParticipantSubmit);
+  participantCardBtn.addEventListener("click", handleCardDownload);
 })();

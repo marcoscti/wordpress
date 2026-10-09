@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dia das Crianças — Quiz de Nostalgia
  * Description: Motor de quiz para a campanha "Quanto de criança ainda existe em você?".
- * Version: 0.3.9
+ * Version: 1.0.0
  * Author: Marcos Cordeiro Soares
  * Requires at least: 5.8
  * Requires PHP: 7.4
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('DCDC_VERSION', '0.3.9');
+define('DCDC_VERSION', '1.0.0');
 define('DCDC_FILE', __FILE__);
 define('DCDC_DIR', plugin_dir_path(__FILE__));
 define('DCDC_URL', plugin_dir_url(__FILE__));
@@ -34,14 +34,18 @@ add_action('plugins_loaded', function () {
 
 add_action('wp_enqueue_scripts', function () {
     wp_register_style('dcdc-public', DCDC_URL . 'public/css/quiz.css', array(), DCDC_VERSION);
-    wp_register_script('dcdc-public', DCDC_URL . 'public/js/quiz.js', array(), DCDC_VERSION, true);
-    wp_register_script('dcdc-ranking', DCDC_URL . 'public/js/ranking.js', array(), DCDC_VERSION, true);
+    wp_register_style('dcdc-cropper', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css', array(), '1.5.13');
+    wp_register_script('dcdc-cropper', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js', array(), '1.5.13', true);
+    wp_register_script('dcdc-card', DCDC_URL . 'public/js/card.js', array(), DCDC_VERSION, true);
+    wp_register_script('dcdc-public', DCDC_URL . 'public/js/quiz.js', array('dcdc-cropper', 'dcdc-card'), DCDC_VERSION, true);
+    wp_register_script('dcdc-ranking', DCDC_URL . 'public/js/ranking.js', array('dcdc-card'), DCDC_VERSION, true);
 });
 
 add_shortcode('dcdc_quiz', function ($atts) {
     $atts = shortcode_atts(array('campaign' => 'dia-das-criancas-2026'), $atts, 'dcdc_quiz');
 
     wp_enqueue_style('dcdc-public');
+    wp_enqueue_style('dcdc-cropper');
     wp_enqueue_script('dcdc-public');
 
     wp_localize_script('dcdc-public', 'DCDC_DATA', array(

@@ -24,6 +24,8 @@ Plugin WordPress — quiz de nostalgia e ranking de participantes.
 - REST API interna.
 - Shortcode para renderização do quiz.
 - Cadastro de participante com nome, foto e unidade de atuação selecionada entre as unidades disponíveis.
+- Recorte obrigatório da foto do participante em proporção quadrada (1:1), antes de salvar.
+- Geração do cartão em PNG após salvar a participação no ranking pelo quiz.
 - Ranking público em cards ou lista, com modal de detalhes responsivo.
 - Download do cartão do participante em PNG.
 - Tela administrativa inicial.

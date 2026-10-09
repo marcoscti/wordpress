@@ -454,9 +454,77 @@
     min-height: 52px;
 }
 
+.dcdc-photo-crop-status {
+    color: var(--dcdc-text-soft);
+    font-size: 0.9rem;
+}
+
+.dcdc-crop-dialog {
+    width: min(640px, calc(100% - 32px));
+    max-width: none;
+    max-height: calc(100% - 32px);
+    padding: 0;
+    border: 0;
+    border-radius: 20px;
+    color: var(--dcdc-text);
+    box-shadow: 0 24px 70px rgba(30, 42, 76, 0.28);
+}
+
+.dcdc-crop-dialog::backdrop {
+    background: rgba(17, 24, 39, 0.72);
+}
+
+.dcdc-crop-dialog__content {
+    padding: 24px;
+}
+
+.dcdc-crop-dialog__content h3 {
+    margin: 0 0 8px;
+}
+
+.dcdc-crop-dialog__content p {
+    margin: 0 0 16px;
+    color: var(--dcdc-text-soft);
+}
+
+.dcdc-crop-dialog__image-wrap {
+    width: 100%;
+    max-height: 60vh;
+    overflow: hidden;
+    background: #f2f4f7;
+}
+
+.dcdc-crop-dialog__image {
+    display: block;
+    max-width: 100%;
+}
+
+.dcdc-crop-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.dcdc-crop-dialog__actions .dcdc-btn {
+    padding: 12px 20px;
+}
+
 .dcdc-participant-btn {
     width: 100%;
     margin-top: 8px;
+}
+
+.dcdc-card-btn {
+    width: 100%;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #e5484d, #c62828);
+    box-shadow: 0 12px 24px rgba(198, 40, 40, 0.2);
+}
+
+.dcdc-card-btn:hover,
+.dcdc-card-btn:focus-visible {
+    box-shadow: 0 16px 28px rgba(198, 40, 40, 0.28);
 }
 
 .dcdc-participant-feedback {

@@ -76,14 +76,29 @@
                     <div class="dcdc-form-row">
                         <label for="dcdc-participant-photo">Foto do participante</label>
                         <input id="dcdc-participant-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
+                        <small class="dcdc-photo-crop-status" data-photo-crop-status aria-live="polite">A foto será recortada no formato quadrado (1:1).</small>
                     </div>
 
                     <button type="submit" class="dcdc-btn dcdc-participant-btn">Salvar no ranking</button>
                 </form>
+                <button type="button" class="dcdc-btn dcdc-card-btn" disabled>Gerar meu cartão</button>
                 <div class="dcdc-participant-feedback" role="status" hidden></div>
             </div>
 
         </div>
+        <dialog class="dcdc-crop-dialog" data-photo-crop-dialog aria-labelledby="dcdc-crop-title">
+            <div class="dcdc-crop-dialog__content">
+                <h3 id="dcdc-crop-title">Ajuste sua foto</h3>
+                <p>Arraste a imagem para escolher o enquadramento quadrado.</p>
+                <div class="dcdc-crop-dialog__image-wrap">
+                    <img class="dcdc-crop-dialog__image" data-photo-crop-image alt="Prévia do recorte da foto" />
+                </div>
+                <div class="dcdc-crop-dialog__actions">
+                    <button type="button" class="dcdc-btn dcdc-crop-cancel">Cancelar</button>
+                    <button type="button" class="dcdc-btn dcdc-crop-confirm" disabled>Recortar e usar</button>
+                </div>
+            </div>
+        </dialog>
     </section>
 
     <div class="dcdc-error" role="alert" hidden></div>
