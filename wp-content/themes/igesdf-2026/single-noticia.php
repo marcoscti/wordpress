@@ -26,7 +26,7 @@ get_header();
             <hr>
             <div class="d-flex justify-content-between mt-4">
                 <?php if (get_previous_post()) : ?>
-                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;">
+                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px; height: 40px;">
                         <?php previous_post_link(
                             '%link',
                             '<i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Anterior'
@@ -35,7 +35,7 @@ get_header();
                 <?php endif; ?>
                 
                 <?php if (get_next_post()) : ?>
-                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;">
+                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;height: 40px;">
                         <?php next_post_link(
                             '%link',
                             'Próximo <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>'
