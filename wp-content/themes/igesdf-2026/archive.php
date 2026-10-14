@@ -27,7 +27,7 @@
 
                             <a href="<?php the_permalink(); ?>">
                                 <?php the_post_thumbnail(
-                                    'medium',
+                                    'full',
                                     ['class' => 'card-img-top img-fluid']
                                 ); ?>
                             </a>

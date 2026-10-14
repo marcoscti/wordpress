@@ -526,17 +526,40 @@ add_action('admin_head', function () {
 
 function breadcrumb()
 {
-
-
-
-    $post_type = get_post_type();
     echo '<nav class="text-muted align-items-center" aria-label="breadcrumb">';
     echo '<ol class="breadcrumb list m-0">';
     echo '<li class="breadcrumb-item">';
-    echo '<a href="' . home_url() . '"><i class="fa fa-home"></i>Início</a>';
+    echo '<a href="' . esc_url(home_url()) . '"><i class="fa fa-home"></i>Início</a>';
     echo '</li>';
 
-    if ($post_type !== 'post' && $post_type !== 'page') {
+    if (is_category()) {
+        $category = get_queried_object();
+
+        if ($category instanceof WP_Term) {
+            $ancestors = array_reverse(get_ancestors($category->term_id, 'category', 'taxonomy'));
+
+            foreach ($ancestors as $ancestor_id) {
+                $ancestor = get_term($ancestor_id, 'category');
+                if ($ancestor instanceof WP_Term) {
+                    $ancestor_link = get_term_link($ancestor);
+                    if (!is_wp_error($ancestor_link)) {
+                        echo '<li class="breadcrumb-item">';
+                        echo '<a href="' . esc_url($ancestor_link) . '">';
+                        echo esc_html($ancestor->name);
+                        echo '</a>';
+                        echo '</li>';
+                    }
+                }
+            }
+
+            echo '<li class="breadcrumb-item active" aria-current="page">';
+            echo esc_html($category->name);
+            echo '</li>';
+        }
+    }
+
+    $post_type = get_post_type();
+    if (!is_category() && $post_type !== 'post' && $post_type !== 'page') {
 
         $obj = get_post_type_object($post_type);
 
