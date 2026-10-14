@@ -164,7 +164,7 @@ class DCDC_Quiz {
              FROM {$t['participants']} p
              LEFT JOIN {$t['categories']} c ON c.id = p.category_id
              WHERE p.campaign = %s AND p.status = 'approved'
-             ORDER BY p.score DESC, p.created_at ASC",
+             ORDER BY p.score DESC, p.created_at DESC, p.id DESC",
             $campaign
         );
         if ($limit > 0) {

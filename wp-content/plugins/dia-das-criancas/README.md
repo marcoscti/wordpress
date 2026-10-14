@@ -29,6 +29,7 @@ Plugin WordPress — quiz de nostalgia e ranking de participantes.
 - Ranking público em cards ou lista, com modal de detalhes responsivo.
 - Download do cartão do participante em PNG.
 - Tela administrativa inicial.
+- Edição administrativa de participantes, incluindo unidade, categoria e status.
 - Seed inicial com perguntas e categorias para testes.
 
 ## Importante

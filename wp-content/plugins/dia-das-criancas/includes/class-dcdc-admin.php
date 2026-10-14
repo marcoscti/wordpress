@@ -103,7 +103,16 @@ class DCDC_Admin {
     }
 
     private static function participant_form($participant) {
+        global $wpdb;
+        $t = DCDC_DB::tables();
         $id = (int) $participant->id;
+        $categories = $wpdb->get_results($wpdb->prepare(
+            "SELECT id, name, emoji, active FROM {$t['categories']}
+             WHERE campaign=%s AND (active=1 OR id=%d)
+             ORDER BY position,id",
+            $participant->campaign,
+            (int) $participant->category_id
+        ));
         $photo_url = $participant->photo_id ? wp_get_attachment_image_url((int) $participant->photo_id, 'thumbnail') : '';
         echo '<h2>Editar participante</h2><form method="post" enctype="multipart/form-data">';
         wp_nonce_field('dcdc_save_participant');
@@ -111,6 +120,12 @@ class DCDC_Admin {
         echo '<table class="form-table"><tr><th><label for="dcdc-participant-name">Nome</label></th><td><input class="regular-text" id="dcdc-participant-name" name="name" maxlength="80" required value="'.esc_attr($participant->name).'">';
         echo '</td></tr><tr><th><label for="dcdc-participant-unit">Unidade</label></th><td><select class="regular-text" id="dcdc-participant-unit" name="unit" required><option value="">Selecione uma unidade</option>';
         foreach (DCDC_Quiz::units() as $unit) echo '<option value="'.esc_attr($unit).'" '.selected($participant->unit, $unit, false).'>'.esc_html($unit).'</option>';
+        echo '</select></td></tr><tr><th><label for="dcdc-participant-category">Categoria</label></th><td><select class="regular-text" id="dcdc-participant-category" name="category_id"><option value="0">Sem categoria</option>';
+        foreach ($categories as $category) {
+            $label = trim($category->emoji.' '.$category->name);
+            if (!$category->active) $label .= ' (inativa)';
+            echo '<option value="'.(int) $category->id.'" '.selected($participant->category_id, $category->id, false).'>'.esc_html($label).'</option>';
+        }
         echo '</select></td></tr><tr><th><label for="dcdc-participant-status">Status</label></th><td><select id="dcdc-participant-status" name="status">';
         foreach (array('approved' => 'Aprovado', 'pending' => 'Pendente', 'rejected' => 'Rejeitado') as $value => $label) echo '<option value="'.esc_attr($value).'" '.selected($participant->status, $value, false).'>'.esc_html($label).'</option>';
         echo '</select></td></tr><tr><th><label for="dcdc-participant-photo">Foto</label></th><td><input type="file" id="dcdc-participant-photo" name="photo" accept="image/jpeg,image/png,image/webp"><p class="description">JPG, PNG ou WEBP até 2MB.</p>';
@@ -129,9 +144,17 @@ class DCDC_Admin {
             $participant = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['participants']} WHERE id=%d", $id));
             $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
             $unit = sanitize_text_field(wp_unslash($_POST['unit'] ?? ''));
+            $category_id = absint($_POST['category_id'] ?? 0);
             $status = sanitize_key($_POST['status'] ?? 'pending');
-            if (!$participant || mb_strlen($name, 'UTF-8') < 2 || mb_strlen($name, 'UTF-8') > 80 || !in_array($unit, DCDC_Quiz::units(), true) || !in_array($status, array('approved', 'pending', 'rejected'), true)) {
-                self::notice('Informe um nome, uma unidade válidos e um status permitido.', 'error');
+            $category_is_valid = !$category_id || ($participant && $wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM {$t['categories']}
+                 WHERE id=%d AND campaign=%s AND (active=1 OR id=%d)",
+                $category_id,
+                $participant->campaign,
+                (int) $participant->category_id
+            )));
+            if (!$participant || mb_strlen($name, 'UTF-8') < 2 || mb_strlen($name, 'UTF-8') > 80 || !in_array($unit, DCDC_Quiz::units(), true) || !in_array($status, array('approved', 'pending', 'rejected'), true) || !$category_is_valid) {
+                self::notice('Informe um nome, uma unidade e uma categoria válidos e um status permitido.', 'error');
             } else {
                 $photo_id = (int) $participant->photo_id;
                 $new_photo_id = 0;
@@ -145,7 +168,7 @@ class DCDC_Admin {
                         if ($participant->photo_id) wp_delete_attachment((int) $participant->photo_id, true);
                         if (!empty($_POST['remove_photo']) && $new_photo_id === 0) $photo_id = 0;
                     }
-                    $wpdb->update($t['participants'], array('name' => $name, 'unit' => $unit, 'status' => $status, 'photo_id' => $photo_id), array('id' => $id));
+                    $wpdb->update($t['participants'], array('name' => $name, 'unit' => $unit, 'category_id' => $category_id ?: null, 'status' => $status, 'photo_id' => $photo_id), array('id' => $id));
                     self::notice('Participante atualizado.');
                 }
             }
@@ -165,7 +188,7 @@ class DCDC_Admin {
         $edit = isset($_GET['edit']) ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['participants']} WHERE id=%d", absint($_GET['edit']))) : null;
         echo '<div class="wrap"><h1>Participantes</h1>';
         if ($edit) self::participant_form($edit);
-        $rows = $wpdb->get_results("SELECT p.*, c.name category_name FROM {$t['participants']} p LEFT JOIN {$t['categories']} c ON c.id=p.category_id ORDER BY p.score DESC,p.id ASC");
+        $rows = $wpdb->get_results("SELECT p.*, c.name category_name FROM {$t['participants']} p LEFT JOIN {$t['categories']} c ON c.id=p.category_id ORDER BY p.score DESC,p.created_at DESC,p.id DESC");
         echo '<h2>Cadastros</h2><table class="widefat striped"><thead><tr><th>Nome</th><th>Unidade</th><th>Pontos</th><th>Categoria</th><th>Foto</th><th>Status</th><th></th></tr></thead><tbody>';
         if (!$rows) echo '<tr><td colspan="7">Nenhum participante cadastrado.</td></tr>';
         foreach ($rows as $row) {
