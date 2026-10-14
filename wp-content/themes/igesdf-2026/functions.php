@@ -451,7 +451,7 @@ add_action('pre_get_posts', 'add_my_post_types_to_query');
 function order_category_archives($query)
 {
     if (is_category() && $query->is_main_query()) { // is_category() can specify a category, if necessary
-        $query->set('post_type', array('noticia', 'evento', 'comunicado', 'convenio'));
+        $query->set('post_type', array('post', 'noticia', 'evento', 'comunicado', 'convenio'));
         $query->set('orderby', 'date');
         $query->set('order', 'DESC');
     }
