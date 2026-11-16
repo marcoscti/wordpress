@@ -1,3 +1,7 @@
+:root {
+    --primary-color: #0094c6;
+}
+
 header#header-lp-dia-dos-pais,
 footer#footer-lp-dia-dos-pais {
     background: linear-gradient(135deg, #Ec6608 0%, #b85a18 100%) !important;
@@ -10,19 +14,19 @@ body#body-lp-dia-dos-pais .offcanvas.offcanvas-start.show {
 /*
 Conteúdo para o aniversário do Hospital de Base
 */
-body.noticia-template {
+body.single-noticia-hb66 {
     background: linear-gradient(135deg, rgba(254, 247, 236, 1) 0%, rgba(254, 242, 228, 1) 100%);
     position: relative;
 }
 
-body.noticia-template h1 {
+body.single-noticia-hb66 h1 {
     font-weight: 600;
     color: #00b3c4;
     font-size: 3rem !important;
     text-align: center;
 }
 
-body.noticia-template::before {
+body.single-noticia-hb66::before {
     content: "";
     position: absolute;
     background: url('../images/hbdf-66/hb-icon.png') right / contain no-repeat;
@@ -34,7 +38,8 @@ body.noticia-template::before {
     z-index: -1;
     opacity: 0.3;
 }
-body.noticia-template h1::before {
+
+body.single-noticia-hb66 h1::before {
     content: url('../images/hbdf-66/img-66.png');
     display: block;
     width: 100%;
@@ -42,13 +47,14 @@ body.noticia-template h1::before {
     text-align: center;
     margin-bottom: 1rem;
 }
-body.noticia-template .offcanvas.offcanvas-start.show,
-body.noticia-template #footer-single-noticia,
-body.noticia-template #header-single-noticia {
+
+body.single-noticia-hb66 .offcanvas.offcanvas-start.show,
+body.single-noticia-hb66 #footer-single-noticia,
+body.single-noticia-hb66 #header-single-noticia {
     background: #00b3c4
 }
 
-body.noticia-template #header-single-noticia::before {
+body.single-noticia-hb66 #header-single-noticia::before {
     content: "";
     position: absolute;
     background: url('../images/hbdf-66/bitmap.png') right / contain no-repeat;
@@ -61,15 +67,22 @@ body.noticia-template #header-single-noticia::before {
 }
 
 @media(max-width:1366px) {
-    body.noticia-template #header-single-noticia::before {
+    body.single-noticia-hb66 #header-single-noticia::before {
         background-size: cover;
         background-position-x: left;
     }
 }
 
 @media (max-width: 430px) {
-    body.noticia-template #header-single-noticia::before {
+    body.single-noticia-hb66 #header-single-noticia::before {
         background-size: cover;
         background-position-x: left;
     }
+}
+
+.noticia-template.noticia-template-single-noticia-purple header,
+.noticia-template.noticia-template-single-noticia-purple .offcanvas.offcanvas-start.show,
+.noticia-template.noticia-template-single-noticia-purple footer,
+.noticia-template.noticia-template-single-noticia-purple .navigation-item{
+    background-color: #61499D !important;
 }

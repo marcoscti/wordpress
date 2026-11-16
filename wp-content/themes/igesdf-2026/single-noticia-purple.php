@@ -1,0 +1,50 @@
+<?php
+/*
+* Template Name: Tema Novembro Roxo
+* Template Post Type: noticia
+*/
+get_header();
+?>
+
+<?php get_header(); ?>
+<div class="container py-2 igesdf-container">
+    <?php while (have_posts()) : the_post(); ?>
+        <article>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <small><?php echo breadcrumb() ?></small>
+                <small class="text-muted text-sm m-0">
+                    Atualizado em
+                    <?php echo get_the_date('d/m/Y') . ' às ' . get_the_date('H:i'); ?>
+                    por
+                    <?php the_author(); ?>
+                </small>
+            </div>
+            <div class="content">
+                <h1 class="mb-4 fs-1"><?php the_title(); ?></h1>
+                <?php the_content(); ?>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mt-4">
+                <?php if (get_previous_post()) : ?>
+                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px; height: 40px;">
+                        <?php previous_post_link(
+                            '%link',
+                            '<i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Anterior'
+                        ); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (get_next_post()) : ?>
+                    <div class="navigation-item px-2 py-2 border rounded" style="max-width: 100px;height: 40px;">
+                        <?php next_post_link(
+                            '%link',
+                            'Próximo <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>'
+                        ); ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+</div>
+</article>
+<?php endwhile; ?>
+</div>
+<?php get_footer(); ?>
