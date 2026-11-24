@@ -26,14 +26,14 @@ function dj_ai_register_meta() {
         'default' => '',
     ]);
 }
-add_action('init', 'dj_ai_register_meta');
+//add_action('init', 'dj_ai_register_meta');
 
 function dj_ai_schedule($post_id) {
     if (get_post_type($post_id) !== 'documento_juridico') return;
     if (wp_next_scheduled('dj_process_ai_document', [$post_id])) return;
     wp_schedule_single_event(time() + 10, 'dj_process_ai_document', [$post_id]);
 }
-add_action('save_post_documento_juridico', 'dj_ai_schedule', 20);
+//add_action('save_post_documento_juridico', 'dj_ai_schedule', 20);
 
 /**
  * Tenta extrair texto de um PDF usando Smalot\PdfParser se disponível,

@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Documentos Jurídicos
  * Description: Repositório de PDFs jurídicos com CPT, filtros, busca AJAX, paginação, mais acessados e estrutura preparada para processamento por IA.
- * Version: 1.0.0
- * Author: Marcos Cordeiro Soares
+ * Version: 1.0.1
+ * Author: Marcos Cordeiro
  * Author URI: https://github.com/marcoscti
  * Requires at least: 5.0
  * Text Domain: documentos-juridicos
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('DJ_VERSION', '1.0.0');
+define('DJ_VERSION', '1.0.1');
 define('DJ_PATH', plugin_dir_path(__FILE__));
 define('DJ_URL', plugin_dir_url(__FILE__));
 

@@ -7,9 +7,9 @@
     <?php wp_head(); ?>
 </head>
 
-<body <?php body_class(); ?> id="<?php echo pathinfo("body-" .get_page_template_slug(), PATHINFO_FILENAME); ?>">
+<body <?php body_class(); ?> id="<?php echo pathinfo("body-" . get_page_template_slug(), PATHINFO_FILENAME); ?>">
     <?php wp_body_open(); ?>
-    <header class="py-3" id="<?php echo pathinfo("header-" .get_page_template_slug(), PATHINFO_FILENAME); ?>">
+    <header class="py-3" id="<?php echo pathinfo("header-" . get_page_template_slug(), PATHINFO_FILENAME); ?>">
         <div class="container">
 
             <div class="header-content">
@@ -19,7 +19,7 @@
                     data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasExample"
                     aria-controls="offcanvasExample">
-                    <i class="fa fa-th" aria-hidden="true"></i> Menu
+                    <i class="fa fa-bars" aria-hidden="true"></i> Menu
                 </button>
 
                 <div class="logo">
@@ -39,7 +39,7 @@
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-white" id="offcanvasExampleLabel">Intranet IgesDF</h5>
+            <h4 class="offcanvas-title text-white" id="offcanvasExampleLabel"><i class="fa fa-globe"></i> Intranet - IgesDF</h4>
             <button type="button" class="btn-close text-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -58,7 +58,7 @@
 
                 <li class=""><a href="https://igesdf.org.br/telefones-e-ramais-unidades-igesdf/" class="color-primary" target="_blank"><i class="fa fa-phone" aria-hidden="true"></i> Contatos</a></li>
 
-                <li class=""><a href="https://institutodegestaoestrategica.app.questorpublico.com.br" class="color-primary" target="_blank"><i class="fa fa-money" aria-hidden="true"></i> Contracheque</a></li>
+                <li class=""><a href="https://institutodegestaoestrategica.app.questorpublico.com.br" class="color-primary" target="_blank"><i class="fa fa-money-bill-1-wave" aria-hidden="true"></i> Contracheque</a></li>
 
                 <?php
                 if (is_user_logged_in()):

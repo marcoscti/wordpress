@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
           ${(item.subjects || []).map(x => `<span>${esc(x)}</span>`).join('')}
         </div>
         <div class="dj-card-actions">
-          ${item.pdf_url ? `<button type="button" class="dj-view-pdf" data-pdf-url="${esc(item.pdf_url)}">Ver PDF</button>` : ''}
-          ${item.pdf_download_url ? `<a href="${esc(item.pdf_download_url)}">Download</a>` : ''}
+          ${item.pdf_url ? `<button type="button" class="dj-view-pdf" data-pdf-url="${esc(item.pdf_url)}"><i class="fa fa-eye"></i> Visualizar</button>` : ''}
+          ${item.pdf_download_url ? `<a href="${esc(item.pdf_download_url)}"><i class="fa fa-download" class="dj-download"></i> Download</a>` : ''}
         </div>
       </div>
     </article>`;
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadFeatured() {
     try {
-      const data = await get('documentos?per_page=6&orderby=views');
+      const data = await get('documentos?per_page=3&orderby=views');
       featuredEl.innerHTML = data.data.map(card).join('') || '<p>Nenhum documento encontrado.</p>';
     } catch (e) {
       featuredEl.innerHTML = '<p>Não foi possível carregar os mais acessados.</p>';

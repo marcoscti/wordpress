@@ -78,9 +78,9 @@ function meu_tema_assets()
     // Font Awesome 4.7
     wp_enqueue_style(
         'font-awesome',
-        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
         [],
-        '4.7.0'
+        '6.5.2'
     );
     wp_enqueue_style(
         'main-css',
@@ -92,6 +92,13 @@ function meu_tema_assets()
     wp_enqueue_style(
         'landing-pages-css',
         get_template_directory_uri() . '/assets/css/landing-pages.css',
+        [],
+        wp_get_theme()->get('Version'),
+        'all'
+    );
+    wp_enqueue_style(
+        'sucon-page-css',
+        get_template_directory_uri() . '/assets/css/sucon-page.css',
         [],
         wp_get_theme()->get('Version'),
         'all'
@@ -124,49 +131,6 @@ function meu_tema_assets()
         '1.0'
     );
 }
-/**
- * Adiciona classes Bootstrap aos itens do menu
- */
-function theme_bootstrap_menu_classes($classes, $item, $args)
-{
-    if ($args->theme_location === 'header_menu') {
-
-        $classes[] = 'nav-item';
-
-        if (in_array('menu-item-has-children', $classes)) {
-            $classes[] = 'dropdown';
-        }
-    }
-
-    return $classes;
-}
-//add_filter('nav_menu_css_class', 'theme_bootstrap_menu_classes', 10, 3);
-
-
-/**
- * Adiciona classes Bootstrap aos links
- */
-function theme_bootstrap_menu_link_classes($atts, $item, $args)
-{
-    if ($args->theme_location === 'header_menu') {
-
-        $classes = ['nav-link'];
-
-        if (in_array('menu-item-has-children', $item->classes)) {
-
-            $classes[] = 'dropdown-toggle';
-
-            $atts['data-bs-toggle'] = 'dropdown';
-            $atts['aria-expanded'] = 'false';
-            $atts['role'] = 'button';
-        }
-
-        $atts['class'] = implode(' ', $classes);
-    }
-
-    return $atts;
-}
-//add_filter('nav_menu_link_attributes', 'theme_bootstrap_menu_link_classes', 10, 3);
 
 
 /**
@@ -202,7 +166,7 @@ function create_post_types()
         'menu_name'           => __('Notícia', 'igesdf-2026'),
     );
 
-    $supports_noticia = array('title', 'editor', 'thumbnail','page-attributes');
+    $supports_noticia = array('title', 'editor', 'thumbnail', 'page-attributes');
 
     $slug_noticia = get_theme_mod('noticia_permalink');
     $slug_noticia = (empty($slug_noticia)) ? 'noticia' : $slug_noticia;
@@ -220,7 +184,7 @@ function create_post_types()
         'hierarchical'        => false,
         'menu_position'       => 4,
         'supports'            => $supports_noticia,
-        'taxonomies'          => array('category','post_tag'),
+        'taxonomies'          => array('category', 'post_tag'),
         'menu_icon'           => 'dashicons-editor-table',
         'show_in_rest'        => true, // Adicionado para compatibilidade com Gutenberg
         'description'         => '',
@@ -434,8 +398,6 @@ function create_post_types()
 }
 add_action('init', 'create_post_types');
 
-// AJAX handler para submissão de homenagens (frontend)
-
 
 // Mostra os posts personalizados nas consultas padrões do wordpress
 function add_my_post_types_to_query($query)
@@ -446,7 +408,6 @@ function add_my_post_types_to_query($query)
     return $query;
 }
 add_action('pre_get_posts', 'add_my_post_types_to_query');
-
 
 function order_category_archives($query)
 {
@@ -648,8 +609,9 @@ add_action('admin_menu', function () {
     );
 });
 
-function igesdf_noticia_report_page_html_theme() {
-    ?>
+function igesdf_noticia_report_page_html_theme()
+{
+?>
     <div class="wrap">
         <h1><?php esc_html_e('Exportar Relatório de Notícias', 'igesdf-2026'); ?></h1>
         <p><?php esc_html_e('Selecione o período e o filtro desejado para gerar o CSV.', 'igesdf-2026'); ?></p>
@@ -692,10 +654,11 @@ function igesdf_noticia_report_page_html_theme() {
             <?php submit_button(__('Gerar e Baixar CSV', 'igesdf-2026')); ?>
         </form>
     </div>
-    <?php
+<?php
 }
 
-function igesdf_handle_noticia_csv_export_theme() {
+function igesdf_handle_noticia_csv_export_theme()
+{
     if (!current_user_can('edit_posts')) {
         wp_die(__('Você não tem permissão para acessar esta página.', 'igesdf-2026'));
     }
