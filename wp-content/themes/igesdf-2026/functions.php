@@ -75,13 +75,6 @@ function meu_tema_assets()
         [],
         '5.3.3'
     );
-    // Font Awesome 4.7
-    wp_enqueue_style(
-        'font-awesome',
-        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
-        [],
-        '6.5.2'
-    );
     wp_enqueue_style(
         'main-css',
         get_template_directory_uri() . '/assets/css/main.css',
@@ -130,6 +123,12 @@ function meu_tema_assets()
         [],
         '1.0'
     );
+    wp_enqueue_style(
+        'font-awesome-6',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
+        [],
+        '6.5.2'
+    );
 }
 
 
@@ -142,15 +141,12 @@ function theme_bootstrap_submenu_classes($classes, $args, $depth)
 
     return $classes;
 }
-//add_filter('nav_menu_submenu_css_class', 'theme_bootstrap_submenu_classes', 10, 3);
+
 add_action('wp_enqueue_scripts', 'meu_tema_assets');
 
-
-// Função para criação de menu na área administrativa
 function create_post_types()
 {
 
-    // NOTÍCIAS
     $labels_noticia = array(
         'name'                => __('Notícias', 'igesdf-2026'),
         'singular_name'       => __('Notícia', 'igesdf-2026'),
@@ -397,7 +393,6 @@ function create_post_types()
     register_post_type('convenio', $args_convenio);
 }
 add_action('init', 'create_post_types');
-
 
 // Mostra os posts personalizados nas consultas padrões do wordpress
 function add_my_post_types_to_query($query)
