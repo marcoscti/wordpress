@@ -154,12 +154,9 @@ get_header();
                                     <div id="collapse-sem-letras-miudas" class="accordion-collapse collapse"
                                         aria-labelledby="heading-sem-letras-miudas" data-bs-parent="#accordion-sem-letras-miudas">
                                         <div class="accordion-body">
-                                            <!--
-                          INSIRA AQUI O SHORTCODE DO CARROSSEL.
-                          No Elementor, arraste o widget "Shortcode" para esta área
-                          e informe o shortcode do carrossel.
-                          Em um template PHP, use: echo do_shortcode('[seu_shortcode]');
-                        -->
+                                            <?php
+                                            echo do_shortcode('[smart_post_show id="32876"]');
+                                            ?>
                                         </div>
                                     </div>
                                 </div>
